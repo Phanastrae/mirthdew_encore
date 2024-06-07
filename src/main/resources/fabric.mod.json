@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "mirthlight-encore",
+	"version": "${version}",
+	"name": "Mirthlight Encore",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/mirthlight-encore/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"phanastrae.mirthlight_encore.MirthlightEncore"
+		],
+		"client": [
+			"phanastrae.mirthlight_encore.MirthlightEncoreClient"
+		],
+		"fabric-datagen": [
+			"phanastrae.mirthlight_encore.MirthlightEncoreDataGenerator"
+		]
+	},
+	"mixins": [
+		"mirthlight-encore.mixins.json",
+		{
+			"config": "mirthlight-encore.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.21-",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "phanastrae.mirthlight_encore.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"ExampleMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
