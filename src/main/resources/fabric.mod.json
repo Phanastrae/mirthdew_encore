@@ -3,15 +3,14 @@
 	"id": "mirthlight-encore",
 	"version": "${version}",
 	"name": "Mirthlight Encore",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Join the Mirthlight Circus, and bring one final Encore to the Dreaming Dead!",
 	"authors": [
-		"Me!"
+		"Phanastrae"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/Phanastrae/mirthlight-encore"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/mirthlight-encore/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -39,6 +38,5 @@
 		"fabric-api": "*"
 	},
 	"suggests": {
-		"another-mod": "*"
 	}
 }
