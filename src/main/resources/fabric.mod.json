@@ -1,6 +1,6 @@
 {
 	"schemaVersion": 1,
-	"id": "mirthlight-encore",
+	"id": "mirthlight_encore",
 	"version": "${version}",
 	"name": "Mirthlight Encore",
 	"description": "Join the Mirthlight Circus, and bring one final Encore to the Dreaming Dead!",
@@ -11,7 +11,7 @@
 		"sources": "https://github.com/Phanastrae/mirthlight-encore"
 	},
 	"license": "MIT",
-	"icon": "assets/mirthlight-encore/icon.png",
+	"icon": "assets/mirthlight_encore/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -21,7 +21,7 @@
 			"phanastrae.mirthlight_encore.MirthlightEncoreClient"
 		],
 		"fabric-datagen": [
-			"phanastrae.mirthlight_encore.MirthlightEncoreDataGenerator"
+          "phanastrae.mirthlight_encore.data.MirthlightEncoreDataGenerator"
 		]
 	},
 	"mixins": [
