@@ -39,9 +39,9 @@ public class WorldGenerationProvider extends FabricDynamicRegistryProvider {
 
     public static void bootstrapBiomes(Registerable<Biome> context) {
         BiomeEffects.Builder builder = new BiomeEffects.Builder()
-                .fogColor(0x032727)
+                .fogColor(0x031717)
                 .waterColor(0x0FEFFF)
-                .waterFogColor(0x0F4F4F)
+                .waterFogColor(0x021414)
                 .skyColor(0x074F4F)
                 .foliageColor(FoliageColors.getColor(0.5, 0.5))
                 .grassColor(GrassColors.getColor(0.5, 0.5))
@@ -76,8 +76,8 @@ public class WorldGenerationProvider extends FabricDynamicRegistryProvider {
                         256,
                         256,
                         BlockTags.INFINIBURN_OVERWORLD,
-                        DimensionTypes.OVERWORLD_ID,
-                        0.4F,
+                        MirthlightEncoreDimensions.DREAMTWIRL_ID,
+                        0.2F,
                         new DimensionType.MonsterSettings(true, false, UniformIntProvider.create(0, 7), 0)
                 ));
     }
