@@ -24,10 +24,11 @@
           "phanastrae.mirthlight_encore.data.MirthlightEncoreDataGenerator"
 		]
 	},
+	"accessWidener": "mirthlight_encore.accesswidener",
 	"mixins": [
-		"mirthlight-encore.mixins.json",
+      "mirthlight_encore.mixins.json",
 		{
-			"config": "mirthlight-encore.client.mixins.json",
+			"config": "mirthlight_encore.client.mixins.json",
 			"environment": "client"
 		}
 	],

@@ -11,6 +11,8 @@ public class MirthlightEncoreDataGenerator implements DataGeneratorEntrypoint {
 	public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
 		FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
 
+		pack.addProvider(BlockTagProvider::new);
+		pack.addProvider(ModelProvider::new);
 		pack.addProvider(WorldGenerationProvider::new);
 	}
 

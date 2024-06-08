@@ -1,13 +1,6 @@
 {
   "type": "mirthlight_encore:dreamtwirl",
   "generator": {
-    "type": "minecraft:flat",
-    "settings": {
-      "biome": "mirthlight_encore:dreamtwirl",
-      "lakes": false,
-      "features": false,
-      "layers": [],
-      "structure_overrides": []
-    }
+    "type": "mirthlight_encore:dreamtwirl"
   }
 }

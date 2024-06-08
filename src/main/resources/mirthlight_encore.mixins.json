@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "phanastrae.mirthlight_encore.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CollisionViewMixin",
+    "EntityMixin",
+    "ProjectileEntityAccessor",
+    "ServerPlayNetworkHandlerMixin",
+    "ServerWorldAccessor",
+    "ServerWorldMixin",
+    "WorldMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}
