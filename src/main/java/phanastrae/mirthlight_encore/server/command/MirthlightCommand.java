@@ -5,11 +5,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import phanastrae.mirthlight_encore.dreamtwirl.DreamtwirlEntityAttachment;
+import phanastrae.mirthlight_encore.dreamtwirl.DreamtwirlStage;
+import phanastrae.mirthlight_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthlight_encore.util.RegionPos;
 
 import java.util.Collection;
@@ -18,14 +21,23 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class MirthlightCommand {
+    private static final SimpleCommandExceptionType FAILED_NO_MANAGER_EXCEPTION = new SimpleCommandExceptionType(
+            Text.stringifiedTranslatable("commands.mirthlight_encore.dreamtwirl.failed.no_manager")
+    );
     private static final DynamicCommandExceptionType FAILED_JOIN_TARGET_NOT_IN_DREAMTWIRL_EXCEPTION = new DynamicCommandExceptionType(
             playerName -> Text.stringifiedTranslatable("commands.mirthlight_encore.dreamtwirl.join.failed.target_not_in_dreamtwirl", playerName)
+    );
+    private static final SimpleCommandExceptionType FAILED_JOIN_DOES_NOT_EXIST_EXCEPTION = new SimpleCommandExceptionType(
+            Text.stringifiedTranslatable("commands.mirthlight_encore.dreamtwirl.join.failed.does_not_exist")
     );
     private static final DynamicCommandExceptionType FAILED_JOIN_SINGLE_EXCEPTION = new DynamicCommandExceptionType(
             playerName -> Text.stringifiedTranslatable("commands.mirthlight_encore.dreamtwirl.join.failed.single", playerName)
     );
     private static final DynamicCommandExceptionType FAILED_JOIN_MULTIPLE_EXCEPTION = new DynamicCommandExceptionType(
             playerCount -> Text.stringifiedTranslatable("commands.mirthlight_encore.dreamtwirl.join.failed.multiple", playerCount)
+    );
+    private static final SimpleCommandExceptionType FAILED_CREATE_ALREADY_EXISTS_EXCEPTION = new SimpleCommandExceptionType(
+            Text.stringifiedTranslatable("commands.mirthlight_encore.dreamtwirl.create.failed.already_exists")
     );
     private static final DynamicCommandExceptionType FAILED_LEAVE_SINGLE_EXCEPTION = new DynamicCommandExceptionType(
             playerName -> Text.stringifiedTranslatable("commands.mirthlight_encore.dreamtwirl.leave.failed.single", playerName)
@@ -67,8 +79,57 @@ public class MirthlightCommand {
                                                         .executes(context -> leave(context.getSource(), EntityArgumentType.getEntities(context, "targets")))
                                         )
                                 )
+                                .then(literal("create")
+                                        .requires(source -> source.hasPermissionLevel(2))
+                                        .then(argument("regionX", IntegerArgumentType.integer())
+                                                .then(argument("regionZ", IntegerArgumentType.integer())
+                                                        .executes(context -> create(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ")))
+                                                )
+                                        )
+                                )
+                                .then(literal("list")
+                                        .executes(context -> list(context.getSource()))
+                                )
                         )
         );
+    }
+
+    private static int create(ServerCommandSource source, int regionX, int regionZ) throws CommandSyntaxException {
+        DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getMainDreamtwirlStageManager(source.getServer());
+        if(dreamtwirlStageManager == null) {
+            throw FAILED_NO_MANAGER_EXCEPTION.create();
+        }
+
+        RegionPos dreamtwirlRegionPos = new RegionPos(regionX, regionZ);
+        DreamtwirlStage dreamtwirlStage = dreamtwirlStageManager.getDreamtwirlIfPresent(dreamtwirlRegionPos);
+        if(dreamtwirlStage != null) {
+            throw FAILED_CREATE_ALREADY_EXISTS_EXCEPTION.create();
+        } else {
+            dreamtwirlStageManager.getOrCreateDreamtwirlStage(dreamtwirlRegionPos);
+            source.sendFeedback(() -> Text.translatable("commands.mirthlight_encore.dreamtwirl.create.success", regionX, regionZ), true);
+            return 1;
+        }
+    }
+
+    private static int list(ServerCommandSource source) throws CommandSyntaxException {
+        DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getMainDreamtwirlStageManager(source.getServer());
+        if(dreamtwirlStageManager == null) {
+            throw FAILED_NO_MANAGER_EXCEPTION.create();
+        }
+
+        int count = dreamtwirlStageManager.getDreamtwirlStageCount();
+
+        if(count > 0) {
+            source.sendFeedback(() -> Text.translatable("commands.mirthlight_encore.dreamtwirl.list.count", count), false);
+            dreamtwirlStageManager.forEach((id, dreamtwirlStage) -> {
+                RegionPos regionPos = new RegionPos(id);
+                source.sendFeedback(() -> Text.translatable("commands.mirthlight_encore.dreamtwirl.list.entry", regionPos.regionX, regionPos.regionZ), false);
+            });
+        } else {
+            source.sendFeedback(() -> Text.translatable("commands.mirthlight_encore.dreamtwirl.list.none_exist"), false);
+        }
+
+        return count;
     }
 
     private static int joinPlayer(ServerCommandSource source, Entity entity, Collection<? extends Entity> targets) throws CommandSyntaxException {
@@ -82,7 +143,16 @@ public class MirthlightCommand {
     }
 
     private static int join(ServerCommandSource source, int regionX, int regionZ, Collection<? extends Entity> targets) throws CommandSyntaxException {
+        DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getMainDreamtwirlStageManager(source.getServer());
+        if(dreamtwirlStageManager == null) {
+            throw FAILED_NO_MANAGER_EXCEPTION.create();
+        }
+
         RegionPos dreamtwirlRegionPos = new RegionPos(regionX, regionZ);
+        DreamtwirlStage dreamtwirlStage = dreamtwirlStageManager.getDreamtwirlIfPresent(dreamtwirlRegionPos);
+        if(dreamtwirlStage == null) {
+            throw FAILED_JOIN_DOES_NOT_EXIST_EXCEPTION.create();
+        }
 
         int successCount = 0;
         for(Entity entity : targets) {

@@ -44,22 +44,40 @@ public class DreamtwirlEntityAttachment {
 
         if(DTWA == null || !this.inDreamtwirl) return;
 
-        if(!shouldIgnoreBorder()) {
-            DreamtwirlBorder dreamtwirlBorder = DTWA.getDreamtwirlBorder(RegionPos.fromEntity(this.entity));
+        if(!world.isClient) {
+            if (!shouldIgnoreBorder()) {
+                DreamtwirlBorder dreamtwirlBorder = DTWA.getDreamtwirlBorder(this.dreamtwirlRegion);
+                boolean touchingBorder = dreamtwirlBorder.entityTouchingBorder(this.entity);
 
-            boolean touchingBorder = dreamtwirlBorder.entityTouchingBorder(this.entity);
-
-            if (touchingBorder) {
-                if(this.canLeave()) {
-                    if (leaveDreamtwirl()) {
-                        return;
+                if (this.dreamtwirlRegion != entityRegion) {
+                    DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getDreamtwirlStageManager(world);
+                    if (dreamtwirlStageManager != null) {
+                        DreamtwirlStage currentStage = dreamtwirlStageManager.getDreamtwirlIfPresent(entityRegion);
+                        DreamtwirlStage newStage = dreamtwirlStageManager.getDreamtwirlIfPresent(entityRegion);
+                        if (newStage != null) {
+                            if (this.canJoinRegion(entityRegion)) {
+                                this.setDreamtwirlRegion(entityRegion);
+                            } else if (currentStage == null) {
+                                touchingBorder = true;
+                            }
+                        } else {
+                            touchingBorder = true;
+                        }
                     }
                 }
 
-                if(this.entity instanceof ProjectileEntity projectileEntity) {
-                    HitResult hitResult = dreamtwirlBorder.voxelShape.raycast(entity.getPos(), entity.getPos().add(entity.getVelocity()), BlockPos.ofFloored(entity.getPos()));
-                    if(hitResult != null && !hitResult.getType().equals(HitResult.Type.MISS)) {
-                        ((ProjectileEntityAccessor) projectileEntity).invokeOnCollision(hitResult);
+                if (touchingBorder) {
+                    if (this.canLeave()) {
+                        if (leaveDreamtwirl()) {
+                            return;
+                        }
+                    }
+
+                    if (this.entity instanceof ProjectileEntity projectileEntity) {
+                        HitResult hitResult = dreamtwirlBorder.voxelShape.raycast(entity.getPos(), entity.getPos().add(entity.getVelocity()), BlockPos.ofFloored(entity.getPos()));
+                        if (hitResult != null && !hitResult.getType().equals(HitResult.Type.MISS)) {
+                            ((ProjectileEntityAccessor) projectileEntity).invokeOnCollision(hitResult);
+                        }
                     }
                 }
             }
@@ -77,6 +95,10 @@ public class DreamtwirlEntityAttachment {
 
     public boolean isInDreamtwirlRegion(RegionPos dreamtwirlRegion) {
         return dreamtwirlRegion.equals(this.dreamtwirlRegion);
+    }
+
+    public boolean canJoinRegion(RegionPos regionPos) {
+        return true;
     }
 
     public boolean joinDreamtwirl(RegionPos dreamtwirlRegion) {

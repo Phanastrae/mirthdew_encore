@@ -15,6 +15,8 @@ import phanastrae.mirthlight_encore.util.RegionPos;
 public class DreamtwirlWorldAttachment {
 
     public final World world;
+    @Nullable
+    private DreamtwirlStageManager dreamtwirlStageManager;
 
     public DreamtwirlWorldAttachment(World world) {
         this.world = world;
@@ -30,10 +32,26 @@ public class DreamtwirlWorldAttachment {
         EntityList serverEntityList = ((ServerWorldAccessor)serverWorld).getEntityList();
 
         serverEntityList.forEach(this::tickEntity);
+
+        if(this.dreamtwirlStageManager != null) {
+            this.dreamtwirlStageManager.tick();
+        }
     }
 
     public void tickEntity(Entity entity) {
 
+    }
+
+    @Nullable
+    public DreamtwirlStageManager getDreamtwirlStageManager() {
+        return this.dreamtwirlStageManager;
+    }
+
+    public void setDreamtwirlStageManager(ServerWorld serverWorld) {
+        this.dreamtwirlStageManager = serverWorld.getPersistentStateManager().getOrCreate(
+                DreamtwirlStageManager.getPersistentStateType(serverWorld),
+                DreamtwirlStageManager.nameFor(serverWorld.getDimensionEntry())
+        );
     }
 
     public DreamtwirlBorder getDreamtwirlBorder(RegionPos regionPos) {
