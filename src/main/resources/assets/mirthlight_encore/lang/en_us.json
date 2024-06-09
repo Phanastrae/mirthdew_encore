@@ -1,3 +1,11 @@
 {
-  "block.mirthlight_encore.dreamtwirl_barrier": "Dreamtwirl Barrier"
+  "block.mirthlight_encore.dreamtwirl_barrier": "Dreamtwirl Barrier",
+
+  "commands.mirthlight_encore.dreamtwirl.join.failed.multiple": "Couldn't send %s entities to the Dreamtwirl",
+  "commands.mirthlight_encore.dreamtwirl.join.failed.single": "Couldn't send %s to the Dreamtwirl",
+  "commands.mirthlight_encore.dreamtwirl.join.failed.target_not_in_dreamtwirl": "%s is not in a Dreamtwirl!",
+  "commands.mirthlight_encore.dreamtwirl.join.success": "Sent %s to the Dreamtwirl (%s, %s)",
+  "commands.mirthlight_encore.dreamtwirl.leave.failed.multiple": "Couldn't free %s entities from the Dreamtwirl",
+  "commands.mirthlight_encore.dreamtwirl.leave.failed.single": "Couldn't free %s from the Dreamtwirl",
+  "commands.mirthlight_encore.dreamtwirl.leave.success": "Freed %s from the Dreamtwirl"
 }
