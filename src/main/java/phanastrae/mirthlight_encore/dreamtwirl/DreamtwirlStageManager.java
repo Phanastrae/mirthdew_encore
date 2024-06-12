@@ -57,7 +57,7 @@ public class DreamtwirlStageManager extends PersistentState {
         while(iterator.hasNext()) {
             DreamtwirlStage dreamtwirlStage = iterator.next();
 
-            dreamtwirlStage.tick();
+            dreamtwirlStage.tick(this.world);
 
             if(dreamtwirlStage.isDirty()) {
                 markDirty = true;
@@ -111,7 +111,7 @@ public class DreamtwirlStageManager extends PersistentState {
 
         for(int i = 0; i < nbtList.size(); ++i) {
             NbtCompound nbtCompound = nbtList.getCompound(i);
-            DreamtwirlStage dreamtwirlStage = DreamtwirlStage.fromNbt(nbtCompound);
+            DreamtwirlStage dreamtwirlStage = DreamtwirlStage.fromNbt(world, nbtCompound);
             dreamtwirlStageManager.dreamtwirls.put(dreamtwirlStage.getId(), dreamtwirlStage);
         }
 

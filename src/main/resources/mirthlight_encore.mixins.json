@@ -5,10 +5,12 @@
   "mixins": [
     "CollisionViewMixin",
     "EntityMixin",
+    "ListPoolElementAccessor",
     "ProjectileEntityAccessor",
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldAccessor",
     "ServerWorldMixin",
+    "SinglePoolElementAccesor",
     "WorldMixin"
   ],
   "injectors": {

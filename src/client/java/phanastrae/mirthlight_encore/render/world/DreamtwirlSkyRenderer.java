@@ -175,8 +175,8 @@ public class DreamtwirlSkyRenderer {
         matrices.scale(0.25F, 0.25F, 0.25F);
         matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(20));
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(5 * MathHelper.sin(time * 120)));
-        matrices.translate(0, 1 * MathHelper.sin(time * 240), 0);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(5 * MathHelper.sin(MathHelper.TAU * time * 20)));
+        matrices.translate(0, 1 * MathHelper.sin(MathHelper.TAU * time * 40), 0);
         matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(25));
 
         RenderSystem.depthMask(false);
@@ -305,8 +305,8 @@ public class DreamtwirlSkyRenderer {
         for(int i = 1; i <= 4; i++) {
             // Back mountains
             matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((4 + 2 * i) * MathHelper.sin(time * 120 + 0.4F * i)));
-            matrices.translate(0, -(10 + i * 2) + (1 + i * 0.5F) * MathHelper.sin(time * 240 + 0.4F * i), 0);
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((4 + 2 * i) * MathHelper.sin(MathHelper.TAU * time * 20 + 0.4F * i)));
+            matrices.translate(0, -(10 + i * 2) + (1 + i * 0.5F) * MathHelper.sin(MathHelper.TAU * time * 40 + 0.4F * i), 0);
             RenderSystem.setShaderColor(0.03F * i, 0.08F * i, 0.08F * i, i / 4F);
 
             this.cylinderBuffer.bind();
@@ -329,8 +329,8 @@ public class DreamtwirlSkyRenderer {
         for(int i = 1; i <= 7; i++) {
             // Outer Sky Twirls
             matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((12 + 5 * i) * MathHelper.sin(time * 60 * (8 - i) + 0.4F * i)));
-            matrices.translate(0, 30 - 15 * i + (2 + i * 3F) * MathHelper.sin(time * 240 + 0.4F * i), 0);
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((12 + 5 * i) * MathHelper.sin(MathHelper.TAU * time * 10 * (8 - i) + 0.4F * i)));
+            matrices.translate(0, 30 - 15 * i + (2 + i * 3F) * MathHelper.sin(MathHelper.TAU * time * 40 + 0.4F * i), 0);
             RenderSystem.setShaderColor(1F - 0.12F * i, 0.7F - 0.02F * i, 0.9F - 0.05F * i, 0.2F + i * 0.1F);
 
             this.cylinderBuffer.bind();
@@ -367,8 +367,8 @@ public class DreamtwirlSkyRenderer {
         for(int i = 1; i <= 6; i++) {
             // Front mountains and Circus
             matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((8 + 2 * i) * MathHelper.sin(time * 120 + 0.2F * (i + 4))));
-            matrices.translate(0, (2 + i) * MathHelper.sin(time * 240 + 0.2F * (i + 4)), 0);
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((8 + 2 * i) * MathHelper.sin(MathHelper.TAU * time * 20 + 0.2F * (i + 4))));
+            matrices.translate(0, (2 + i) * MathHelper.sin(MathHelper.TAU * time * 40 + 0.2F * (i + 4)), 0);
             RenderSystem.setShaderColor(0.1F + 0.03F * i, 0.2F + 0.08F * i, 0.2F + 0.08F * i, (7 - i) / 8F);
 
             this.cylinderBuffer.bind();
@@ -389,8 +389,8 @@ public class DreamtwirlSkyRenderer {
         for(int i = 1; i <= 3; i++) {
             // Inner Sky Twirls
             matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((12 + 5 * i) * MathHelper.sin(time * 30 * (8 - i) + 0.6F * i)));
-            matrices.translate(0, -40 - 18 * i + (2 + i * 3F) * MathHelper.sin(time * 60 + 0.4F * i), 0);
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((12 + 5 * i) * MathHelper.sin(MathHelper.TAU * time * 5 * (8 - i) + 0.6F * i)));
+            matrices.translate(0, -40 - 18 * i + (2 + i * 3F) * MathHelper.sin(MathHelper.TAU * time * 10 + 0.4F * i), 0);
             RenderSystem.setShaderColor(0.1F + 0.2F * i, 0.8F - 0.2F * i, 0.7F - 0.1F * i, 0.05F + i * 0.1F);
 
             this.cylinderBuffer.bind();
@@ -427,8 +427,8 @@ public class DreamtwirlSkyRenderer {
         for(int i = 1; i <= 6; i++) {
             // Water
             matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((10 + 3 * i) * MathHelper.sin(time * 120 + 0.5F * (i + 6))));
-            matrices.translate(0, (3 + i) * MathHelper.sin(time * 240 + 0.5F * (i + 6)), 0);
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((10 + 3 * i) * MathHelper.sin(MathHelper.TAU * time * 20 + 0.5F * (i + 6))));
+            matrices.translate(0, (3 + i) * MathHelper.sin(MathHelper.TAU * time * 40 + 0.5F * (i + 6)), 0);
             RenderSystem.setShaderColor(0.04F + 0.04F * i, 0.24F + 0.09F * i, 0.24F + 0.09F * i, (7 - i) / 8F);
 
             this.cylinderBuffer.bind();
@@ -482,7 +482,7 @@ public class DreamtwirlSkyRenderer {
 
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(40 * height));
 
-            float sin = MathHelper.sin(localTime * 400);
+            float sin = MathHelper.sin(MathHelper.TAU * localTime * 65);
 
             matrices.translate(0.1 * sin, height * 48, (-64 + 8 * data.depth) * (distFromGate * 0.5 + 0.8));
 
@@ -503,10 +503,10 @@ public class DreamtwirlSkyRenderer {
         int b = 0xFF & (int)(blue * 255);
         int color = 0xFF000000 | (r << 16) | (g << 8) | b;
 
-        float wiggle1 = 0.5F * MathHelper.sin(time * 2400);
-        float wiggle2 = 0.5F * MathHelper.sin(time * 2400 + 0.4F);
-        float wiggle3 = 0.5F * MathHelper.sin(time * 2400 + 0.8F);
-        float wiggle4 = 0.5F * MathHelper.sin(time * 2400 + 1.2F);
+        float wiggle1 = 0.5F * MathHelper.sin(MathHelper.TAU * time * 400);
+        float wiggle2 = 0.5F * MathHelper.sin(MathHelper.TAU * time * 400 + 0.4F);
+        float wiggle3 = 0.5F * MathHelper.sin(MathHelper.TAU * time * 400 + 0.8F);
+        float wiggle4 = 0.5F * MathHelper.sin(MathHelper.TAU * time * 400 + 1.2F);
         float[] wiggles = new float[]{wiggle1, wiggle2, wiggle3, wiggle4};
 
         int animationFrame = ((int)(time * 12000)) % 4;

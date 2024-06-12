@@ -93,10 +93,10 @@ public class DreamtwirlBorderRenderer {
 
         // render border
 
-        minX += 16;
-        maxX -= 16;
-        minZ += 16;
-        maxZ -= 16;
+        minX = border.minX - centerX + 1/32F;
+        maxX = border.maxX - centerX - 1/32F;
+        minZ = border.minZ - centerZ + 1/32F;
+        maxZ = border.maxZ - centerZ - 1/32F;
 
         MinecraftClient client = MinecraftClient.getInstance();
         Framebuffer clientFramebuffer = client.getFramebuffer();
@@ -106,12 +106,10 @@ public class DreamtwirlBorderRenderer {
             framebuffer = new SimpleFramebuffer(width, height, true, MinecraftClient.IS_SYSTEM_MAC);
             fbWidth = width;
             fbHeight = height;
-        } else {
-            if(width != fbWidth || height != fbHeight) {
-                framebuffer.resize(fbWidth, fbHeight, MinecraftClient.IS_SYSTEM_MAC);
-                fbWidth = width;
-                fbHeight = height;
-            }
+        } else if(width != fbWidth || height != fbHeight) {
+            framebuffer.resize(width, height, MinecraftClient.IS_SYSTEM_MAC);
+            fbWidth = width;
+            fbHeight = height;
         }
 
         framebuffer.setClearColor(0F, 0F, 0F, 0F);
@@ -169,6 +167,27 @@ public class DreamtwirlBorderRenderer {
         bufferBuilder.vertex(matrix4f, maxX, minY, maxZ);
         bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ);
 
+
+        bufferBuilder.vertex(matrix4f, minX, maxY, minZ);
+        bufferBuilder.vertex(matrix4f, maxX, maxY, minZ);
+        bufferBuilder.vertex(matrix4f, maxX, minY, minZ);
+        bufferBuilder.vertex(matrix4f, minX, minY, minZ);
+
+        bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ);
+        bufferBuilder.vertex(matrix4f, minX, maxY, maxZ);
+        bufferBuilder.vertex(matrix4f, minX, minY, maxZ);
+        bufferBuilder.vertex(matrix4f, maxX, minY, maxZ);
+
+        bufferBuilder.vertex(matrix4f, minX, maxY, maxZ);
+        bufferBuilder.vertex(matrix4f, minX, maxY, minZ);
+        bufferBuilder.vertex(matrix4f, minX, minY, minZ);
+        bufferBuilder.vertex(matrix4f, minX, minY, maxZ);
+
+        bufferBuilder.vertex(matrix4f, maxX, maxY, minZ);
+        bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ);
+        bufferBuilder.vertex(matrix4f, maxX, minY, maxZ);
+        bufferBuilder.vertex(matrix4f, maxX, minY, minZ);
+
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         matrices.pop();
 
@@ -178,6 +197,8 @@ public class DreamtwirlBorderRenderer {
     public static void close() {
         if(framebuffer != null) {
             framebuffer.delete();
+            fbWidth = 0;
+            fbHeight = 0;
         }
     }
 

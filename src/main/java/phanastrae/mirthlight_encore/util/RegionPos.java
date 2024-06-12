@@ -48,6 +48,18 @@ public class RegionPos {
         return this.worldZ + 256;
     }
 
+    public ChunkPos getMinChunkPos() {
+        return getChunkPos(0, 0);
+    }
+
+    public ChunkPos getMaxChunkPos() {
+        return getChunkPos(31, 31);
+    }
+
+    public ChunkPos getChunkPos(int x, int z) {
+        return new ChunkPos(x + this.regionX << 5, z + this.regionZ << 5);
+    }
+
     public static RegionPos fromWorldCoords(int x, int z) {
         return new RegionPos(x >> REGION_SIZE_BITS, z >> REGION_SIZE_BITS);
     }

@@ -16,24 +16,28 @@ out vec4 fragColor;
 
 void main() {
     vec2 screenUV = gl_FragCoord.xy / ScreenSize.xy;
+    vec2 centeredScreenUv = screenUV * 2. - 1.;
 
     float l = length(position);
-    l = l * l;
-    float j = l * (0.75 + 0.25 * sin(l - TAU * GameTime * 400.0));
 
-    float f = 0.15 * max(0.0, 1.0 - j * 0.05);
-    float g = min(1.0, j * 0.08);
+    float r = length(centeredScreenUv);
+    float theta = atan(centeredScreenUv.y, centeredScreenUv.x);
+
+    float t = 0.;
+    for(int i = 0; i < 5; i++) {
+        float s = float(i % 2) * 2. - 1.;
+        t += sin(s * float(i * i) * l * 0.08 - s * float(i) * 200.0 * TAU * GameTime);
+    }
+    t /= 5.;
+    float k = 0.5 + 0.5 * t;
+    float g = (1.0 - exp(-pow(k, 10.0) * 10000.0)) * exp(-l * 0.03);
+    float f = 0.03 * g;
 
     vec4 color1 = texture(Sampler0, screenUV + vec2(f, 0.0));
     vec4 color2 = texture(Sampler0, screenUV + vec2(-f, 0.0));
+    vec4 color = (1.0 - g * 0.5) * vec4(color1.r, color2.g, 0.5 * (color1.b + color2.b), 1.0);
 
-    vec4 color = g * g * vec4(color1.r, color2.g, 0.5 * (color1.b + color2.b), 1.0);
-
-    float alpha = 0.6 * (1.0 - g * g);
-    color = (1.0 - alpha) * color + alpha * vec4(0.8 + g * 0.2, 0.2 + g * 0.2, 0.5 + g * 0.2, 1.0);
-
-    alpha = 0.4 * (1.0 - g);
-    color = (1.0 - alpha) * color + alpha * vec4(0.1, 0.05, 0.1, 1.0);
+    //color = vec4(k, 0.0, 0.0, 1.0);
 
     fragColor = vec4(color.rgb, 1.0);
 }

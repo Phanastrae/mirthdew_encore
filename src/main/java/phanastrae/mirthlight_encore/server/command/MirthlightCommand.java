@@ -10,6 +10,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import phanastrae.mirthlight_encore.MirthlightEncore;
 import phanastrae.mirthlight_encore.dreamtwirl.DreamtwirlEntityAttachment;
 import phanastrae.mirthlight_encore.dreamtwirl.DreamtwirlStage;
 import phanastrae.mirthlight_encore.dreamtwirl.DreamtwirlStageManager;
@@ -27,8 +28,8 @@ public class MirthlightCommand {
     private static final DynamicCommandExceptionType FAILED_JOIN_TARGET_NOT_IN_DREAMTWIRL_EXCEPTION = new DynamicCommandExceptionType(
             playerName -> Text.stringifiedTranslatable("commands.mirthlight_encore.dreamtwirl.join.failed.target_not_in_dreamtwirl", playerName)
     );
-    private static final SimpleCommandExceptionType FAILED_JOIN_DOES_NOT_EXIST_EXCEPTION = new SimpleCommandExceptionType(
-            Text.stringifiedTranslatable("commands.mirthlight_encore.dreamtwirl.join.failed.does_not_exist")
+    private static final SimpleCommandExceptionType FAILED_DOES_NOT_EXIST_EXCEPTION = new SimpleCommandExceptionType(
+            Text.stringifiedTranslatable("commands.mirthlight_encore.dreamtwirl.failed.does_not_exist")
     );
     private static final DynamicCommandExceptionType FAILED_JOIN_SINGLE_EXCEPTION = new DynamicCommandExceptionType(
             playerName -> Text.stringifiedTranslatable("commands.mirthlight_encore.dreamtwirl.join.failed.single", playerName)
@@ -52,12 +53,16 @@ public class MirthlightCommand {
                         .then(literal("dreamtwirl")
                                 .then(literal("join")
                                         .requires(source -> source.hasPermissionLevel(2))
-                                        .then(argument("regionX", IntegerArgumentType.integer())
-                                                .then(argument("regionZ", IntegerArgumentType.integer())
-                                                        .executes(context -> join(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ"), ImmutableList.of(context.getSource().getEntityOrThrow())))
-                                                        .then(
-                                                                argument("targets", EntityArgumentType.entities())
-                                                                        .executes(context -> join(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ"), EntityArgumentType.getEntities(context, "targets")))
+                                        .then(literal("region")
+                                                .then(argument("regionX", IntegerArgumentType.integer())
+                                                        .then(argument("regionZ", IntegerArgumentType.integer())
+                                                                .executes(context -> join(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ"), ImmutableList.of(context.getSource().getEntityOrThrow())))
+                                                                .then(
+                                                                        argument("targets", EntityArgumentType.entities())
+                                                                                .executes(
+                                                                                        context -> join(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ"), EntityArgumentType.getEntities(context, "targets"))
+                                                                                )
+                                                                )
                                                         )
                                                 )
                                         )
@@ -66,7 +71,9 @@ public class MirthlightCommand {
                                                         .executes(context -> joinPlayer(context.getSource(), EntityArgumentType.getPlayer(context, "targetPlayer"), ImmutableList.of(context.getSource().getEntityOrThrow())))
                                                         .then(
                                                                 argument("targets", EntityArgumentType.entities())
-                                                                        .executes(context -> joinPlayer(context.getSource(), EntityArgumentType.getPlayer(context, "targetPlayer"), EntityArgumentType.getEntities(context, "targets")))
+                                                                        .executes(
+                                                                                context -> joinPlayer(context.getSource(), EntityArgumentType.getPlayer(context, "targetPlayer"), EntityArgumentType.getEntities(context, "targets"))
+                                                                        )
                                                         )
                                                 )
                                         )
@@ -76,19 +83,41 @@ public class MirthlightCommand {
                                         .executes(context -> leave(context.getSource(), ImmutableList.of(context.getSource().getEntityOrThrow())))
                                         .then(
                                                 argument("targets", EntityArgumentType.entities())
-                                                        .executes(context -> leave(context.getSource(), EntityArgumentType.getEntities(context, "targets")))
+                                                        .executes(
+                                                                context -> leave(context.getSource(), EntityArgumentType.getEntities(context, "targets"))
+                                                        )
                                         )
                                 )
                                 .then(literal("create")
                                         .requires(source -> source.hasPermissionLevel(2))
                                         .then(argument("regionX", IntegerArgumentType.integer())
                                                 .then(argument("regionZ", IntegerArgumentType.integer())
-                                                        .executes(context -> create(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ")))
+                                                        .executes(
+                                                                context -> create(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ"))
+                                                        )
                                                 )
                                         )
                                 )
                                 .then(literal("list")
                                         .executes(context -> list(context.getSource()))
+                                )
+                                .then(literal("edit")
+                                        .requires(source -> source.hasPermissionLevel(2))
+                                        .then(argument("regionX", IntegerArgumentType.integer())
+                                                .then(argument("regionZ", IntegerArgumentType.integer())
+                                                        .then(literal("generate")
+                                                            .executes(
+                                                                    context -> generate(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ"))
+                                                            )
+                                                        )
+                                                        .then(literal("clearAllChunks")
+                                                                .requires(source -> source.hasPermissionLevel(4))
+                                                                .then(literal("CONFIRM")
+                                                                        .executes(context -> clear(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ")))
+                                                                )
+                                                        )
+                                                )
+                                        )
                                 )
                         )
         );
@@ -132,6 +161,58 @@ public class MirthlightCommand {
         return count;
     }
 
+    private static int generate(ServerCommandSource source, int regionX, int regionZ) throws CommandSyntaxException {
+        DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getMainDreamtwirlStageManager(source.getServer());
+        if(dreamtwirlStageManager == null) {
+            throw FAILED_NO_MANAGER_EXCEPTION.create();
+        }
+        RegionPos dreamtwirlRegionPos = new RegionPos(regionX, regionZ);
+        DreamtwirlStage dreamtwirlStage = dreamtwirlStageManager.getDreamtwirlIfPresent(dreamtwirlRegionPos);
+        if(dreamtwirlStage == null) {
+            throw FAILED_DOES_NOT_EXIST_EXCEPTION.create();
+        } else {
+            long time = System.nanoTime();
+
+            dreamtwirlStage.generate(source.getWorld());
+
+            long time2 = System.nanoTime();
+            long dif = time2 - time;
+            long ms = dif / 1000000;
+            MirthlightEncore.LOGGER.info("Generated in {}ms", ms);
+
+            source.sendFeedback(() -> Text.literal("Generated Dreamtwirl"), true);
+            return 1;
+        }
+    }
+
+    private static int clear(ServerCommandSource source, int regionX, int regionZ) throws CommandSyntaxException {
+        DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getMainDreamtwirlStageManager(source.getServer());
+        if(dreamtwirlStageManager == null) {
+            throw FAILED_NO_MANAGER_EXCEPTION.create();
+        }
+        RegionPos dreamtwirlRegionPos = new RegionPos(regionX, regionZ);
+        DreamtwirlStage dreamtwirlStage = dreamtwirlStageManager.getDreamtwirlIfPresent(dreamtwirlRegionPos);
+        if(dreamtwirlStage == null) {
+            throw FAILED_DOES_NOT_EXIST_EXCEPTION.create();
+        } else {
+            long time = System.nanoTime();
+
+            try {
+                dreamtwirlStage.clear(source.getWorld());
+            } catch (Exception e) {
+                MirthlightEncore.LOGGER.info(e.getMessage());
+            }
+
+            long time2 = System.nanoTime();
+            long dif = time2 - time;
+            long ms = dif / 1000000;
+            MirthlightEncore.LOGGER.info("Cleared in {}ms", ms);
+
+            source.sendFeedback(() -> Text.literal("Cleared Dreamtwirl"), true);
+            return 1;
+        }
+    }
+
     private static int joinPlayer(ServerCommandSource source, Entity entity, Collection<? extends Entity> targets) throws CommandSyntaxException {
         DreamtwirlEntityAttachment DTEA = DreamtwirlEntityAttachment.fromEntity(entity);
         RegionPos regionPos = DTEA.getDreamtwirlRegion();
@@ -151,7 +232,7 @@ public class MirthlightCommand {
         RegionPos dreamtwirlRegionPos = new RegionPos(regionX, regionZ);
         DreamtwirlStage dreamtwirlStage = dreamtwirlStageManager.getDreamtwirlIfPresent(dreamtwirlRegionPos);
         if(dreamtwirlStage == null) {
-            throw FAILED_JOIN_DOES_NOT_EXIST_EXCEPTION.create();
+            throw FAILED_DOES_NOT_EXIST_EXCEPTION.create();
         }
 
         int successCount = 0;

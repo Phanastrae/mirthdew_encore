@@ -94,7 +94,7 @@ public class DreamtwirlChunkGenerator extends ChunkGenerator {
 
     @Override
     public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world, NoiseConfig noiseConfig) {
-        return 0;
+        return 128;
     }
 
     @Override
