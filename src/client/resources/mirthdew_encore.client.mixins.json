@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "phanastrae.mirthdew_encore.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "MinecraftClientMixin",
+    "WorldRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}

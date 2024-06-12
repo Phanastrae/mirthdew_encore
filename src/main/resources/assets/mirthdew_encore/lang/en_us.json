@@ -1,0 +1,18 @@
+{
+  "block.mirthdew_encore.dreamtwirl_barrier": "Dreamtwirl Barrier",
+
+  "commands.mirthdew_encore.dreamtwirl.create.failed.already_exists": "That Dreamtwirl already exists.",
+  "commands.mirthdew_encore.dreamtwirl.create.success": "Created new Dreamtwirl (%s, %s)",
+  "commands.mirthdew_encore.dreamtwirl.failed.does_not_exist": "That Dreamtwirl does not exist.",
+  "commands.mirthdew_encore.dreamtwirl.failed.no_manager": "Failed to get Dreamtwirls",
+  "commands.mirthdew_encore.dreamtwirl.join.failed.multiple": "Couldn't send %s entities to the Dreamtwirl",
+  "commands.mirthdew_encore.dreamtwirl.join.failed.single": "Couldn't send %s to the Dreamtwirl",
+  "commands.mirthdew_encore.dreamtwirl.join.failed.target_not_in_dreamtwirl": "%s is not in a Dreamtwirl!",
+  "commands.mirthdew_encore.dreamtwirl.join.success": "Sent %s to the Dreamtwirl (%s, %s)",
+  "commands.mirthdew_encore.dreamtwirl.list.entry": "- Dreamtwirl (%s, %s)",
+  "commands.mirthdew_encore.dreamtwirl.list.count": "There are %s active Dreamtwirls:",
+  "commands.mirthdew_encore.dreamtwirl.list.none_exist": "There are 0 active Dreamtwirls",
+  "commands.mirthdew_encore.dreamtwirl.leave.failed.multiple": "Couldn't free %s entities from the Dreamtwirl",
+  "commands.mirthdew_encore.dreamtwirl.leave.failed.single": "Couldn't free %s from the Dreamtwirl",
+  "commands.mirthdew_encore.dreamtwirl.leave.success": "Freed %s from the Dreamtwirl"
+}

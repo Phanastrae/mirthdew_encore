@@ -22,13 +22,13 @@ loom {
     splitEnvironmentSourceSets()
 
 	mods {
-		"mirthlight_encore" {
+		"mirthdew_encore" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}
 	}
 
-	accessWidenerPath = file("src/main/resources/mirthlight_encore.accesswidener")
+	accessWidenerPath = file("src/main/resources/mirthdew_encore.accesswidener")
 }
 
 fabricApi {

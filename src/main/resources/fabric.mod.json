@@ -1,34 +1,34 @@
 {
 	"schemaVersion": 1,
-	"id": "mirthlight_encore",
+	"id": "mirthdew_encore",
 	"version": "${version}",
-	"name": "Mirthlight Encore",
-	"description": "Join the Mirthlight Circus, and bring one final Encore to the Dreaming Dead!",
+	"name": "Mirthdew Encore",
+	"description": "Join the Mirthdew Circus, and bring a final Encore to the Dreaming Dead!",
 	"authors": [
 		"Phanastrae"
 	],
 	"contact": {
-		"sources": "https://github.com/Phanastrae/mirthlight-encore"
+		"sources": "https://github.com/Phanastrae/mirthdew_encore"
 	},
 	"license": "MIT",
-	"icon": "assets/mirthlight_encore/icon.png",
+	"icon": "assets/mirthdew_encore/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"phanastrae.mirthlight_encore.MirthlightEncore"
+			"phanastrae.mirthdew_encore.MirthdewEncore"
 		],
 		"client": [
-			"phanastrae.mirthlight_encore.MirthlightEncoreClient"
+			"phanastrae.mirthdew_encore.MirthdewEncoreClient"
 		],
 		"fabric-datagen": [
-          "phanastrae.mirthlight_encore.data.MirthlightEncoreDataGenerator"
+          "phanastrae.mirthdew_encore.data.MirthdewEncoreDataGenerator"
 		]
 	},
-	"accessWidener": "mirthlight_encore.accesswidener",
+	"accessWidener": "mirthdew_encore.accesswidener",
 	"mixins": [
-      "mirthlight_encore.mixins.json",
+      "mirthdew_encore.mixins.json",
 		{
-			"config": "mirthlight_encore.client.mixins.json",
+			"config": "mirthdew_encore.client.mixins.json",
 			"environment": "client"
 		}
 	],
