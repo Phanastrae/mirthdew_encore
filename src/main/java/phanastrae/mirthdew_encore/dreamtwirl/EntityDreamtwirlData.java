@@ -1,6 +1,8 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.registry.RegistryKey;
@@ -15,12 +17,13 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import phanastrae.mirthdew_encore.duck.EntityDuckInterface;
+import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
+import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.mixin.ProjectileEntityAccessor;
 import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
-public class DreamtwirlEntityAttachment {
+public class EntityDreamtwirlData {
 
     private final Entity entity;
 
@@ -28,7 +31,7 @@ public class DreamtwirlEntityAttachment {
     @Nullable
     RegionPos dreamtwirlRegion;
 
-    public DreamtwirlEntityAttachment(Entity entity) {
+    public EntityDreamtwirlData(Entity entity) {
         this.entity = entity;
     }
 
@@ -45,6 +48,12 @@ public class DreamtwirlEntityAttachment {
         if(DTWA == null || !this.inDreamtwirl) return;
 
         if(!world.isClient) {
+            if (world.getTime() % 80L == 0L) {
+                if(this.entity instanceof LivingEntity livingEntity) {
+                    livingEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
+                }
+            }
+
             if (!shouldIgnoreBorder()) {
                 DreamtwirlBorder dreamtwirlBorder = DTWA.getDreamtwirlBorder(this.dreamtwirlRegion);
                 boolean touchingBorder = dreamtwirlBorder.entityTouchingBorder(this.entity);
@@ -108,6 +117,9 @@ public class DreamtwirlEntityAttachment {
             Vec3d vec3d = new Vec3d(dreamtwirlRegion.getCenterX(), 64, dreamtwirlRegion.getCenterZ());
             if(teleportEntity(entity, MirthdewEncoreDimensions.DREAMTWIRL_WORLD, vec3d)) {
                 this.setDreamtwirlRegion(dreamtwirlRegion);
+                if(this.entity instanceof LivingEntity livingEntity) {
+                    livingEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
+                }
                 return true;
             } else {
                 return false;
@@ -155,10 +167,6 @@ public class DreamtwirlEntityAttachment {
         this.inDreamtwirl = !(region == null);
     }
 
-    public static DreamtwirlEntityAttachment fromEntity(Entity entity) {
-        return ((EntityDuckInterface)entity).mirthdew_encore$getDreamtwirlAttachment();
-    }
-
     public static VoxelShape addCollisionsTo(@Nullable VoxelShape original, Entity entity) {
         DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(entity.getWorld());
         if(DTWA == null) {
@@ -176,13 +184,13 @@ public class DreamtwirlEntityAttachment {
     }
 
     public static boolean joinDreamtwirl(Entity entity, RegionPos dreamtwirlRegion) {
-        DreamtwirlEntityAttachment DTEA = DreamtwirlEntityAttachment.fromEntity(entity);
-        return DTEA.joinDreamtwirl(dreamtwirlRegion);
+        MirthdewEncoreEntityAttachment MEA = MirthdewEncoreEntityAttachment.fromEntity(entity);
+        return MEA.getDreamtwirlEntityData().joinDreamtwirl(dreamtwirlRegion);
     }
 
     public static boolean leaveDreamtwirl(Entity entity) {
-        DreamtwirlEntityAttachment DTEA = DreamtwirlEntityAttachment.fromEntity(entity);
-        return DTEA.leaveDreamtwirl();
+        MirthdewEncoreEntityAttachment MEA = MirthdewEncoreEntityAttachment.fromEntity(entity);
+        return MEA.getDreamtwirlEntityData().leaveDreamtwirl();
     }
 
     public static boolean teleportEntity(Entity entity, RegistryKey<World> worldKey, Vec3d position) {

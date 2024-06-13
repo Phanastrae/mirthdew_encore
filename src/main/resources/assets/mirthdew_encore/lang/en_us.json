@@ -14,5 +14,7 @@
   "commands.mirthdew_encore.dreamtwirl.list.none_exist": "There are 0 active Dreamtwirls",
   "commands.mirthdew_encore.dreamtwirl.leave.failed.multiple": "Couldn't free %s entities from the Dreamtwirl",
   "commands.mirthdew_encore.dreamtwirl.leave.failed.single": "Couldn't free %s from the Dreamtwirl",
-  "commands.mirthdew_encore.dreamtwirl.leave.success": "Freed %s from the Dreamtwirl"
+  "commands.mirthdew_encore.dreamtwirl.leave.success": "Freed %s from the Dreamtwirl",
+
+  "effect.mirthdew_encore.dreamy_diet": "Dreamy Diet"
 }

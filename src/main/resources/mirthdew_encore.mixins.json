@@ -5,8 +5,11 @@
   "mixins": [
     "CollisionViewMixin",
     "EntityMixin",
+    "HungerManagerMixin",
     "ListPoolElementAccessor",
+    "PlayerEntityMixin",
     "ProjectileEntityAccessor",
+    "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldAccessor",
     "ServerWorldMixin",

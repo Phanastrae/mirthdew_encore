@@ -6,13 +6,13 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.CollisionView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlEntityAttachment;
+import phanastrae.mirthdew_encore.dreamtwirl.EntityDreamtwirlData;
 
 @Mixin(CollisionView.class)
 public interface CollisionViewMixin {
 
     @ModifyReturnValue(method = "getWorldBorderCollisions", at = @At("RETURN"))
     private VoxelShape mirthdew_encore$addDreamtwirlCollisions(VoxelShape original, Entity entity) {
-        return DreamtwirlEntityAttachment.addCollisionsTo(original, entity);
+        return EntityDreamtwirlData.addCollisionsTo(original, entity);
     }
 }

@@ -1,7 +1,7 @@
 package phanastrae.mirthdew_encore.duck;
 
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlEntityAttachment;
+import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 
 public interface EntityDuckInterface {
-    DreamtwirlEntityAttachment mirthdew_encore$getDreamtwirlAttachment();
+    MirthdewEncoreEntityAttachment mirthdew_encore$getAttachment();
 }

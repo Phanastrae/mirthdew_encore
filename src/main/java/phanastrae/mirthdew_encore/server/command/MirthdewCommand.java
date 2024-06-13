@@ -11,9 +11,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import phanastrae.mirthdew_encore.MirthdewEncore;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlEntityAttachment;
+import phanastrae.mirthdew_encore.dreamtwirl.EntityDreamtwirlData;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
+import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.Collection;
@@ -214,8 +215,8 @@ public class MirthdewCommand {
     }
 
     private static int joinPlayer(ServerCommandSource source, Entity entity, Collection<? extends Entity> targets) throws CommandSyntaxException {
-        DreamtwirlEntityAttachment DTEA = DreamtwirlEntityAttachment.fromEntity(entity);
-        RegionPos regionPos = DTEA.getDreamtwirlRegion();
+        MirthdewEncoreEntityAttachment MEA = MirthdewEncoreEntityAttachment.fromEntity(entity);
+        RegionPos regionPos = MEA.getDreamtwirlEntityData().getDreamtwirlRegion();
         if(regionPos == null) {
             throw FAILED_JOIN_TARGET_NOT_IN_DREAMTWIRL_EXCEPTION.create(entity.getName());
         } else {
@@ -237,7 +238,7 @@ public class MirthdewCommand {
 
         int successCount = 0;
         for(Entity entity : targets) {
-            if(DreamtwirlEntityAttachment.joinDreamtwirl(entity, dreamtwirlRegionPos)) {
+            if(EntityDreamtwirlData.joinDreamtwirl(entity, dreamtwirlRegionPos)) {
                 successCount++;
                 source.sendFeedback(() -> Text.translatable("commands.mirthdew_encore.dreamtwirl.join.success", entity.getDisplayName(), regionX, regionZ), true);
             }
@@ -257,7 +258,7 @@ public class MirthdewCommand {
     private static int leave(ServerCommandSource source, Collection<? extends Entity> targets) throws CommandSyntaxException {
         int successCount = 0;
         for(Entity entity : targets) {
-            if(DreamtwirlEntityAttachment.leaveDreamtwirl(entity)) {
+            if(EntityDreamtwirlData.leaveDreamtwirl(entity)) {
                 successCount++;
                 source.sendFeedback(() -> Text.translatable("commands.mirthdew_encore.dreamtwirl.leave.success", entity.getDisplayName()), true);
             }

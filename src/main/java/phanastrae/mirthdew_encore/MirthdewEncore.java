@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
+import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
+import phanastrae.mirthdew_encore.network.packet.MirthdewEncorePackets;
 import phanastrae.mirthdew_encore.server.command.MirthdewEncoreCommands;
 import phanastrae.mirthdew_encore.world.gen.chunk.MirthdewEncoreChunkGenerators;
 
@@ -23,7 +25,11 @@ public class MirthdewEncore implements ModInitializer {
 	public void onInitialize() {
 		MirthdewEncoreBlocks.init();
 
+		MirthdewEncoreStatusEffects.init();
+
 		MirthdewEncoreChunkGenerators.init();
+
+		MirthdewEncorePackets.init();
 
 		ServerTickEvents.START_WORLD_TICK.register((DreamtwirlWorldAttachment::tickWorld));
 		CommandRegistrationCallback.EVENT.register(MirthdewEncoreCommands::registerCommands);

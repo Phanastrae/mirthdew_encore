@@ -3,6 +3,7 @@
   "package": "phanastrae.mirthdew_encore.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "InGameHudMixin",
     "MinecraftClientMixin",
     "WorldRendererMixin"
   ],
