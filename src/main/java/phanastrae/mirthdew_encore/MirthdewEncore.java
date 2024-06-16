@@ -7,8 +7,11 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
+import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
+import phanastrae.mirthdew_encore.item.MirthdewEncoreItemGroups;
+import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 import phanastrae.mirthdew_encore.network.packet.MirthdewEncorePackets;
 import phanastrae.mirthdew_encore.server.command.MirthdewEncoreCommands;
 import phanastrae.mirthdew_encore.world.gen.chunk.MirthdewEncoreChunkGenerators;
@@ -23,6 +26,9 @@ public class MirthdewEncore implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		MirthdewEncoreDataComponentTypes.init();
+		MirthdewEncoreItemGroups.init();
+		MirthdewEncoreItems.init();
 		MirthdewEncoreBlocks.init();
 
 		MirthdewEncoreStatusEffects.init();

@@ -16,5 +16,12 @@
   "commands.mirthdew_encore.dreamtwirl.leave.failed.single": "Couldn't free %s from the Dreamtwirl",
   "commands.mirthdew_encore.dreamtwirl.leave.success": "Freed %s from the Dreamtwirl",
 
-  "effect.mirthdew_encore.dreamy_diet": "Dreamy Diet"
+  "effect.mirthdew_encore.dreamy_diet": "Dreamy Diet",
+
+  "item.mirthdew_encore.spell_card": "Spell Card",
+  "item.mirthdew_encore.spell_deck": "Spell Deck",
+  "item.mirthdew_encore.spell_deck.deck_of_card": "%s: %s",
+  "item.mirthdew_encore.spell_deck.id_card": "#%s > %s",
+
+  "itemGroup.mirthdew_encore": "Mirthdew Encore"
 }
