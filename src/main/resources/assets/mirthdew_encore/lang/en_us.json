@@ -31,8 +31,11 @@
   "commands.mirthdew_encore.dreamtwirl.leave.failed.single": "Couldn't free %s from the Dreamtwirl",
   "commands.mirthdew_encore.dreamtwirl.leave.success": "Freed %s from the Dreamtwirl",
 
+  "entity.mirthdew_encore.dreamspeck": "Dreamspeck",
+
   "effect.mirthdew_encore.dreamy_diet": "Dreamy Diet",
 
+  "item.mirthdew_encore.dreamspeck_spawn_egg": "Dreamspeck Spawn Egg",
   "item.mirthdew_encore.spell_card": "Spell Card",
   "item.mirthdew_encore.spell_card.card_of_spell": "%s: \"%s\"",
   "item.mirthdew_encore.spell_deck": "Spell Deck",

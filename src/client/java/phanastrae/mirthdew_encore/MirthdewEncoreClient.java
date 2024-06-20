@@ -7,6 +7,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import phanastrae.mirthdew_encore.network.MirthdewEncoreClientPacketHandler;
+import phanastrae.mirthdew_encore.render.entity.MirthdewEncoreEntityRenderers;
+import phanastrae.mirthdew_encore.render.entity.model.MirthdewEncoreEntityModelLayers;
 import phanastrae.mirthdew_encore.render.shader.MirthdewEncoreShaders;
 import phanastrae.mirthdew_encore.render.world.DreamtwirlBorderRenderer;
 import phanastrae.mirthdew_encore.render.world.MirthdewEncoreDimensionEffects;
@@ -15,6 +17,9 @@ public class MirthdewEncoreClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		MirthdewEncoreEntityRenderers.init();
+		MirthdewEncoreEntityModelLayers.init();
+
 		MirthdewEncoreDimensionEffects.getInstance().init();
 		CoreShaderRegistrationCallback.EVENT.register(MirthdewEncoreShaders::registerShaders);
 

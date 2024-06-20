@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -26,17 +27,20 @@ public class MirthdewEncoreItemGroups {
     }
 
     public static void setupEntires() {
-        ItemGroupEvents.modifyEntriesEvent(MIRTHDEW_ENCORE_KEY).register(entries -> {
+        addAllSpellCardsToGroup(MIRTHDEW_ENCORE_KEY);
+        addAllSpellCardsToGroup(ItemGroups.COMBAT);
+
+        addItemToGroup(ItemGroups.SPAWN_EGGS, MirthdewEncoreItems.DREAMSPECK_SPAWN_EGG);
+    }
+
+    private static void addAllSpellCardsToGroup(RegistryKey<ItemGroup> itemGroupKey) {
+        ItemGroupEvents.modifyEntriesEvent(itemGroupKey).register(entries -> {
             ItemGroup.DisplayContext displayContext = entries.getContext();
-            displayContext.lookup().getOptionalWrapper(MirthdewEncoreRegistries.CARD_SPELL_KEY).ifPresent(registryWrapper -> {
-                addAllSpelLCards(entries, registryWrapper);
-            });
+            displayContext.lookup().getOptionalWrapper(MirthdewEncoreRegistries.CARD_SPELL_KEY).ifPresent(registryWrapper -> addAllSpellCards(entries, registryWrapper));
         });
     }
 
-    private static void addAllSpelLCards(
-            ItemGroup.Entries entries, RegistryWrapper<CardSpell> registryWrapper
-    ) {
+    private static void addAllSpellCards(ItemGroup.Entries entries, RegistryWrapper<CardSpell> registryWrapper) {
         registryWrapper.streamEntries()
                 .map(
                         SpellCardSingularItem::forCardSpell

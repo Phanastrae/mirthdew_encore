@@ -12,16 +12,15 @@ import java.util.List;
 public record CastNextEffect(int targetIndex) {
     public static final MapCodec<CastNextEffect> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
-                            Codecs.NONNEGATIVE_INT.optionalFieldOf("targetIndex", 0).forGetter(CastNextEffect::targetIndex)
+                            Codecs.NONNEGATIVE_INT.optionalFieldOf("target_index", 0).forGetter(CastNextEffect::targetIndex)
                     )
                     .apply(instance, CastNextEffect::new)
     );
 
     public void castSpell(SpellCast.DelayCollector delayCollector, World world, Entity user, List<SpellCast> children) {
-        if(this.targetIndex < 0) return;
-        if(this.targetIndex >= children.size()) return;
-
-        SpellCast spellCast = children.get(this.targetIndex);
-        spellCast.castSpellSingle(delayCollector, world, user);
+        if(0 <= this.targetIndex && this.targetIndex < children.size()) {
+            SpellCast spellCast = children.get(this.targetIndex);
+            spellCast.castSpellSingle(delayCollector, world, user);
+        }
     }
 }

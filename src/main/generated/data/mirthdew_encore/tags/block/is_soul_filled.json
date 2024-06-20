@@ -1,0 +1,14 @@
+{
+  "values": [
+    {
+      "id": "#minecraft:soul_speed_blocks",
+      "required": false
+    },
+    {
+      "id": "#minecraft:soul_fire_base_blocks",
+      "required": false
+    },
+    "minecraft:soul_fire",
+    "minecraft:soul_lantern"
+  ]
+}

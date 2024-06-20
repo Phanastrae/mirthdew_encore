@@ -10,6 +10,7 @@ import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.component.SpellEffectComponentTypes;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
+import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItemGroups;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
@@ -38,6 +39,8 @@ public class MirthdewEncore implements ModInitializer {
 		MirthdewEncoreItemGroups.setupEntires();
 
 		MirthdewEncoreBlocks.init();
+
+		MirthdewEncoreEntityTypes.init();
 
 		MirthdewEncoreStatusEffects.init();
 

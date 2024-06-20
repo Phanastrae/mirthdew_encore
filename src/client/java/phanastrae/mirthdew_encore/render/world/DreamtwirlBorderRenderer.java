@@ -234,6 +234,15 @@ public class DreamtwirlBorderRenderer {
     }
 
     public static boolean shouldHideEntity(Entity entity, double cameraX, double cameraY, double cameraZ) {
+        World world = entity.getWorld();
+        if(world == null) {
+            return false;
+        }
+        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
+        if(DTWA == null) {
+            return false;
+        }
+
         RegionPos currentRegion = getRegionPosFromEntityOrElseVec3d(new Vec3d(cameraX, cameraY, cameraZ));
         RegionPos entityRegion = RegionPos.fromEntity(entity);
         return !currentRegion.equals(entityRegion);

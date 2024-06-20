@@ -1,0 +1,28 @@
+{
+  "values": [
+    {
+      "id": "#mirthdew_encore:is_xp_manipulator",
+      "required": false
+    },
+    {
+      "id": "#mirthdew_encore:is_netherite",
+      "required": false
+    },
+    {
+      "id": "#mirthdew_encore:is_purpur",
+      "required": false
+    },
+    {
+      "id": "#mirthdew_encore:is_sculk",
+      "required": false
+    },
+    {
+      "id": "#mirthdew_encore:is_soul_filled",
+      "required": false
+    },
+    {
+      "id": "#mirthdew_encore:is_nether_wart",
+      "required": false
+    }
+  ]
+}

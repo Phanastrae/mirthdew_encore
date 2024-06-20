@@ -5,9 +5,7 @@
   },
   "effects": {
     "mirthdew_encore:cast_next": [
-      {
-        "index": 0
-      }
+      {}
     ]
   },
   "input_count": 1,

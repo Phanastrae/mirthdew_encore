@@ -5,13 +5,13 @@
   "effects": {
     "mirthdew_encore:cast_next": [
       {
-        "index": 0
+        "target_index": 0
       },
       {
-        "index": 1
+        "target_index": 1
       },
       {
-        "index": 2
+        "target_index": 2
       }
     ]
   },

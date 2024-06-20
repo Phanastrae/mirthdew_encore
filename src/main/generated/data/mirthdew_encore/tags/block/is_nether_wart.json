@@ -1,0 +1,13 @@
+{
+  "values": [
+    {
+      "id": "#minecraft:wart_blocks",
+      "required": false
+    },
+    "minecraft:nether_wart",
+    "minecraft:red_nether_bricks",
+    "minecraft:red_nether_brick_slab",
+    "minecraft:red_nether_brick_stairs",
+    "minecraft:red_nether_brick_wall"
+  ]
+}
