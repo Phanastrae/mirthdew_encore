@@ -1,0 +1,18 @@
+{
+  "cast_delay_ms": 600,
+  "description": {
+    "translate": "mirthdew_encore.card_spell.mirthdew_encore.fire_fireball"
+  },
+  "effects": {
+    "mirthdew_encore:fire_entity": [
+      {
+        "entity": [
+          "minecraft:fireball"
+        ]
+      }
+    ]
+  },
+  "input_count": 0,
+  "mirth_cost": 80,
+  "recharge_delay_ms": 80
+}

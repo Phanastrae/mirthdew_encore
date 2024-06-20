@@ -1,0 +1,18 @@
+{
+  "description": {
+    "translate": "mirthdew_encore.card_spell.mirthdew_encore.cast_two"
+  },
+  "effects": {
+    "mirthdew_encore:cast_next": [
+      {
+        "index": 0
+      },
+      {
+        "index": 1
+      }
+    ]
+  },
+  "input_count": 2,
+  "mirth_cost": 10,
+  "recharge_delay_ms": 60
+}

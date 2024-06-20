@@ -1,8 +1,10 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.registry.RegistryKey;
@@ -37,19 +39,18 @@ public class EntityDreamtwirlData {
 
     public void tick() {
         World world = this.entity.getWorld();
-        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
-        boolean nowInDreamtwirl = DTWA != null;
+        if(!world.isClient()) {
+            DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
+            boolean nowInDreamtwirl = DTWA != null;
 
-        RegionPos entityRegion = RegionPos.fromEntity(this.entity);
-        if(this.inDreamtwirl != nowInDreamtwirl) {
-            this.setDreamtwirlRegion(entityRegion);
-        }
+            RegionPos entityRegion = RegionPos.fromEntity(this.entity);
+            if (this.inDreamtwirl != nowInDreamtwirl) {
+                this.setDreamtwirlRegion(entityRegion);
+            }
 
-        if(DTWA == null || !this.inDreamtwirl) return;
-
-        if(!world.isClient) {
+            if (DTWA == null || !this.inDreamtwirl) return;
             if (world.getTime() % 80L == 0L) {
-                if(this.entity instanceof LivingEntity livingEntity) {
+                if (this.entity instanceof LivingEntity livingEntity) {
                     livingEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
                 }
             }

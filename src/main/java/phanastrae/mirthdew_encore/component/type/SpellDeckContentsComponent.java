@@ -25,7 +25,7 @@ public class SpellDeckContentsComponent {
     }
 
     public ItemStack get(int index) {
-        return (ItemStack)this.stacks.get(index);
+        return this.stacks.get(index);
     }
 
     public Stream<ItemStack> stream() {
@@ -37,7 +37,7 @@ public class SpellDeckContentsComponent {
     }
 
     public Iterable<ItemStack> iterateCopy() {
-        return Lists.<ItemStack, ItemStack>transform(this.stacks, ItemStack::copy);
+        return Lists.transform(this.stacks, ItemStack::copy);
     }
 
     public int size() {
@@ -90,7 +90,7 @@ public class SpellDeckContentsComponent {
             if(this.stacks.isEmpty()) {
                 return null;
             } else {
-                return this.stacks.removeFirst();
+                return this.stacks.removeFirst().copy();
             }
         }
 
@@ -99,7 +99,7 @@ public class SpellDeckContentsComponent {
             if(this.stacks.isEmpty()) {
                 return null;
             } else {
-                return this.stacks.removeLast();
+                return this.stacks.removeLast().copy();
             }
         }
 

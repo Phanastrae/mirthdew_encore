@@ -15,7 +15,7 @@ public class MirthdewEncoreItems {
     public static final Item SPELL_DECK = new SpellCardDeckItem(settings().maxCount(1).rarity(Rarity.RARE));
 
     public static void init() {
-        regWithIG(SPELL_CARD, "spell_card");
+        register(SPELL_CARD, "spell_card");
         register(SPELL_DECK, "spell_deck");
     }
 

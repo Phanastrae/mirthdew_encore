@@ -1,6 +1,21 @@
 {
   "block.mirthdew_encore.dreamtwirl_barrier": "Dreamtwirl Barrier",
 
+  "mirthdew_encore.card_spell.mirthdew_encore.cast_three": "Triple Cast",
+  "mirthdew_encore.card_spell.mirthdew_encore.cast_two": "Double Cast",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_arrow": "Launch Arrow",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_ender_pearl": "Toss Ender Pearl",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_fireball": "Greater Fireball",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_small_fireball": "Lesser Fireball",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_wind_charge": "Fire Wind Charge",
+  "mirthdew_encore.card_spell.mirthdew_encore.reduce_cast_delay": "Reduce Cast Delay",
+  "mirthdew_encore.card_spell.mirthdew_encore.reduce_recharge_delay": "Reduce Recharge Delay",
+  "mirthdew_encore.card_spell.tooltip.cast_delay_ms": "Cast Delay: %sms",
+  "mirthdew_encore.card_spell.tooltip.input_count": "Inputs: %s",
+  "mirthdew_encore.card_spell.tooltip.mirth_cost": "Mirth Cost: %s",
+  "mirthdew_encore.card_spell.tooltip.name": "Name: \"%s\"",
+  "mirthdew_encore.card_spell.tooltip.recharge_delay_ms": "Recharge Delay: %sms",
+
   "commands.mirthdew_encore.dreamtwirl.create.failed.already_exists": "That Dreamtwirl already exists.",
   "commands.mirthdew_encore.dreamtwirl.create.success": "Created new Dreamtwirl (%s, %s)",
   "commands.mirthdew_encore.dreamtwirl.failed.does_not_exist": "That Dreamtwirl does not exist.",
@@ -19,9 +34,10 @@
   "effect.mirthdew_encore.dreamy_diet": "Dreamy Diet",
 
   "item.mirthdew_encore.spell_card": "Spell Card",
+  "item.mirthdew_encore.spell_card.card_of_spell": "%s: \"%s\"",
   "item.mirthdew_encore.spell_deck": "Spell Deck",
-  "item.mirthdew_encore.spell_deck.deck_of_card": "%s: %s",
-  "item.mirthdew_encore.spell_deck.id_card": "#%s > %s",
+  "item.mirthdew_encore.spell_deck.deck_of_cards": "%s (%s cards)",
+  "item.mirthdew_encore.spell_deck.id_card": "#%s > \"%s\"",
 
   "itemGroup.mirthdew_encore": "Mirthdew Encore"
 }

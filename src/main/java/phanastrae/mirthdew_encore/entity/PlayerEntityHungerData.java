@@ -23,25 +23,27 @@ public class PlayerEntityHungerData {
     }
 
     public void tick() {
-        if(this.isDreamyDieting()) {
-            if(!player.hasStatusEffect(DREAMY_DIET_ENTRY)) {
-                this.onEndDreamyDieting();
-            } else {
-                player.getHungerManager().setFoodLevel(20);
-            }
+        if(!this.player.getWorld().isClient()) {
+            if (this.isDreamyDieting()) {
+                if (!player.hasStatusEffect(DREAMY_DIET_ENTRY)) {
+                    this.onEndDreamyDieting();
+                } else {
+                    player.getHungerManager().setFoodLevel(20);
+                }
 
-            StatusEffectInstance dietEffect = this.player.getStatusEffect(DREAMY_DIET_ENTRY);
-            if(dietEffect != null) {
-                int amplifier = dietEffect.getAmplifier();
-                if(amplifier >= 0) {
-                    this.dreamyDietTicks += (amplifier + 1);
+                StatusEffectInstance dietEffect = this.player.getStatusEffect(DREAMY_DIET_ENTRY);
+                if (dietEffect != null) {
+                    int amplifier = dietEffect.getAmplifier();
+                    if (amplifier >= 0) {
+                        this.dreamyDietTicks += (amplifier + 1);
+                    }
                 }
             }
-        }
-        HungerManager hungerManager = player.getHungerManager();
-        if(hungerManager.getFoodLevel() > 0 && this.getFoodLevelDebt() > 0) {
-            hungerManager.setFoodLevel(hungerManager.getFoodLevel() - 1);
-            this.setFoodLevelDebt(this.getFoodLevelDebt() - 1);
+            HungerManager hungerManager = player.getHungerManager();
+            if (hungerManager.getFoodLevel() > 0 && this.getFoodLevelDebt() > 0) {
+                hungerManager.setFoodLevel(hungerManager.getFoodLevel() - 1);
+                this.setFoodLevelDebt(this.getFoodLevelDebt() - 1);
+            }
         }
     }
 
