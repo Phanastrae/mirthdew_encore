@@ -18,11 +18,21 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+        getOrCreateTagBuilder(BlockTags.AXE_MINEABLE)
+                .add(MirthdewEncoreBlocks.DREAMSEED);
+
+        getOrCreateTagBuilder(BlockTags.HOE_MINEABLE)
+                .add(MirthdewEncoreBlocks.DREAMSEED)
+                .add(MirthdewEncoreBlocks.VERIC_DREAMSNARE);
+
         getOrCreateTagBuilder(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS)
                 .add(MirthdewEncoreBlocks.DREAMTWIRL_BARRIER);
 
         getOrCreateTagBuilder(BlockTags.DRAGON_IMMUNE)
                 .add(MirthdewEncoreBlocks.DREAMTWIRL_BARRIER);
+
+        getOrCreateTagBuilder(BlockTags.ENCHANTMENT_POWER_PROVIDER)
+                .add(MirthdewEncoreBlocks.DREAMSEED);
 
         getOrCreateTagBuilder(BlockTags.SNOW_LAYER_CANNOT_SURVIVE_ON)
                 .add(MirthdewEncoreBlocks.DREAMTWIRL_BARRIER);
@@ -66,7 +76,8 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(Blocks.SCULK_SENSOR)
                 .add(Blocks.CALIBRATED_SCULK_SENSOR)
                 .add(Blocks.SCULK_SHRIEKER)
-                .add(Blocks.SCULK_VEIN);
+                .add(Blocks.SCULK_VEIN)
+                .add(MirthdewEncoreBlocks.VERIC_DREAMSNARE);
 
         getOrCreateTagBuilder(MirthdewEncoreBlockTags.IS_SOUL_FILLED)
                 .addOptionalTag(BlockTags.SOUL_SPEED_BLOCKS)

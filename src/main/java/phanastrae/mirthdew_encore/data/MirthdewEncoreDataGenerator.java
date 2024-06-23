@@ -11,10 +11,16 @@ public class MirthdewEncoreDataGenerator implements DataGeneratorEntrypoint {
 	public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
 		FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
 
-		pack.addProvider(BlockTagProvider::new);
-		pack.addProvider(EntityTagProvider::new);
-		pack.addProvider(BiomeTagProvider::new);
 		pack.addProvider(ModelProvider::new);
+
+
+		pack.addProvider(BlockTagProvider::new);
+		pack.addProvider(EntityTypeTagProvider::new);
+		pack.addProvider(DamageTypeTagProvider::new);
+		pack.addProvider(BiomeTagProvider::new);
+
+		pack.addProvider(BlockLootTableProvider::new);
+
 		pack.addProvider(WorldGenerationProvider::new);
 	}
 

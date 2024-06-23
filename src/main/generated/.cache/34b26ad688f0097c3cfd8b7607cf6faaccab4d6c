@@ -1,0 +1,6 @@
+// 1.21 Pre-Release 3	2024-06-23T02:16:29.6990315	Mirthdew Encore/Tags for minecraft:damage_type
+dd7a2ae8eec489eb40d58a3b73b6dbb540a9eba7 data\minecraft\tags\damage_type\bypasses_enchantments.json
+dd7a2ae8eec489eb40d58a3b73b6dbb540a9eba7 data\minecraft\tags\damage_type\panic_causes.json
+dd7a2ae8eec489eb40d58a3b73b6dbb540a9eba7 data\minecraft\tags\damage_type\bypasses_wolf_armor.json
+dd7a2ae8eec489eb40d58a3b73b6dbb540a9eba7 data\minecraft\tags\damage_type\is_projectile.json
+dd7a2ae8eec489eb40d58a3b73b6dbb540a9eba7 data\minecraft\tags\damage_type\bypasses_armor.json

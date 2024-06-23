@@ -7,6 +7,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import phanastrae.mirthdew_encore.network.MirthdewEncoreClientPacketHandler;
+import phanastrae.mirthdew_encore.render.MirthdewEncoreBlockRenderLayers;
+import phanastrae.mirthdew_encore.render.block.entity.MirthdewEncoreBlockEntityRendererFactories;
 import phanastrae.mirthdew_encore.render.entity.MirthdewEncoreEntityRenderers;
 import phanastrae.mirthdew_encore.render.entity.model.MirthdewEncoreEntityModelLayers;
 import phanastrae.mirthdew_encore.render.shader.MirthdewEncoreShaders;
@@ -17,6 +19,9 @@ public class MirthdewEncoreClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		MirthdewEncoreBlockRenderLayers.init();
+		MirthdewEncoreBlockEntityRendererFactories.init();
+
 		MirthdewEncoreEntityRenderers.init();
 		MirthdewEncoreEntityModelLayers.init();
 

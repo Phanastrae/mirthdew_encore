@@ -1,5 +1,7 @@
 {
+  "block.mirthdew_encore.dreamseed": "Dreamseed",
   "block.mirthdew_encore.dreamtwirl_barrier": "Dreamtwirl Barrier",
+  "block.mirthdew_encore.veric_dreamsnare": "Veric Dreamsnare",
 
   "mirthdew_encore.card_spell.mirthdew_encore.cast_three": "Triple Cast",
   "mirthdew_encore.card_spell.mirthdew_encore.cast_two": "Double Cast",
@@ -30,6 +32,9 @@
   "commands.mirthdew_encore.dreamtwirl.leave.failed.multiple": "Couldn't free %s entities from the Dreamtwirl",
   "commands.mirthdew_encore.dreamtwirl.leave.failed.single": "Couldn't free %s from the Dreamtwirl",
   "commands.mirthdew_encore.dreamtwirl.leave.success": "Freed %s from the Dreamtwirl",
+
+  "death.attack.mirthdew_encore.dreamsnare_tongue": "%1$s got snared within an Endless dream",
+  "death.attack.mirthdew_encore.dreamsnare_tongue.player": "%1$s got snared within an Endless dream while trying to forget %2$s",
 
   "entity.mirthdew_encore.dreamspeck": "Dreamspeck",
 

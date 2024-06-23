@@ -7,6 +7,7 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
+import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.component.SpellEffectComponentTypes;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
@@ -39,6 +40,7 @@ public class MirthdewEncore implements ModInitializer {
 		MirthdewEncoreItemGroups.setupEntires();
 
 		MirthdewEncoreBlocks.init();
+		MirthdewEncoreBlockEntityTypes.init();
 
 		MirthdewEncoreEntityTypes.init();
 

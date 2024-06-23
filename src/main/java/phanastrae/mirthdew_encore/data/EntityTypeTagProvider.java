@@ -10,8 +10,8 @@ import phanastrae.mirthdew_encore.registry.MirthdewEncoreEntityTypeTags;
 
 import java.util.concurrent.CompletableFuture;
 
-public class EntityTagProvider extends FabricTagProvider.EntityTypeTagProvider {
-    public EntityTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
+public class EntityTypeTagProvider extends FabricTagProvider.EntityTypeTagProvider {
+    public EntityTypeTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
         super(output, completableFuture);
     }
 

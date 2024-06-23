@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "mirthdew_encore:block/veric_dreamsnare",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "mirthdew_encore:block/veric_dreamsnare",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "mirthdew_encore:block/veric_dreamsnare",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "mirthdew_encore:block/veric_dreamsnare",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "mirthdew_encore:block/veric_dreamsnare"
+    },
+    "facing=west": {
+      "model": "mirthdew_encore:block/veric_dreamsnare",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

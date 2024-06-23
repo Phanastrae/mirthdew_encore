@@ -9,6 +9,7 @@
     "ListPoolElementAccessor",
     "PlayerEntityMixin",
     "ProjectileEntityAccessor",
+    "SculkBlockMixin",
     "ServerPlayerEntityMixin",
     "ServerPlayNetworkHandlerMixin",
     "ServerWorldAccessor",

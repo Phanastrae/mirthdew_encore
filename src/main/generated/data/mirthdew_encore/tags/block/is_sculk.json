@@ -5,6 +5,7 @@
     "minecraft:sculk_sensor",
     "minecraft:calibrated_sculk_sensor",
     "minecraft:sculk_shrieker",
-    "minecraft:sculk_vein"
+    "minecraft:sculk_vein",
+    "mirthdew_encore:veric_dreamsnare"
   ]
 }

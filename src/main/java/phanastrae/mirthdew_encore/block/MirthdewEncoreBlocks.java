@@ -7,6 +7,7 @@ import net.minecraft.block.MapColor;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 
@@ -20,8 +21,22 @@ public class MirthdewEncoreBlocks {
             .noBlockBreakParticles()
             .pistonBehavior(PistonBehavior.BLOCK));
 
+    public static final Block VERIC_DREAMSNARE = new VericDreamsnareBlock(createSettings()
+            .strength(2.0F, 2.0F)
+            .mapColor(MapColor.CYAN)
+            .sounds(BlockSoundGroup.SCULK)
+            .luminance(state -> 4));
+
+    public static final Block DREAMSEED = new DreamseedBlock(createSettings()
+            .strength(2.0F, 8.0F)
+            .mapColor(MapColor.MAGENTA)
+            .sounds(BlockSoundGroup.WART_BLOCK)
+            .luminance(state -> 5));
+
     public static void init() {
         register(DREAMTWIRL_BARRIER, "dreamtwirl_barrier");
+        register(VERIC_DREAMSNARE, "veric_dreamsnare");
+        register(DREAMSEED, "dreamseed");
     }
 
     private static void register(Block block, String name) {
