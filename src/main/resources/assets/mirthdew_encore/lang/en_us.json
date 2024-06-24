@@ -1,6 +1,8 @@
 {
   "block.mirthdew_encore.dreamseed": "Dreamseed",
   "block.mirthdew_encore.dreamtwirl_barrier": "Dreamtwirl Barrier",
+  "block.mirthdew_encore.slumbersocket": "Slumbersocket",
+  "block.mirthdew_encore.slumberveil": "Slumberveil",
   "block.mirthdew_encore.veric_dreamsnare": "Veric Dreamsnare",
 
   "mirthdew_encore.card_spell.mirthdew_encore.cast_three": "Triple Cast",
@@ -19,6 +21,8 @@
   "mirthdew_encore.card_spell.tooltip.recharge_delay_ms": "Recharge Delay: %sms",
 
   "commands.mirthdew_encore.dreamtwirl.create.failed.already_exists": "That Dreamtwirl already exists.",
+  "commands.mirthdew_encore.dreamtwirl.create.failed.invalid_position": "Invalid Position: Dreamtwirls may only be created at even-numbered region coordinates",
+  "commands.mirthdew_encore.dreamtwirl.create.failed.no_candidate": "Failed to find an unoccupied region to place the Dreamtwirl!",
   "commands.mirthdew_encore.dreamtwirl.create.success": "Created new Dreamtwirl (%s, %s)",
   "commands.mirthdew_encore.dreamtwirl.failed.does_not_exist": "That Dreamtwirl does not exist.",
   "commands.mirthdew_encore.dreamtwirl.failed.no_manager": "Failed to get Dreamtwirls",

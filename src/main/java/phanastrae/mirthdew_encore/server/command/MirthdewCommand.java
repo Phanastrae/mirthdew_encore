@@ -11,13 +11,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import phanastrae.mirthdew_encore.MirthdewEncore;
-import phanastrae.mirthdew_encore.dreamtwirl.EntityDreamtwirlData;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
+import phanastrae.mirthdew_encore.dreamtwirl.EntityDreamtwirlData;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -41,6 +42,12 @@ public class MirthdewCommand {
     private static final SimpleCommandExceptionType FAILED_CREATE_ALREADY_EXISTS_EXCEPTION = new SimpleCommandExceptionType(
             Text.stringifiedTranslatable("commands.mirthdew_encore.dreamtwirl.create.failed.already_exists")
     );
+    private static final SimpleCommandExceptionType FAILED_CREATE_NO_CANDIDATE_EXCEPTION = new SimpleCommandExceptionType(
+            Text.stringifiedTranslatable("commands.mirthdew_encore.dreamtwirl.create.failed.no_candidate")
+    );
+    private static final SimpleCommandExceptionType FAILED_CREATE_INVALID_POSITION_EXCEPTION = new SimpleCommandExceptionType(
+            Text.stringifiedTranslatable("commands.mirthdew_encore.dreamtwirl.create.failed.invalid_position")
+    );
     private static final DynamicCommandExceptionType FAILED_LEAVE_SINGLE_EXCEPTION = new DynamicCommandExceptionType(
             playerName -> Text.stringifiedTranslatable("commands.mirthdew_encore.dreamtwirl.leave.failed.single", playerName)
     );
@@ -51,9 +58,9 @@ public class MirthdewCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
                 literal("mirthdew")
+                        .requires(source -> source.hasPermissionLevel(2))
                         .then(literal("dreamtwirl")
                                 .then(literal("join")
-                                        .requires(source -> source.hasPermissionLevel(2))
                                         .then(literal("region")
                                                 .then(argument("regionX", IntegerArgumentType.integer())
                                                         .then(argument("regionZ", IntegerArgumentType.integer())
@@ -80,7 +87,6 @@ public class MirthdewCommand {
                                         )
                                 )
                                 .then(literal("leave")
-                                        .requires(source -> source.hasPermissionLevel(2))
                                         .executes(context -> leave(context.getSource(), ImmutableList.of(context.getSource().getEntityOrThrow())))
                                         .then(
                                                 argument("targets", EntityArgumentType.entities())
@@ -90,7 +96,7 @@ public class MirthdewCommand {
                                         )
                                 )
                                 .then(literal("create")
-                                        .requires(source -> source.hasPermissionLevel(2))
+                                        .executes(context -> create(context.getSource()))
                                         .then(argument("regionX", IntegerArgumentType.integer())
                                                 .then(argument("regionZ", IntegerArgumentType.integer())
                                                         .executes(
@@ -103,7 +109,6 @@ public class MirthdewCommand {
                                         .executes(context -> list(context.getSource()))
                                 )
                                 .then(literal("edit")
-                                        .requires(source -> source.hasPermissionLevel(2))
                                         .then(argument("regionX", IntegerArgumentType.integer())
                                                 .then(argument("regionZ", IntegerArgumentType.integer())
                                                         .then(literal("generate")
@@ -124,7 +129,27 @@ public class MirthdewCommand {
         );
     }
 
+    private static int create(ServerCommandSource source) throws CommandSyntaxException {
+        DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getMainDreamtwirlStageManager(source.getServer());
+        if(dreamtwirlStageManager == null) {
+            throw FAILED_NO_MANAGER_EXCEPTION.create();
+        }
+
+        Optional<DreamtwirlStage> stageOptional = dreamtwirlStageManager.createNewStage();
+        if(stageOptional.isPresent()) {
+            RegionPos regionPos = stageOptional.get().getRegionPos();
+            source.sendFeedback(() -> Text.translatable("commands.mirthdew_encore.dreamtwirl.create.success", regionPos.regionX, regionPos.regionZ), true);
+            return 1;
+        } else {
+            throw FAILED_CREATE_NO_CANDIDATE_EXCEPTION.create();
+        }
+    }
+
     private static int create(ServerCommandSource source, int regionX, int regionZ) throws CommandSyntaxException {
+        if((regionX & 0x1) != 0 || (regionZ & 0x1) != 0) {
+            throw FAILED_CREATE_INVALID_POSITION_EXCEPTION.create();
+        }
+
         DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getMainDreamtwirlStageManager(source.getServer());
         if(dreamtwirlStageManager == null) {
             throw FAILED_NO_MANAGER_EXCEPTION.create();

@@ -40,8 +40,8 @@ public class WorldGenerationProvider extends FabricDynamicRegistryProvider {
                 .waterColor(0x0FEFFF)
                 .waterFogColor(0x021414)
                 .skyColor(0x074F4F)
-                .foliageColor(FoliageColors.getColor(0.5, 0.5))
-                .grassColor(GrassColors.getColor(0.5, 0.5))
+                .foliageColor(0xFF165E6E)
+                .grassColor(0xFF328BA6)
                 .music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_SOUL_SAND_VALLEY));
 
         context.register(

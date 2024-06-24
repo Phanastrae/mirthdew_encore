@@ -63,12 +63,9 @@ public class DreamtwirlWorldAttachment {
         return ((WorldDuckInterface)world).mirthdew_encore$getDreamtwirlAttachment();
     }
 
-    public static boolean isDreamtwirl(World world) {
-        return fromWorld(world) != null;
-    }
-
     public static void findBorderCollision(@Nullable Entity entity, World world, ImmutableList.Builder<VoxelShape> builder) {
         if(entity == null) return;
+        if(entity.getWorld() != world) return;
 
         DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
         if(DTWA == null) return;

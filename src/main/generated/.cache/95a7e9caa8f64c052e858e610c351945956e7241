@@ -1,6 +1,8 @@
-// 1.21 Pre-Release 3	2024-06-23T02:16:29.698034	Mirthdew Encore/Tags for minecraft:block
+// 1.21	2024-06-24T01:51:35.7836212	Mirthdew Encore/Tags for minecraft:block
 01bf7947bc0c886599014953778a3c0a80de048d data\minecraft\tags\block\dragon_immune.json
+1d19dbfdc1bd7bcd01fced29d33013c41c3e540e data\minecraft\tags\block\needs_iron_tool.json
 383b3055ad982ac15aac8d261b039bbd0cff76b4 data\mirthdew_encore\tags\block\is_sculk.json
+7b630b5b403f280a5ced1dcbd9c549efcab40eb3 data\minecraft\tags\block\portals.json
 cc422a6f97374d62c6c6df6e0e203524e5b2c196 data\mirthdew_encore\tags\block\is_xp_manipulator.json
 50929c6a3ffa83ffe4b51ce5a13b520f98876716 data\mirthdew_encore\tags\block\is_netherite.json
 354c3b850871debf5306bbbc84f1ba408fc9bd7e data\minecraft\tags\block\mineable\hoe.json
@@ -9,6 +11,7 @@ d2a47aee1922ff3de4a2ad0b8dd9be87cde6009a data\minecraft\tags\block\enchantment_p
 01bf7947bc0c886599014953778a3c0a80de048d data\minecraft\tags\block\snow_layer_cannot_survive_on.json
 56d55020a028561b7a60b24f53e39d76f7bb58ec data\mirthdew_encore\tags\block\is_purpur.json
 01bf7947bc0c886599014953778a3c0a80de048d data\minecraft\tags\block\wither_immune.json
+1d19dbfdc1bd7bcd01fced29d33013c41c3e540e data\minecraft\tags\block\mineable\pickaxe.json
 01bf7947bc0c886599014953778a3c0a80de048d data\minecraft\tags\block\blocks_wind_charge_explosions.json
 171b2826b530e54d9b2d7518ecd6818dc68f9863 data\mirthdew_encore\tags\block\is_soul_filled.json
 7cdfccecf98f80d7f3ff76dd648f41cb8b9c8020 data\mirthdew_encore\tags\block\dreamspeck_opaque.json

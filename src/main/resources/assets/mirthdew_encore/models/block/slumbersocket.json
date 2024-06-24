@@ -1,0 +1,75 @@
+{
+	"parent": "block/block",
+	"display": {
+		"firstperson_righthand": {
+			"rotation": [ 0, 135, 0 ],
+			"translation": [ 0, 0, 0 ],
+			"scale": [ 0.40, 0.40, 0.40 ]
+		}
+	},
+	"textures": {
+		"end": "mirthdew_encore:block/slumbersocket_end",
+		"particle": "mirthdew_encore:block/slumbersocket_top",
+		"top": "mirthdew_encore:block/slumbersocket_top",
+		"bottom": "mirthdew_encore:block/slumbersocket_bottom",
+		"side": "mirthdew_encore:block/slumbersocket_side",
+		"inside_bottom": "mirthdew_encore:block/slumbersocket_inside_bottom",
+		"inside_top": "mirthdew_encore:block/slumbersocket_inside_top",
+		"inside_side": "mirthdew_encore:block/slumbersocket_inside_side",
+		"back": "mirthdew_encore:block/slumbersocket_inside_back"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#end", "cullface": "north"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#side", "cullface": "east"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#end", "cullface": "south"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#side", "cullface": "west"}
+			}
+		},
+		{
+			"from": [0, 0, 0],
+			"to": [16, 2, 16],
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#inside_bottom"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#bottom", "cullface": "down"}
+			}
+		},
+		{
+			"from": [0, 14, 0],
+			"to": [16, 16, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 14, 0]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#top", "cullface": "top"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#inside_top"}
+			}
+		},
+		{
+			"from": [14, 2, 0],
+			"to": [16, 14, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [14, 2, 0]},
+			"faces": {
+				"west": {"uv": [0, 2, 16, 14], "texture": "#inside_side"}
+			}
+		},
+		{
+			"from": [0, 2, 0],
+			"to": [2, 14, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 2, 0]},
+			"faces": {
+				"east": {"uv": [16, 2, 0, 14], "texture": "#inside_side"}
+			}
+		},
+		{
+			"from": [2, 2, 13.5],
+			"to": [14, 14, 15.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 2, 14.5]},
+			"faces": {
+				"north": {"uv": [2, 2, 14, 14], "texture": "#back"},
+				"south": {"uv": [2, 2, 14, 14], "texture": "#back"}
+			}
+		}
+	]
+}

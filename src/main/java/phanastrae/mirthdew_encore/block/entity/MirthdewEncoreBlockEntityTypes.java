@@ -11,9 +11,14 @@ import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 
 public class MirthdewEncoreBlockEntityTypes {
 
-    public static final BlockEntityType<VericDreamsnareBlockEntity> VERIC_DREAMSNARE = create("veric_dreamsnare", VericDreamsnareBlockEntity::new, MirthdewEncoreBlocks.VERIC_DREAMSNARE);
+    public static final BlockEntityType<SlumbersocketBlockEntity> SLUMBERSOCKET = create(
+            "slumbersocket", SlumbersocketBlockEntity::new, MirthdewEncoreBlocks.SLUMBERSOCKET);
+
+    public static final BlockEntityType<VericDreamsnareBlockEntity> VERIC_DREAMSNARE = create(
+            "veric_dreamsnare", VericDreamsnareBlockEntity::new, MirthdewEncoreBlocks.VERIC_DREAMSNARE);
 
     public static void init() {
+        register(SLUMBERSOCKET, "slumbersocket");
         register(VERIC_DREAMSNARE, "veric_dreamsnare");
     }
 

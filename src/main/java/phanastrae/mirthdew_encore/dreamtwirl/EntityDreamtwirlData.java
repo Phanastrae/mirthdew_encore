@@ -1,10 +1,8 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.registry.RegistryKey;
@@ -144,9 +142,9 @@ public class EntityDreamtwirlData {
             }
 
             BlockPos blockPos = targetWorld.getSpawnPos();
-            Vec3d vec3d = entity.getWorldSpawnPos(targetWorld, blockPos).toBottomCenterPos();
+            Vec3d vec3d = this.entity.getWorldSpawnPos(targetWorld, blockPos).toBottomCenterPos();
 
-            if (teleportEntity(entity, World.OVERWORLD, vec3d)) {
+            if (teleportEntity(this.entity, World.OVERWORLD, vec3d)) {
                 this.setDreamtwirlRegion(null);
                 return true;
             } else {

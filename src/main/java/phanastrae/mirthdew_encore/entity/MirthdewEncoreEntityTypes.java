@@ -16,6 +16,7 @@ public class MirthdewEncoreEntityTypes {
     public static final EntityType<DreamspeckEntity> DREAM_SPECK =
             createBuilder(DreamspeckEntity::new, SpawnGroup.MISC)
                     .dimensions(0.4F, 0.4F)
+                    .makeFireImmune()
                     .build();
 
     public static void init() {

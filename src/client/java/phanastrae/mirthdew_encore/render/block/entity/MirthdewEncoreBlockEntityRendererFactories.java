@@ -9,6 +9,7 @@ import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
 public class MirthdewEncoreBlockEntityRendererFactories {
 
     public static void init() {
+        register(MirthdewEncoreBlockEntityTypes.SLUMBERSOCKET, SlumbersocketBlockEntityRenderer::new);
         register(MirthdewEncoreBlockEntityTypes.VERIC_DREAMSNARE, VericDreamsnareBlockEntityRenderer::new);
     }
 

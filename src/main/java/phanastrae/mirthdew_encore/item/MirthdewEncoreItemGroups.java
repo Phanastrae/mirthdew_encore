@@ -28,8 +28,9 @@ public class MirthdewEncoreItemGroups {
         addAllSpellCardsToGroup(MIRTHDEW_ENCORE_KEY);
         addAllSpellCardsToGroup(ItemGroups.COMBAT);
 
-        addItemToGroup(ItemGroups.FUNCTIONAL,
-                MirthdewEncoreItems.DREAMSEED);
+        addItemsToGroup(ItemGroups.FUNCTIONAL,
+                MirthdewEncoreItems.DREAMSEED,
+                MirthdewEncoreItems.SLUMBERSOCKET);
 
         addItemToGroupAfter(Items.SCULK_SENSOR, ItemGroups.NATURAL,
                 MirthdewEncoreItems.VERIC_DREAMSNARE);

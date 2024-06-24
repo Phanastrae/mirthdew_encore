@@ -4,6 +4,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -33,10 +34,34 @@ public class MirthdewEncoreBlocks {
             .sounds(BlockSoundGroup.WART_BLOCK)
             .luminance(state -> 5));
 
+    public static final Block SLUMBERSOCKET = new SlumbersocketBlock((createSettings())
+            .strength(30.0F, 1200.0F)
+            .mapColor(MapColor.DEEPSLATE_GRAY)
+            .instrument(NoteBlockInstrument.BASEDRUM)
+            .requiresTool()
+            .sounds(BlockSoundGroup.DEEPSLATE)
+            .luminance(state -> state.get(SlumbersocketBlock.DREAMING) ? 9 : 13)
+            .nonOpaque()
+            .allowsSpawning(Blocks::never)
+            .solidBlock(Blocks::never)
+            .suffocates(Blocks::never)
+            .blockVision(Blocks::never));
+
+    public static final Block SLUMBERVEIL = new SlumberveilBlock(createSettings()
+            .noCollision()
+            .strength(-1.0F)
+            .sounds(BlockSoundGroup.WOOL)
+            .luminance(state -> 13)
+            .pistonBehavior(PistonBehavior.BLOCK)
+            .replaceable()
+    );
+
     public static void init() {
         register(DREAMTWIRL_BARRIER, "dreamtwirl_barrier");
         register(VERIC_DREAMSNARE, "veric_dreamsnare");
         register(DREAMSEED, "dreamseed");
+        register(SLUMBERSOCKET, "slumbersocket");
+        register(SLUMBERVEIL, "slumberveil");
     }
 
     private static void register(Block block, String name) {

@@ -14,7 +14,10 @@ public class BlockLootTableProvider extends FabricBlockLootTableProvider {
 
     @Override
     public void generate() {
+        addDrop(MirthdewEncoreBlocks.SLUMBERSOCKET);
         addDropWithSilkTouch(MirthdewEncoreBlocks.DREAMSEED);
         addDropWithSilkTouch(MirthdewEncoreBlocks.VERIC_DREAMSNARE);
+
+        addDrop(MirthdewEncoreBlocks.SLUMBERVEIL, dropsNothing());
     }
 }

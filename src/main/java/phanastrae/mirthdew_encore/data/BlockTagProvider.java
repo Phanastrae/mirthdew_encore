@@ -25,6 +25,12 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(MirthdewEncoreBlocks.DREAMSEED)
                 .add(MirthdewEncoreBlocks.VERIC_DREAMSNARE);
 
+        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
+                .add(MirthdewEncoreBlocks.SLUMBERSOCKET);
+
+        getOrCreateTagBuilder(BlockTags.NEEDS_IRON_TOOL)
+                .add(MirthdewEncoreBlocks.SLUMBERSOCKET);
+
         getOrCreateTagBuilder(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS)
                 .add(MirthdewEncoreBlocks.DREAMTWIRL_BARRIER);
 
@@ -33,6 +39,9 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
         getOrCreateTagBuilder(BlockTags.ENCHANTMENT_POWER_PROVIDER)
                 .add(MirthdewEncoreBlocks.DREAMSEED);
+
+        getOrCreateTagBuilder(BlockTags.PORTALS)
+                .add(MirthdewEncoreBlocks.SLUMBERVEIL);
 
         getOrCreateTagBuilder(BlockTags.SNOW_LAYER_CANNOT_SURVIVE_ON)
                 .add(MirthdewEncoreBlocks.DREAMTWIRL_BARRIER);

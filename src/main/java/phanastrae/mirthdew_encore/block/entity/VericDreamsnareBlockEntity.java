@@ -160,11 +160,6 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
     }
 
     @Override
-    public void markRemoved() {
-        super.markRemoved();
-    }
-
-    @Override
     public void setCachedState(BlockState state) {
         super.setCachedState(state);
         this.updateCachedPositions(state);
@@ -176,6 +171,26 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
 
         this.baseOffset = CENTER_POS.add(directionVector.multiply(-0.5));
         this.tongueBaseOffset = this.baseOffset.add(directionVector.multiply(3/16F));
+    }
+
+    public void setTongueTargetOffset(Vec3d value) {
+        this.tongueTargetOffset = value;
+        this.markDirty();
+    }
+
+    public void setTongueExtended(boolean value) {
+        this.tongueExtended = value;
+        this.markDirty();
+    }
+
+    public void setEntitySnared(boolean value) {
+        this.entitySnared = value;
+        this.markDirty();
+    }
+
+    public void setTongueDistance(double value) {
+        this.tongueDistance = value;
+        this.markDirty();
     }
 
     public Vec3d getBaseOffset() {
@@ -200,6 +215,7 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
 
     public void setHeldItem(ItemStack itemStack) {
         this.heldItem.set(0, itemStack);
+        this.markDirty();
     }
 
     public ItemStack getHeldItem() {
@@ -228,16 +244,16 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         }
 
         if(this.tongueDistance <= 0 && !this.tongueExtended) {
-            this.tongueTargetOffset = this.tongueBaseOffset;
+            this.setTongueTargetOffset(this.tongueBaseOffset);
         }
 
         this.prevTongueDistance = this.tongueDistance;
         Vec3d offset = this.tongueTargetOffset.subtract(this.tongueBaseOffset);
         double offsetLength = offset.length();
         if (this.tongueExtended) {
-            this.tongueDistance = Math.min(this.tongueDistance + 0.05 + 0.25 * (offsetLength - this.tongueDistance), offsetLength);
+            this.setTongueDistance(Math.min(this.tongueDistance + 0.05 + 0.25 * (offsetLength - this.tongueDistance), offsetLength));
         } else {
-            this.tongueDistance = Math.max(this.tongueDistance - (this.entitySnared ? 0.1 : 0.3), 0);
+            this.setTongueDistance(Math.max(this.tongueDistance - (this.entitySnared ? 0.1 : 0.3), 0));
         }
 
         if(!world.isClient() && world instanceof ServerWorld serverWorld) {
@@ -254,8 +270,8 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
                     if(entity instanceof DreamspeckEntity dreamspeckEntity && !dreamspeckEntity.isSnared()) {
                         dreamspeckEntity.setSnare(this.getPos());
                         this.snaredEntity = entity;
-                        this.entitySnared = true;
-                        this.tongueExtended = false;
+                        this.setEntitySnared(true);
+                        this.setTongueExtended(false);
                         this.markForUpdate(serverWorld);
                     } else {
                         if(!(entity instanceof ItemEntity)) {
@@ -266,7 +282,7 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
             }
 
             if(this.tongueDistance >= offsetLength) {
-                this.tongueExtended = false;
+                this.setTongueExtended(false);
                 this.markForUpdate(serverWorld);
             }
 
@@ -284,7 +300,7 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
                     }
 
                     this.snaredEntity = null;
-                    this.entitySnared = false;
+                    this.setEntitySnared(false);
                     this.markForUpdate(serverWorld);
                 }
             }
@@ -333,9 +349,9 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
             return;
         }
 
-        this.tongueTargetOffset = offset.add(this.tongueBaseOffset);
+        this.setTongueTargetOffset(offset.add(this.tongueBaseOffset));
         this.tongueOffset = this.tongueTargetOffset;
-        this.tongueExtended = true;
+        this.setTongueExtended(true);
         this.markForUpdate(world);
     }
 

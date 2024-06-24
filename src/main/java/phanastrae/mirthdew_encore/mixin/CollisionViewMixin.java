@@ -25,7 +25,11 @@ public interface CollisionViewMixin {
 
     @ModifyReturnValue(method = "getWorldBorderCollisions", at = @At("RETURN"))
     private VoxelShape mirthdew_encore$addDreamtwirlCollisions(VoxelShape original, Entity entity) {
-        return EntityDreamtwirlData.addCollisionsTo(original, entity);
+        if(entity.getWorld().equals(this)) {
+            return EntityDreamtwirlData.addCollisionsTo(original, entity);
+        } else {
+            return original;
+        }
     }
 
     @Inject(method = "getBlockCollisions", at = @At("HEAD"), cancellable = true)

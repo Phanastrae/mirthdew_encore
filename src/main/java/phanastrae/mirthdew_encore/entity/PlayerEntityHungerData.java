@@ -33,9 +33,11 @@ public class PlayerEntityHungerData {
 
                 StatusEffectInstance dietEffect = this.player.getStatusEffect(DREAMY_DIET_ENTRY);
                 if (dietEffect != null) {
-                    int amplifier = dietEffect.getAmplifier();
-                    if (amplifier >= 0) {
-                        this.dreamyDietTicks += (amplifier + 1);
+                    if(!player.isSpectator() && !player.getAbilities().creativeMode) {
+                        int amplifier = dietEffect.getAmplifier();
+                        if (amplifier >= 0) {
+                            this.dreamyDietTicks += (amplifier + 1);
+                        }
                     }
                 }
             }

@@ -19,6 +19,8 @@ public class MirthdewEncoreDataGenerator implements DataGeneratorEntrypoint {
 		pack.addProvider(DamageTypeTagProvider::new);
 		pack.addProvider(BiomeTagProvider::new);
 
+		pack.addProvider(RecipeProvider::new);
+
 		pack.addProvider(BlockLootTableProvider::new);
 
 		pack.addProvider(WorldGenerationProvider::new);

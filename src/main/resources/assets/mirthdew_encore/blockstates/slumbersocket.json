@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "mirthdew_encore:block/slumbersocket",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "mirthdew_encore:block/slumbersocket"
+    },
+    "facing=south": {
+      "model": "mirthdew_encore:block/slumbersocket",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "mirthdew_encore:block/slumbersocket",
+      "y": 270
+    }
+  }
+}

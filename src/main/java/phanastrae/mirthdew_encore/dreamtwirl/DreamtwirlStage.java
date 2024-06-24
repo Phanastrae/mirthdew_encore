@@ -32,15 +32,22 @@ import java.util.Map;
 
 public class DreamtwirlStage {
 
+    private final World world;
     private final long id;
     private final RegionPos regionPos;
     private final long timestamp;
     private boolean markDirty = false;
 
-    public DreamtwirlStage(long id, long timestamp) {
+    public DreamtwirlStage(World world, long id, long timestamp) {
+        this.world = world;
         this.id = id;
         this.regionPos = new RegionPos(id);
         this.timestamp = timestamp;
+    }
+
+    public static boolean isIdAllowed(long id) {
+        RegionPos rp = new RegionPos(id);
+        return ((rp.regionX & 0x1) == 0) && ((rp.regionZ & 0x1) == 0);
     }
 
     public void generate(ServerWorld serverWorld) {
@@ -146,6 +153,10 @@ public class DreamtwirlStage {
         return this.regionPos;
     }
 
+    public World getWorld() {
+        return this.world;
+    }
+
     public NbtCompound writeNbt(NbtCompound nbt) {
         nbt.putLong("Id", this.getId());
         nbt.putLong("Timestamp", this.getTimestamp());
@@ -155,6 +166,6 @@ public class DreamtwirlStage {
     public static DreamtwirlStage fromNbt(World world, NbtCompound nbt) {
         long id = nbt.getLong("Id");
         long timestamp = nbt.getLong("Timestamp");
-        return new DreamtwirlStage(id, timestamp);
+        return new DreamtwirlStage(world, id, timestamp);
     }
 }

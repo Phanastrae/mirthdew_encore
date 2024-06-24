@@ -18,6 +18,7 @@ public class MirthdewEncoreItems {
     public static final Item DREAMSPECK_SPAWN_EGG = new SpawnEggItem(MirthdewEncoreEntityTypes.DREAM_SPECK, 0xEDABF5, 0xA1507E, settings());
     public static final Item VERIC_DREAMSNARE = new BlockItem(MirthdewEncoreBlocks.VERIC_DREAMSNARE, settings());
     public static final Item DREAMSEED = new BlockItem(MirthdewEncoreBlocks.DREAMSEED, settings().rarity(Rarity.UNCOMMON));
+    public static final Item SLUMBERSOCKET = new BlockItem(MirthdewEncoreBlocks.SLUMBERSOCKET, settings());
 
     public static final Item SPELL_CARD = new SpellCardSingularItem(settings().maxCount(1).rarity(Rarity.UNCOMMON));
     public static final Item SPELL_DECK = new SpellCardDeckItem(settings().maxCount(1).rarity(Rarity.RARE));
@@ -26,6 +27,7 @@ public class MirthdewEncoreItems {
         regWithIG(DREAMSPECK_SPAWN_EGG, "dreamspeck_spawn_egg");
         regWithIG(VERIC_DREAMSNARE, "veric_dreamsnare");
         regWithIG(DREAMSEED, "dreamseed");
+        regWithIG(SLUMBERSOCKET, "slumbersocket");
         register(SPELL_CARD, "spell_card");
         register(SPELL_DECK, "spell_deck");
     }

@@ -1,0 +1,15 @@
+{
+    "textures": {
+        "particle": "mirthdew_encore:block/slumberveil",
+        "veil": "mirthdew_encore:block/slumberveil"
+    },
+    "elements": [
+        {   "from": [ 7, 0, 0 ],
+            "to": [ 9, 16, 16 ],
+            "faces": {
+                "east": { "uv": [ 0, 0, 16, 16 ], "texture": "#veil" },
+                "west": { "uv": [ 0, 0, 16, 16 ], "texture": "#veil" }
+            }
+        }
+    ]
+}

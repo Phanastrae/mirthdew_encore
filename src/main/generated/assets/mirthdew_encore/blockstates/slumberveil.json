@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "mirthdew_encore:block/slumberveil_ns"
+    },
+    "axis=z": {
+      "model": "mirthdew_encore:block/slumberveil_ew"
+    }
+  }
+}
