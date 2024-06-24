@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.component.type.CardSpellComponent;
+import phanastrae.mirthdew_encore.component.type.LocationComponent;
 import phanastrae.mirthdew_encore.component.type.SpellChargeComponent;
 import phanastrae.mirthdew_encore.component.type.SpellDeckContentsComponent;
 
@@ -22,6 +23,9 @@ public class MirthdewEncoreDataComponentTypes {
     public static final ComponentType<SpellDeckContentsComponent> SPELL_DECK_CONTENTS =
             ComponentType.<SpellDeckContentsComponent>builder().codec(SpellDeckContentsComponent.CODEC).packetCodec(SpellDeckContentsComponent.PACKET_CODEC).cache().build();
 
+    public static final ComponentType<LocationComponent> LOCATION_COMPONENT =
+            ComponentType.<LocationComponent>builder().codec(LocationComponent.CODEC).packetCodec(LocationComponent.PACKET_CODEC).cache().build();
+
     public static final ComponentType<Integer> MIRTHDEW_VIAL_AMPLIFIER =
             ComponentType.<Integer>builder().codec(Codecs.rangedInt(0, 15)).packetCodec(PacketCodecs.VAR_INT).build();
 
@@ -30,6 +34,7 @@ public class MirthdewEncoreDataComponentTypes {
         register(SPELL_CHARGE, "spell_charge");
         register(SPELL_DECK_CONTENTS, "spell_deck_contents");
         register(MIRTHDEW_VIAL_AMPLIFIER, "mirthdew_vial_amplifier");
+        register(LOCATION_COMPONENT, "location_component");
     }
 
     private static void register(ComponentType<?> componentType, String name) {

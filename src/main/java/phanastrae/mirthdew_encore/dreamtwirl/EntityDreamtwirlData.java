@@ -77,6 +77,10 @@ public class EntityDreamtwirlData {
                     }
                 }
 
+                if(this.entity.getY() < world.getBottomY() - 64) {
+                    touchingBorder = true;
+                }
+
                 if (touchingBorder) {
                     if (this.canLeave()) {
                         if (leaveDreamtwirl()) {

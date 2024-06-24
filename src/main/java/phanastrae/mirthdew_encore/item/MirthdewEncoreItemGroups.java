@@ -30,9 +30,13 @@ public class MirthdewEncoreItemGroups {
         addAllSpellCardsToGroup(ItemGroups.COMBAT);
         addMirthdewVialsToGroup(ItemGroups.FOOD_AND_DRINK);
 
+        addItemToGroup(ItemGroups.FOOD_AND_DRINK,
+                MirthdewEncoreItems.SPECTRAL_CANDY);
+
         addItemsToGroup(ItemGroups.FUNCTIONAL,
                 MirthdewEncoreItems.DREAMSEED,
-                MirthdewEncoreItems.SLUMBERSOCKET);
+                MirthdewEncoreItems.SLUMBERSOCKET,
+                MirthdewEncoreItems.SLUMBERING_EYE);
 
         addItemToGroupAfter(Items.SCULK_SENSOR, ItemGroups.NATURAL,
                 MirthdewEncoreItems.VERIC_DREAMSNARE);

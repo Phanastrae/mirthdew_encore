@@ -26,6 +26,8 @@ public class ModelProvider extends FabricModelProvider {
         registerGenerated(itemModelGenerator, MirthdewEncoreItems.SPELL_CARD);
         registerGenerated(itemModelGenerator, MirthdewEncoreItems.SPELL_DECK);
         registerGenerated(itemModelGenerator, MirthdewEncoreItems.MIRTHDEW_VIAL);
+        registerGenerated(itemModelGenerator, MirthdewEncoreItems.SPECTRAL_CANDY);
+        registerGenerated(itemModelGenerator, MirthdewEncoreItems.SLUMBERING_EYE);
     }
 
     private static void registerGenerated(ItemModelGenerator itemModelGenerator, Item item) {

@@ -13,7 +13,7 @@ public class MirthdewEncoreStatusEffects {
     public static final StatusEffect DREAMY_DIET = new DreamyDietStatusEffect(StatusEffectCategory.NEUTRAL, 0xFF0B3E70);
     public static RegistryEntry<StatusEffect> DREAMY_DIET_ENTRY;
 
-    public static final StatusEffect MIRTHFUL = new MirthfulStatusEffect(StatusEffectCategory.NEUTRAL, 0xFFFF3FDF);
+    public static final StatusEffect MIRTHFUL = new MirthfulStatusEffect(StatusEffectCategory.BENEFICIAL, 0xFFFF3FDF);
     public static RegistryEntry<StatusEffect> MIRTHFUL_ENTRY;
 
     public static void init() {

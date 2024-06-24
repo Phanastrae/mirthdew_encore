@@ -24,7 +24,9 @@ import net.minecraft.world.*;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
 import phanastrae.mirthdew_encore.block.entity.SlumbersocketBlockEntity;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStage;
+import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
+import phanastrae.mirthdew_encore.component.type.LocationComponent;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.Optional;
@@ -244,20 +246,33 @@ public class SlumberveilBlock extends Block implements Portal {
     public TeleportTarget createTeleportTarget(ServerWorld world, Entity entity, BlockPos pos) {
         Optional<SlumbersocketBlockEntity> slumbersocketBlockEntityOptional = findVeilSocket(world, pos);
         if(slumbersocketBlockEntityOptional.isPresent()) {
-            Optional<DreamtwirlStage> dreamtwirlStageOptional = slumbersocketBlockEntityOptional.get().getDreamtwirlStage(world);
-            if(dreamtwirlStageOptional.isPresent()) {
-                DreamtwirlStage dreamtwirlStage = dreamtwirlStageOptional.get();
-                RegionPos regionPos = dreamtwirlStage.getRegionPos();
-                if(dreamtwirlStage.getWorld() instanceof ServerWorld serverWorld) {
-                    Vec3d position = new Vec3d(regionPos.getCenterX(), 64, regionPos.getCenterZ());
-                    return new TeleportTarget(
-                            serverWorld,
-                            position,
-                            entity.getVelocity(),
-                            entity.getYaw(),
-                            entity.getPitch(),
-                            TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET.then(TeleportTarget.ADD_PORTAL_CHUNK_TICKET)
-                    );
+            SlumbersocketBlockEntity slumbersocketBlockEntity = slumbersocketBlockEntityOptional.get();
+            ItemStack itemStack = slumbersocketBlockEntity.getHeldItem();
+            if(!itemStack.isEmpty() && itemStack.contains(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
+                LocationComponent locationComponent = itemStack.get(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT);
+                Vec3d targetPos = locationComponent.getPos();
+                World targetWorld = locationComponent.getWorld(world.getServer());
+                if(targetWorld != null) {
+                    boolean validTarget = true;
+                    DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getDreamtwirlStageManager(targetWorld);
+                    if(dreamtwirlStageManager != null) {
+                        if(dreamtwirlStageManager.getDreamtwirlIfPresent(RegionPos.fromVec3d(targetPos)) == null) {
+                            validTarget = false;
+                        }
+                    }
+
+                    if(validTarget) {
+                        if (targetWorld instanceof ServerWorld serverWorld) {
+                            return new TeleportTarget(
+                                    serverWorld,
+                                    targetPos,
+                                    entity.getVelocity(),
+                                    entity.getYaw(),
+                                    entity.getPitch(),
+                                    TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET.then(TeleportTarget.ADD_PORTAL_CHUNK_TICKET)
+                            );
+                        }
+                    }
                 }
             }
         }

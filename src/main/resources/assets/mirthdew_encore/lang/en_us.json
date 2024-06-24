@@ -61,6 +61,9 @@
   "item.mirthdew_encore.spell_deck.deck_of_cards": "%s (%s cards)",
   "item.mirthdew_encore.spell_deck.id_card": "#%s > \"%s\"",
   "item.mirthdew_encore.mirthdew_vial": "Mirthdew Vial",
+  "item.mirthdew_encore.slumbering_eye": "Slumbering Eye",
+  "item.mirthdew_encore.spectral_candy": "Spectral Candy",
+  "item.mirthdew_encore.spectral_candy.when_full": "When Full:",
 
   "itemGroup.mirthdew_encore": "Mirthdew Encore"
 }

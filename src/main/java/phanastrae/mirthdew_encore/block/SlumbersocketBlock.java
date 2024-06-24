@@ -26,6 +26,8 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
 import phanastrae.mirthdew_encore.block.entity.SlumbersocketBlockEntity;
+import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
+import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 
 public class SlumbersocketBlock extends BlockWithEntity {
     public static final MapCodec<SlumbersocketBlock> CODEC = createCodec(SlumbersocketBlock::new);
@@ -107,7 +109,7 @@ public class SlumbersocketBlock extends BlockWithEntity {
         if (blockEntity instanceof SlumbersocketBlockEntity slumberSocketBlockEntity) {
             if(!slumberSocketBlockEntity.isHoldingItem()) {
                 ItemStack itemStack = player.getStackInHand(hand);
-                if(itemStack.isOf(Items.ENDER_EYE)) {
+                if(itemStack.isOf(Items.ENDER_EYE) || (itemStack.isOf(MirthdewEncoreItems.SLUMBERING_EYE) && itemStack.contains(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT))) {
                     if (!world.isClient) {
                         player.getWorld().playSoundFromEntity(null, player, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1.0F, 1.0F);
                         player.emitGameEvent(GameEvent.BLOCK_PLACE, player);
@@ -115,6 +117,9 @@ public class SlumbersocketBlock extends BlockWithEntity {
                         ItemStack newStack = itemStack.copyWithCount(1);
                         itemStack.decrementUnlessCreative(1, player);
                         slumberSocketBlockEntity.setHeldItem(newStack);
+                        if(newStack.isOf(MirthdewEncoreItems.SLUMBERING_EYE)) {
+                            world.setBlockState(pos, state.with(SlumbersocketBlock.DREAMING, true));
+                        }
                         if(world instanceof ServerWorld serverWorld) {
                             slumberSocketBlockEntity.markForUpdate(serverWorld);
                         }

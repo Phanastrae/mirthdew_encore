@@ -24,6 +24,9 @@ public class MirthdewEncoreItems {
     public static final Item MIRTHDEW_VIAL = new MirthdewVialItem(
             settings().food(MirthdewVialItem.FOOD_COMPONENT).component(MirthdewEncoreDataComponentTypes.MIRTHDEW_VIAL_AMPLIFIER, 0).rarity(Rarity.UNCOMMON));
 
+    public static final Item SLUMBERING_EYE = new SlumberingEyeItem(settings().maxCount(1).rarity(Rarity.UNCOMMON));
+    public static final Item SPECTRAL_CANDY = new SpectralCandyItem(settings().food(SpectralCandyItem.FOOD_COMPONENT));
+
     public static final Item SPELL_CARD = new SpellCardSingularItem(settings().maxCount(1).rarity(Rarity.UNCOMMON));
     public static final Item SPELL_DECK = new SpellCardDeckItem(settings().maxCount(1).rarity(Rarity.RARE));
 
@@ -33,6 +36,8 @@ public class MirthdewEncoreItems {
         regWithIG(DREAMSEED, "dreamseed");
         regWithIG(SLUMBERSOCKET, "slumbersocket");
         register(MIRTHDEW_VIAL, "mirthdew_vial");
+        regWithIG(SLUMBERING_EYE, "slumbering_eye");
+        regWithIG(SPECTRAL_CANDY, "spectral_candy");
         register(SPELL_CARD, "spell_card");
         register(SPELL_DECK, "spell_deck");
     }

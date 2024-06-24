@@ -8,7 +8,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -31,6 +30,8 @@ import org.joml.Math;
 import phanastrae.mirthdew_encore.block.DreamseedBlock;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.block.SlumbersocketBlock;
+import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
+import phanastrae.mirthdew_encore.component.type.LocationComponent;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
@@ -49,10 +50,6 @@ public class SlumbersocketBlockEntity extends BlockEntity {
 
     public long timer = 0;
 
-    private boolean hasDreamtwirl = false;
-    private long dreamtwirlId = -1;
-    private long dreamtwirlTimestamp = -1;
-
     private final DefaultedList<ItemStack> heldItem = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
     public SlumbersocketBlockEntity(BlockPos pos, BlockState state) {
@@ -67,30 +64,12 @@ public class SlumbersocketBlockEntity extends BlockEntity {
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         Inventories.writeNbt(nbt, this.heldItem, true, registryLookup);
-
-        nbt.putBoolean("has_dreamtwirl", this.hasDreamtwirl);
-        nbt.putLong("dreamtwirl_id", this.dreamtwirlId);
-        nbt.putLong("dreamtwirl_timestamp", this.dreamtwirlTimestamp);
     }
 
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         this.heldItem.clear();
         Inventories.readNbt(nbt, this.heldItem, registryLookup);
-
-        if(nbt.contains("has_dreamtwirl", NbtElement.BYTE_TYPE)) {
-            this.hasDreamtwirl = nbt.getBoolean("has_dreamtwirl");
-        }
-        if(nbt.contains("dreamtwirl_id", NbtElement.LONG_TYPE)) {
-            this.dreamtwirlId = nbt.getLong("dreamtwirl_id");
-        } else {
-            this.hasDreamtwirl = false;
-        }
-        if(nbt.contains("dreamtwirl_timestamp", NbtElement.LONG_TYPE)) {
-            this.dreamtwirlTimestamp = nbt.getLong("dreamtwirl_timestamp");
-        } else {
-            this.hasDreamtwirl = false;
-        }
     }
 
     @Nullable
@@ -104,27 +83,6 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         NbtCompound nbtCompound = this.createComponentlessNbt(registryLookup);
 
         return nbtCompound;
-    }
-
-    public void setDreamtwirlId(long id, long timestamp) {
-        this.dreamtwirlId = id;
-        this.dreamtwirlTimestamp = timestamp;
-        this.hasDreamtwirl = true;
-        this.markDirty();
-    }
-
-    public Optional<DreamtwirlStage> getDreamtwirlStage (ServerWorld world) {
-        if(!this.hasDreamtwirl) return Optional.empty();
-
-        DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getMainDreamtwirlStageManager(world.getServer());
-        if(dreamtwirlStageManager == null) return Optional.empty();
-
-        DreamtwirlStage dreamtwirlStage = dreamtwirlStageManager.getDreamtwirlIfPresent(new RegionPos(this.dreamtwirlId));
-        if(dreamtwirlStage == null) return Optional.empty();
-
-        if(dreamtwirlStage.getTimestamp() != this.dreamtwirlTimestamp) return Optional.empty();
-
-        return Optional.of(dreamtwirlStage);
     }
 
     public void setHeldItem(ItemStack itemStack) {
@@ -180,7 +138,7 @@ public class SlumbersocketBlockEntity extends BlockEntity {
             if (blockEntity.timer % 100 == 0) {
                 if(state.contains(SlumbersocketBlock.DREAMING)) {
                     boolean dreaming = state.get(SlumbersocketBlock.DREAMING);
-                    if(!dreaming) {
+                    if(!dreaming && !blockEntity.getHeldItem().contains(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
                         if(world.getBlockState(pos.down()).isAir()) {
                             attemptEat(serverWorld, pos, state, blockEntity);
                         }
@@ -208,17 +166,24 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         if(stageOptional.isEmpty()) return;
 
         DreamtwirlStage stage = stageOptional.get();
-        blockEntity.setDreamtwirlId(stage.getId(), stage.getTimestamp());
+        RegionPos regionPos = stage.getRegionPos();
 
         BlockPos seedBlockPos = blockPosOptional.get();
         world.setBlockState(seedBlockPos, Blocks.SOUL_FIRE.getDefaultState());
         world.setBlockState(pos, state.with(SlumbersocketBlock.DREAMING, true));
 
+        ItemStack itemStack = blockEntity.getHeldItem();
+        ItemStack newStack = MirthdewEncoreItems.SLUMBERING_EYE.getDefaultStack();
+        newStack.applyChanges(itemStack.getComponentChanges());
+        Random random = world.getRandom();
+        Vec3d targetPos = new Vec3d(regionPos.getCenterX() + 256 * random.nextDouble() - 128, 64, regionPos.getCenterZ() + 256 * random.nextDouble() - 128);
+        newStack.set(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT, LocationComponent.fromPosAndWorld(targetPos, stage.getWorld()));
+        blockEntity.setHeldItem(newStack);
+
         Vec3d socketPos = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
         world.playSound(null, socketPos.x, socketPos.y, socketPos.z, SoundEvents.ENTITY_ENDERMAN_SCREAM, SoundCategory.BLOCKS, 0.3F, 0.3F);
 
         Vec3d seedOffset = new Vec3d(seedBlockPos.getX() + 0.5, seedBlockPos.getY() + 0.5, seedBlockPos.getZ() + 0.5).subtract(socketPos);
-        Random random = world.getRandom();
 
         ParticleEffect particleEffect = new ItemStackParticleEffect(ParticleTypes.ITEM, MirthdewEncoreItems.DREAMSEED.getDefaultStack());
 
