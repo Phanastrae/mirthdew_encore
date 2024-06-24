@@ -1,6 +1,7 @@
-// 1.21	2024-06-24T01:51:35.7826238	Mirthdew Encore/Model Definitions
+// 1.21	2024-06-24T11:30:56.8241542	Mirthdew Encore/Model Definitions
 849fc08078e74cf21df1e1269628ce6d3f20e283 assets\mirthdew_encore\models\item\spell_card.json
 af879fe2f1c14934ab0fecf03d903f8eb9ea06f8 assets\mirthdew_encore\models\block\dreamtwirl_barrier.json
 b679445d4374be47189a72602761845bbf2d6482 assets\mirthdew_encore\models\item\spell_deck.json
 c4f8f0fa4f1fe5f5c786e86b482a6dfef8565220 assets\mirthdew_encore\blockstates\slumberveil.json
+d8f609fd2e019305616cca1cb72d09df4080f052 assets\mirthdew_encore\models\item\mirthdew_vial.json
 952685f085fbc83137faaaf1b5c1262a3daf8fb4 assets\mirthdew_encore\blockstates\dreamtwirl_barrier.json

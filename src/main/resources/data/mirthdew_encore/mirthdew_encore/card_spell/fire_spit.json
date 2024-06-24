@@ -1,0 +1,20 @@
+{
+  "cast_delay_ms": 25,
+  "description": {
+    "translate": "mirthdew_encore.card_spell.mirthdew_encore.fire_spit"
+  },
+  "effects": {
+    "mirthdew_encore:fire_entity": [
+      {
+        "entity": [
+          "minecraft:llama_spit"
+        ],
+        "speed": 1.8,
+        "divergence": 0.5
+      }
+    ]
+  },
+  "input_count": 0,
+  "mirth_cost": 4,
+  "recharge_delay_ms": 40
+}

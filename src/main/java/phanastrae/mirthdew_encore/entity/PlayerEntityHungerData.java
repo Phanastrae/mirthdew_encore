@@ -140,6 +140,6 @@ public class PlayerEntityHungerData {
     }
 
     public static PlayerEntityHungerData fromPlayer(PlayerEntity player) {
-        return MirthdewEncorePlayerEntityAttachment.fromPlayer(player).getEntityHungerData();
+        return MirthdewEncorePlayerEntityAttachment.fromPlayer(player).getHungerData();
     }
 }

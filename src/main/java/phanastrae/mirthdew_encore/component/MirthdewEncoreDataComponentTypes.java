@@ -1,9 +1,11 @@
 package phanastrae.mirthdew_encore.component;
 
 import net.minecraft.component.ComponentType;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.Codecs;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.component.type.CardSpellComponent;
 import phanastrae.mirthdew_encore.component.type.SpellChargeComponent;
@@ -20,10 +22,14 @@ public class MirthdewEncoreDataComponentTypes {
     public static final ComponentType<SpellDeckContentsComponent> SPELL_DECK_CONTENTS =
             ComponentType.<SpellDeckContentsComponent>builder().codec(SpellDeckContentsComponent.CODEC).packetCodec(SpellDeckContentsComponent.PACKET_CODEC).cache().build();
 
+    public static final ComponentType<Integer> MIRTHDEW_VIAL_AMPLIFIER =
+            ComponentType.<Integer>builder().codec(Codecs.rangedInt(0, 15)).packetCodec(PacketCodecs.VAR_INT).build();
+
     public static void init() {
         register(CARD_SPELL, "card_spell");
         register(SPELL_CHARGE, "spell_charge");
         register(SPELL_DECK_CONTENTS, "spell_deck_contents");
+        register(MIRTHDEW_VIAL_AMPLIFIER, "mirthdew_vial_amplifier");
     }
 
     private static void register(ComponentType<?> componentType, String name) {

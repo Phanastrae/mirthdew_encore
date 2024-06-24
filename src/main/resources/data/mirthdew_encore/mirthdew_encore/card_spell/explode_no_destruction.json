@@ -1,0 +1,28 @@
+{
+  "cast_delay_ms": 1600,
+  "description": {
+    "translate": "mirthdew_encore.card_spell.mirthdew_encore.explode_no_destruction"
+  },
+  "effects": {
+    "mirthdew_encore:explode": [
+      {
+        "attribute_to_user": false,
+        "knockback_multiplier": 2.0,
+        "immune_blocks": [],
+        "radius": 3,
+        "create_fire": false,
+        "block_interaction": "none",
+        "small_particle": {
+          "type": "minecraft:gust_emitter_small"
+        },
+        "large_particle": {
+          "type": "minecraft:gust_emitter_large"
+        },
+        "sound": "entity.breeze.wind_burst"
+      }
+    ]
+  },
+  "input_count": 0,
+  "mirth_cost": 140,
+  "recharge_delay_ms": 200
+}

@@ -1,0 +1,20 @@
+{
+  "cast_delay_ms": 1000,
+  "description": {
+    "translate": "mirthdew_encore.card_spell.mirthdew_encore.conjure_lightning"
+  },
+  "effects": {
+    "mirthdew_encore:fire_entity": [
+      {
+        "entity": [
+          "minecraft:lightning_bolt"
+        ],
+        "speed": 0.0,
+        "divergence": 0.0
+      }
+    ]
+  },
+  "input_count": 0,
+  "mirth_cost": 360,
+  "recharge_delay_ms": 1000
+}

@@ -5,12 +5,19 @@
   "block.mirthdew_encore.slumberveil": "Slumberveil",
   "block.mirthdew_encore.veric_dreamsnare": "Veric Dreamsnare",
 
+  "mirthdew_encore.card_spell.mirthdew_encore.add_mirth": "Add Mirth",
   "mirthdew_encore.card_spell.mirthdew_encore.cast_three": "Triple Cast",
   "mirthdew_encore.card_spell.mirthdew_encore.cast_two": "Double Cast",
+  "mirthdew_encore.card_spell.mirthdew_encore.conjure_lightning": "Conjure Lightning",
+  "mirthdew_encore.card_spell.mirthdew_encore.explode": "Explosion",
+  "mirthdew_encore.card_spell.mirthdew_encore.explode_no_destruction": "Dubiously Effective Explosion",
   "mirthdew_encore.card_spell.mirthdew_encore.fire_arrow": "Launch Arrow",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_egg": "Throw Egg",
   "mirthdew_encore.card_spell.mirthdew_encore.fire_ender_pearl": "Toss Ender Pearl",
   "mirthdew_encore.card_spell.mirthdew_encore.fire_fireball": "Greater Fireball",
   "mirthdew_encore.card_spell.mirthdew_encore.fire_small_fireball": "Lesser Fireball",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_snowball": "Throw Snowball",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_spit": "Spit",
   "mirthdew_encore.card_spell.mirthdew_encore.fire_wind_charge": "Fire Wind Charge",
   "mirthdew_encore.card_spell.mirthdew_encore.reduce_cast_delay": "Reduce Cast Delay",
   "mirthdew_encore.card_spell.mirthdew_encore.reduce_recharge_delay": "Reduce Recharge Delay",
@@ -43,6 +50,9 @@
   "entity.mirthdew_encore.dreamspeck": "Dreamspeck",
 
   "effect.mirthdew_encore.dreamy_diet": "Dreamy Diet",
+  "effect.mirthdew_encore.mirthful": "Mirthful",
+
+  "gui.mirthdew_encore.mirth": "Mirth: %s",
 
   "item.mirthdew_encore.dreamspeck_spawn_egg": "Dreamspeck Spawn Egg",
   "item.mirthdew_encore.spell_card": "Spell Card",
@@ -50,6 +60,7 @@
   "item.mirthdew_encore.spell_deck": "Spell Deck",
   "item.mirthdew_encore.spell_deck.deck_of_cards": "%s (%s cards)",
   "item.mirthdew_encore.spell_deck.id_card": "#%s > \"%s\"",
+  "item.mirthdew_encore.mirthdew_vial": "Mirthdew Vial",
 
   "itemGroup.mirthdew_encore": "Mirthdew Encore"
 }

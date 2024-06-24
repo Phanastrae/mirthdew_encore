@@ -8,7 +8,9 @@
       {
         "entity": [
           "minecraft:small_fireball"
-        ]
+        ],
+        "speed": 2.4,
+        "divergence": 2.0
       }
     ]
   },

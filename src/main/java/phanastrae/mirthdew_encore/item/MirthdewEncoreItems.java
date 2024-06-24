@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
+import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 
 import static phanastrae.mirthdew_encore.item.MirthdewEncoreItemGroups.MIRTHDEW_ENCORE_KEY;
@@ -20,6 +21,9 @@ public class MirthdewEncoreItems {
     public static final Item DREAMSEED = new BlockItem(MirthdewEncoreBlocks.DREAMSEED, settings().rarity(Rarity.UNCOMMON));
     public static final Item SLUMBERSOCKET = new BlockItem(MirthdewEncoreBlocks.SLUMBERSOCKET, settings());
 
+    public static final Item MIRTHDEW_VIAL = new MirthdewVialItem(
+            settings().food(MirthdewVialItem.FOOD_COMPONENT).component(MirthdewEncoreDataComponentTypes.MIRTHDEW_VIAL_AMPLIFIER, 0).rarity(Rarity.UNCOMMON));
+
     public static final Item SPELL_CARD = new SpellCardSingularItem(settings().maxCount(1).rarity(Rarity.UNCOMMON));
     public static final Item SPELL_DECK = new SpellCardDeckItem(settings().maxCount(1).rarity(Rarity.RARE));
 
@@ -28,6 +32,7 @@ public class MirthdewEncoreItems {
         regWithIG(VERIC_DREAMSNARE, "veric_dreamsnare");
         regWithIG(DREAMSEED, "dreamseed");
         regWithIG(SLUMBERSOCKET, "slumbersocket");
+        register(MIRTHDEW_VIAL, "mirthdew_vial");
         register(SPELL_CARD, "spell_card");
         register(SPELL_DECK, "spell_deck");
     }

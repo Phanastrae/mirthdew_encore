@@ -8,7 +8,19 @@
       {
         "entity": [
           "minecraft:arrow"
-        ]
+        ],
+        "speed": 2.8,
+        "divergence": 1.0,
+        "nbt": {
+          "item":{
+            "count":1,
+            "id":"minecraft:arrow",
+            "components": {
+              "minecraft:intangible_projectile":{}
+            }
+          },
+          "pickup": 2
+        }
       }
     ]
   },

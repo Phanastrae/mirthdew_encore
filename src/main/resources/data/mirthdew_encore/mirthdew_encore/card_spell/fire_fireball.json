@@ -8,7 +8,9 @@
       {
         "entity": [
           "minecraft:fireball"
-        ]
+        ],
+        "speed": 1.5,
+        "divergence": 0.1
       }
     ]
   },

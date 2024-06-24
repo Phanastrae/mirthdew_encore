@@ -10,6 +10,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.card_spell.CardSpell;
+import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
 
 public class MirthdewEncoreItemGroups {
@@ -27,6 +28,7 @@ public class MirthdewEncoreItemGroups {
     public static void setupEntires() {
         addAllSpellCardsToGroup(MIRTHDEW_ENCORE_KEY);
         addAllSpellCardsToGroup(ItemGroups.COMBAT);
+        addMirthdewVialsToGroup(ItemGroups.FOOD_AND_DRINK);
 
         addItemsToGroup(ItemGroups.FUNCTIONAL,
                 MirthdewEncoreItems.DREAMSEED,
@@ -61,6 +63,20 @@ public class MirthdewEncoreItemGroups {
                         entries.add(itemStack);
                     }
                 });
+    }
+
+    private static void addMirthdewVialsToGroup(RegistryKey<ItemGroup> itemGroupKey) {
+        ItemGroupEvents.modifyEntriesEvent(itemGroupKey).register(entries -> {
+            addMirthdewVials(entries, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
+        });
+    }
+
+    private static void addMirthdewVials(ItemGroup.Entries entries, ItemGroup.StackVisibility visibility) {
+        for (int i = 0; i <= 4; i++) {
+            ItemStack itemStack = new ItemStack(MirthdewEncoreItems.MIRTHDEW_VIAL);
+            itemStack.set(MirthdewEncoreDataComponentTypes.MIRTHDEW_VIAL_AMPLIFIER, i);
+            entries.add(itemStack, visibility);
+        }
     }
 
     public static void addItemToGroup(RegistryKey<ItemGroup> groupKey, ItemConvertible item) {

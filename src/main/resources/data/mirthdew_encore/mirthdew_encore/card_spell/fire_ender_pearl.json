@@ -8,7 +8,9 @@
       {
         "entity": [
           "minecraft:ender_pearl"
-        ]
+        ],
+        "speed": 4.5,
+        "divergence": 0.2
       }
     ]
   },

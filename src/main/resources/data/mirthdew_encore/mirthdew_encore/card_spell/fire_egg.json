@@ -1,0 +1,20 @@
+{
+  "cast_delay_ms": 250,
+  "description": {
+    "translate": "mirthdew_encore.card_spell.mirthdew_encore.fire_egg"
+  },
+  "effects": {
+    "mirthdew_encore:fire_entity": [
+      {
+        "entity": [
+          "minecraft:egg"
+        ],
+        "speed": 1.4,
+        "divergence": 0.4
+      }
+    ]
+  },
+  "input_count": 0,
+  "mirth_cost": 240,
+  "recharge_delay_ms": 60
+}

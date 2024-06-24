@@ -3,21 +3,43 @@ package phanastrae.mirthdew_encore.mixin.client;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
+import net.minecraft.world.GameMode;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import phanastrae.mirthdew_encore.card_spell.PlayerEntityMirthData;
 import phanastrae.mirthdew_encore.entity.PlayerEntityHungerData;
+import phanastrae.mirthdew_encore.item.SpellCardAbstractItem;
 
 import static phanastrae.mirthdew_encore.entity.effect.DreamyDietStatusEffect.*;
 import static phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY;
 
 @Mixin(InGameHud.class)
-public class InGameHudMixin {
+public abstract class InGameHudMixin {
+
+    @Shadow @Final private MinecraftClient client;
+
+    @Shadow private ItemStack currentStack;
+
+    @Shadow @Nullable protected abstract PlayerEntity getCameraPlayer();
+
+    @Shadow public abstract TextRenderer getTextRenderer();
 
     @Inject(method = "renderFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/HungerManager;getSaturationLevel()F", shift = At.Shift.BEFORE))
     private void mirthdew_encore$dreamyDietTextureSwap(DrawContext context, PlayerEntity player, int top, int right, CallbackInfo ci,
@@ -48,6 +70,36 @@ public class InGameHudMixin {
                                                            @Local(ordinal = 4) LocalIntRef topOffsetRef) {
         if(player.hasStatusEffect(DREAMY_DIET_ENTRY)) {
             topOffsetRef.set(top);
+        }
+    }
+
+    @Inject(method = "renderMainHud", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHeldItemTooltip(Lnet/minecraft/client/gui/DrawContext;)V", shift = At.Shift.AFTER))
+    private void mirthdew_encore$renderMirthAmount(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
+            return;
+        }
+
+        if(this.currentStack.isEmpty()) return;
+
+        PlayerEntity player = this.getCameraPlayer();
+        if(player == null) return;
+
+        if(this.currentStack.getItem() instanceof SpellCardAbstractItem) {
+            long mirth = PlayerEntityMirthData.fromPlayer(player).getMirth();
+
+            Formatting color = mirth == 0 ? Formatting.RED : Formatting.LIGHT_PURPLE;
+            MutableText mutableText = Text.translatable("gui.mirthdew_encore.mirth", Text.of(String.valueOf(mirth)).copy().formatted(color)).formatted(Formatting.AQUA);
+
+            int width = this.getTextRenderer().getWidth(mutableText);
+            int x = (context.getScaledWindowWidth() - width) / 2;
+            int y = context.getScaledWindowHeight() - 59;
+            if (!this.client.interactionManager.hasStatusBars()) {
+                y += 14;
+            }
+
+            y -= 14;
+
+            context.drawTextWithBackground(this.getTextRenderer(), mutableText, x, y, width, ColorHelper.Argb.withAlpha(255, -1));
         }
     }
 }

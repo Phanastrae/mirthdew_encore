@@ -6,8 +6,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -15,6 +17,7 @@ import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import phanastrae.mirthdew_encore.card_spell.SpellCast;
@@ -89,7 +92,7 @@ public abstract class SpellCardAbstractItem extends Item {
             return false;
         }
 
-        if(!world.isClient) {
+        if(!world.isClient && world instanceof ServerWorld serverWorld) {
             SpellChargeComponent.Builder builder;
             if (spellChargeComponent == null) {
                 List<SpellCast> spellCastList = SpellCastHelper.castListFromStack(itemStack);
@@ -102,10 +105,44 @@ public abstract class SpellCardAbstractItem extends Item {
 
             SpellCast nextCast = builder.removeFirst();
             if (nextCast != null) {
-                SpellCast.DelayCollector delayCollector = nextCast.castSpell(world, user);
+                SpellCast.SpellInfoCollector spellInfoCollector = nextCast.castSpell(serverWorld, user);
 
-                totalDelayMs += delayCollector.getCastDelayMs();
-                builder.addRechargeDelay(delayCollector.getRechargeDelayMs());
+                totalDelayMs += spellInfoCollector.getCastDelayMs();
+                builder.addRechargeDelay(spellInfoCollector.getRechargeDelayMs());
+
+                boolean hadSuccess = spellInfoCollector.getHadSuccess();
+                boolean hadFailure = spellInfoCollector.getHadFailure();
+                if(hadFailure || !hadSuccess) {
+                    Vec3d pos = user.getEyePos();
+                    double spread = hadSuccess ? 0.02 : 0.1;
+                    serverWorld.spawnParticles(ParticleTypes.SMOKE,
+                            pos.x,
+                            pos.y - (hadSuccess ? 0.3 : 0.0),
+                            pos.z,
+                            hadSuccess ? 20 : 200,
+                            spread,
+                            spread,
+                            spread,
+                            hadSuccess ? 0.01 : 0.1);
+                    serverWorld.playSound(null,
+                            pos.x,
+                            pos.y,
+                            pos.z,
+                            SoundEvents.BLOCK_FIRE_EXTINGUISH,
+                            SoundCategory.PLAYERS,
+                            0.6F,
+                            hadSuccess ? 1.0F : 0.3F);
+                    if(!hadSuccess) {
+                        serverWorld.playSound(null,
+                                pos.x,
+                                pos.y,
+                                pos.z,
+                                SoundEvents.ENTITY_GENERIC_EXPLODE,
+                                SoundCategory.PLAYERS,
+                                0.2F,
+                                1.0F);
+                    }
+                }
             }
 
             if (builder.isEmpty()) {

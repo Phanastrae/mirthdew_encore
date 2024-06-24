@@ -51,6 +51,9 @@ public class EntityDreamtwirlData {
                 if (this.entity instanceof LivingEntity livingEntity) {
                     livingEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
                 }
+                if (this.entity instanceof LivingEntity livingEntity) {
+                    livingEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.MIRTHFUL_ENTRY, 200, 0, true, true));
+                }
             }
 
             if (!shouldIgnoreBorder()) {
