@@ -40,7 +40,7 @@ public class MirthdewVialItem extends Item {
         if (!world.isClient) {
             world.playSound(null, user.getBlockPos(), SoundEvents.ENTITY_WITCH_DRINK, user.getSoundCategory(), 1.0F, 1.0F);
             Integer level = stack.getOrDefault(MirthdewEncoreDataComponentTypes.MIRTHDEW_VIAL_AMPLIFIER, 0);
-            user.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.MIRTHFUL_ENTRY, 600 * (2 * level + 1), level, false, false, true));
+            user.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.MIRTHFUL_ENTRY, 600 * (2 * level + 1), level));
         }
 
         stack.decrementUnlessCreative(1, user);
@@ -66,7 +66,7 @@ public class MirthdewVialItem extends Item {
     public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
         Integer level = stack.getOrDefault(MirthdewEncoreDataComponentTypes.MIRTHDEW_VIAL_AMPLIFIER, 0);
-        List<StatusEffectInstance> list = List.of(new StatusEffectInstance(MirthdewEncoreStatusEffects.MIRTHFUL_ENTRY, 600 * (2 * level + 1), level, false, false, true));
+        List<StatusEffectInstance> list = List.of(new StatusEffectInstance(MirthdewEncoreStatusEffects.MIRTHFUL_ENTRY, 600 * (2 * level + 1), level));
         PotionContentsComponent.buildTooltip(list, tooltip::add, 1.0F, context.getUpdateTickRate());
     }
 }

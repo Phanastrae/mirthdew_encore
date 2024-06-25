@@ -49,6 +49,11 @@ public class DreamtwirlBarrierBlock extends Block {
     }
 
     @Override
+    protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return VoxelShapes.fullCube();
+    }
+
+    @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         double x = pos.getX() + 0.5;
         double y = pos.getY() + 0.5;

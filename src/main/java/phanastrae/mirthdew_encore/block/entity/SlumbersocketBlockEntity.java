@@ -7,6 +7,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -138,7 +139,8 @@ public class SlumbersocketBlockEntity extends BlockEntity {
             if (blockEntity.timer % 100 == 0) {
                 if(state.contains(SlumbersocketBlock.DREAMING)) {
                     boolean dreaming = state.get(SlumbersocketBlock.DREAMING);
-                    if(!dreaming && !blockEntity.getHeldItem().contains(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
+                    ItemStack heldItem = blockEntity.getHeldItem();
+                    if(!dreaming && (heldItem.isOf(Items.ENDER_EYE) || heldItem.isOf(MirthdewEncoreItems.SLUMBERING_EYE)) && !heldItem.contains(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
                         if(world.getBlockState(pos.down()).isAir()) {
                             attemptEat(serverWorld, pos, state, blockEntity);
                         }

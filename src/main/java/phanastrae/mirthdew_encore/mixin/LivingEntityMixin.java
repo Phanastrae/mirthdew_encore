@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
+import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements Attackable {
@@ -24,10 +25,12 @@ public abstract class LivingEntityMixin extends Entity implements Attackable {
 
     @Inject(method = "eatFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;applyFoodEffects(Lnet/minecraft/component/type/FoodComponent;)V", shift = At.Shift.AFTER))
     private void mirthdew_encore$applySpectralCandyEffect(World world, ItemStack stack, FoodComponent foodComponent, CallbackInfoReturnable<ItemStack> cir) {
-        LivingEntity thisEntity = (LivingEntity)(Object)this;
-        if(thisEntity instanceof PlayerEntity player) {
-            if(player.getHungerManager().getFoodLevel() == 20) {
-                thisEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 3000, 2));
+        if(stack.isOf(MirthdewEncoreItems.SPECTRAL_CANDY)) { // TODO make this an item component in the future
+            LivingEntity thisEntity = (LivingEntity) (Object) this;
+            if (thisEntity instanceof PlayerEntity player) {
+                if (player.getHungerManager().getFoodLevel() == 20) {
+                    thisEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 3000, 2));
+                }
             }
         }
     }
