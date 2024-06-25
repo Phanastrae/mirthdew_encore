@@ -29,7 +29,7 @@ public class MirthdewEncorePlayerEntityAttachment {
 
         NbtCompound mirthData = new NbtCompound();
         this.mirthData.writeNbt(mirthData);
-        nbt.put("MirthData", hungerData);
+        nbt.put("MirthData", mirthData);
     }
 
     public void readNbt(NbtCompound nbt) {

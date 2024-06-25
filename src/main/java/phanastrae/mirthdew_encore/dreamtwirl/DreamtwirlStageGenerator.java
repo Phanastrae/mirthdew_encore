@@ -47,7 +47,7 @@ public class DreamtwirlStageGenerator {
         this.chunkMap = new ChunkMap(new Vec3i(minCornerPos.x, serverWorld.getBottomY() >> 4, minCornerPos.z), 30, serverWorld.getHeight() >> 4, 30);
 
         BlockPos minPos = new BlockPos(regionPos.worldX + 16, serverWorld.getBottomY(), regionPos.worldZ + 16);
-        BlockPos maxPos = new BlockPos(regionPos.worldX + 16 * 31 - 1, serverWorld.getTopY() - 1, regionPos.worldX + 16 * 31 - 1);
+        BlockPos maxPos = new BlockPos(regionPos.worldX + 16 * 31 - 1, serverWorld.getTopY() - 1, regionPos.worldZ + 16 * 31 - 1);
         this.areaBox = new BlockBox(minPos.getX(), minPos.getY(), minPos.getZ(), maxPos.getX(), maxPos.getY(), maxPos.getZ());
     }
 

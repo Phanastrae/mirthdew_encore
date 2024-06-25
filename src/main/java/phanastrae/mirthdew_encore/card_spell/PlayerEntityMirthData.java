@@ -17,8 +17,8 @@ public class PlayerEntityMirthData {
     }
 
     public void readNbt(NbtCompound nbt) {
-        if(nbt.contains("mirth", NbtElement.INT_TYPE)) {
-            this.mirth = nbt.getInt("mirth");
+        if(nbt.contains("mirth", NbtElement.LONG_TYPE)) {
+            this.mirth = nbt.getLong("mirth");
         }
     }
 
