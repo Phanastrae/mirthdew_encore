@@ -1,7 +1,9 @@
 package phanastrae.mirthdew_encore.item;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -26,27 +28,30 @@ public class MirthdewEncoreItemGroups {
     }
 
     public static void setupEntires() {
+        addMirthdewVialsToGroup(MIRTHDEW_ENCORE_KEY);
+        addMirthdewVialsToGroup(ItemGroups.FOOD_AND_DRINK);
         addAllSpellCardsToGroup(MIRTHDEW_ENCORE_KEY);
         addAllSpellCardsToGroup(ItemGroups.COMBAT);
-        addMirthdewVialsToGroup(ItemGroups.FOOD_AND_DRINK);
 
-        addItemToGroup(ItemGroups.FOOD_AND_DRINK,
+        addAfter(Items.PUMPKIN_PIE, ItemGroups.FOOD_AND_DRINK,
                 MirthdewEncoreItems.SPECTRAL_CANDY);
 
-        addItemsToGroup(ItemGroups.FUNCTIONAL,
+        add(ItemGroups.FUNCTIONAL,
                 MirthdewEncoreItems.DREAMSEED,
                 MirthdewEncoreItems.SLUMBERSOCKET,
                 MirthdewEncoreItems.SLUMBERING_EYE);
 
-        addItemToGroupAfter(Items.SCULK_SENSOR, ItemGroups.NATURAL,
-                MirthdewEncoreItems.VERIC_DREAMSNARE);
-        addItemToGroup(ItemGroups.NATURAL,
+        addAfter(Items.SCULK_SENSOR, ItemGroups.NATURAL,
+                MirthdewEncoreItems.VERIC_DREAMSNARE,
                 MirthdewEncoreItems.DREAMSEED);
 
-        addItemToGroupAfter(Items.SCULK_SHRIEKER, ItemGroups.REDSTONE,
+        addAfter(Items.SCULK_SHRIEKER, ItemGroups.REDSTONE,
                 MirthdewEncoreItems.VERIC_DREAMSNARE);
 
-        addItemToGroup(ItemGroups.SPAWN_EGGS,
+        addAfter(Items.ENDER_EYE, ItemGroups.TOOLS,
+                MirthdewEncoreItems.SLUMBERING_EYE);
+
+        add(ItemGroups.SPAWN_EGGS,
                 MirthdewEncoreItems.DREAMSPECK_SPAWN_EGG);
     }
 
@@ -70,24 +75,26 @@ public class MirthdewEncoreItemGroups {
     }
 
     private static void addMirthdewVialsToGroup(RegistryKey<ItemGroup> itemGroupKey) {
-        ItemGroupEvents.modifyEntriesEvent(itemGroupKey).register(entries -> {
-            addMirthdewVials(entries, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
-        });
+        ItemGroupEvents.modifyEntriesEvent(itemGroupKey).register(MirthdewEncoreItemGroups::addMirthdewVials);
     }
 
-    private static void addMirthdewVials(ItemGroup.Entries entries, ItemGroup.StackVisibility visibility) {
+    private static void addMirthdewVials(FabricItemGroupEntries entries) {
+        ItemStack prevStack = Items.OMINOUS_BOTTLE.getDefaultStack();
+        prevStack.set(DataComponentTypes.OMINOUS_BOTTLE_AMPLIFIER, 4);
         for (int i = 0; i <= 4; i++) {
             ItemStack itemStack = new ItemStack(MirthdewEncoreItems.MIRTHDEW_VIAL);
             itemStack.set(MirthdewEncoreDataComponentTypes.MIRTHDEW_VIAL_AMPLIFIER, i);
-            entries.add(itemStack, visibility);
+
+            entries.addAfter(prevStack, itemStack);
+            prevStack = itemStack;
         }
     }
 
-    public static void addItemToGroup(RegistryKey<ItemGroup> groupKey, ItemConvertible item) {
+    public static void add(RegistryKey<ItemGroup> groupKey, ItemConvertible item) {
         ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> entries.add(item));
     }
 
-    public static void addItemsToGroup(RegistryKey<ItemGroup> groupKey, ItemConvertible... items) {
+    public static void add(RegistryKey<ItemGroup> groupKey, ItemConvertible... items) {
         ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> {
             for(ItemConvertible item : items) {
                 entries.add(item);
@@ -95,7 +102,11 @@ public class MirthdewEncoreItemGroups {
         });
     }
 
-    public static void addItemToGroupAfter(ItemConvertible after, RegistryKey<ItemGroup> groupKey, Item item) {
+    public static void addAfter(ItemConvertible after, RegistryKey<ItemGroup> groupKey, Item item) {
         ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> entries.addAfter(after, item));
+    }
+
+    public static void addAfter(ItemConvertible after, RegistryKey<ItemGroup> groupKey, Item... items) {
+        ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> entries.addAfter(after, items));
     }
 }

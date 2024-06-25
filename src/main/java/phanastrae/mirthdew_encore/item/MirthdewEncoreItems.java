@@ -44,7 +44,7 @@ public class MirthdewEncoreItems {
 
     private static void regWithIG(Item item, String name) {
         register(item, name);
-        MirthdewEncoreItemGroups.addItemToGroup(MIRTHDEW_ENCORE_KEY, item);
+        MirthdewEncoreItemGroups.add(MIRTHDEW_ENCORE_KEY, item);
     }
 
     private static void register(Item item, String name) {
