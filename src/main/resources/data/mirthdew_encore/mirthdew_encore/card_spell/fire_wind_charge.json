@@ -9,12 +9,12 @@
         "entity": [
           "minecraft:wind_charge"
         ],
-        "speed": 2.4,
-        "divergence": 0.4
+        "speed": 1.9,
+        "divergence": 2.1
       }
     ]
   },
   "input_count": 0,
-  "mirth_cost": 9,
-  "recharge_delay_ms": 20
+  "mirth_cost": 12,
+  "recharge_delay_ms": 80
 }

@@ -16,6 +16,6 @@
     ]
   },
   "input_count": 3,
-  "mirth_cost": 15,
-  "recharge_delay_ms": 90
+  "mirth_cost": 12,
+  "recharge_delay_ms": 45
 }

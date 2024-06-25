@@ -1,5 +1,5 @@
 {
-  "cast_delay_ms": 25,
+  "cast_delay_ms": 190,
   "description": {
     "translate": "mirthdew_encore.card_spell.mirthdew_encore.fire_spit"
   },
@@ -9,8 +9,8 @@
         "entity": [
           "minecraft:llama_spit"
         ],
-        "speed": 1.8,
-        "divergence": 0.5
+        "speed": 1.6,
+        "divergence": 9.0
       }
     ]
   },

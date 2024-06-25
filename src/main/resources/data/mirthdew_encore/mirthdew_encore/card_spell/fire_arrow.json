@@ -9,8 +9,8 @@
         "entity": [
           "minecraft:arrow"
         ],
-        "speed": 2.8,
-        "divergence": 1.0,
+        "speed": 1.8,
+        "divergence": 6.0,
         "nbt": {
           "item":{
             "count":1,
@@ -26,5 +26,5 @@
   },
   "input_count": 0,
   "mirth_cost": 12,
-  "recharge_delay_ms": 15
+  "recharge_delay_ms": 60
 }

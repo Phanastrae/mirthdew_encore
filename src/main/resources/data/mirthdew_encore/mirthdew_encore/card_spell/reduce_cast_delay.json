@@ -1,5 +1,5 @@
 {
-  "cast_delay_ms": -200,
+  "cast_delay_ms": -80,
   "description": {
     "translate": "mirthdew_encore.card_spell.mirthdew_encore.reduce_cast_delay"
   },
@@ -9,6 +9,6 @@
     ]
   },
   "input_count": 1,
-  "mirth_cost": 200,
-  "recharge_delay_ms": 100
+  "mirth_cost": 15,
+  "recharge_delay_ms": 20
 }

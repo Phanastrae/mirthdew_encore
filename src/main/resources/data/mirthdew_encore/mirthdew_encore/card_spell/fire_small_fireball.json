@@ -9,12 +9,12 @@
         "entity": [
           "minecraft:small_fireball"
         ],
-        "speed": 2.4,
-        "divergence": 2.0
+        "speed": 1.3,
+        "divergence": 6.0
       }
     ]
   },
   "input_count": 0,
   "mirth_cost": 20,
-  "recharge_delay_ms": 25
+  "recharge_delay_ms": 80
 }

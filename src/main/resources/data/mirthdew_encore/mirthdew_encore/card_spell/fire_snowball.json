@@ -9,8 +9,8 @@
         "entity": [
           "minecraft:snowball"
         ],
-        "speed": 1.4,
-        "divergence": 0.4
+        "speed": 1.0,
+        "divergence": 5.4
       }
     ]
   },

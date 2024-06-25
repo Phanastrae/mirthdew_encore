@@ -1,11 +1,11 @@
 {
-  "cast_delay_ms": 100,
+  "cast_delay_ms": 10,
   "description": {
     "translate": "mirthdew_encore.card_spell.mirthdew_encore.add_mirth"
   },
   "effects": {
   },
   "input_count": 0,
-  "mirth_cost": -30,
-  "recharge_delay_ms": 1000
+  "mirth_cost": -45,
+  "recharge_delay_ms": 40
 }

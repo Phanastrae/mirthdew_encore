@@ -1,5 +1,5 @@
 {
-  "cast_delay_ms": 1600,
+  "cast_delay_ms": 300,
   "description": {
     "translate": "mirthdew_encore.card_spell.mirthdew_encore.explode_no_destruction"
   },
@@ -24,5 +24,5 @@
   },
   "input_count": 0,
   "mirth_cost": 140,
-  "recharge_delay_ms": 200
+  "recharge_delay_ms": 1100
 }

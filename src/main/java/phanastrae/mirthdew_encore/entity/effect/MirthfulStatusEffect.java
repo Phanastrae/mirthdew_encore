@@ -15,7 +15,7 @@ public class MirthfulStatusEffect extends StatusEffect {
     @Override
     public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
         if(!entity.getWorld().isClient() && amplifier >= 0 && entity instanceof PlayerEntity player) {
-            long addMirth = 8L << Math.clamp(amplifier, 0, 59);
+            long addMirth = 16L << Math.clamp(amplifier, 0, 58);
             long maxMirth = 2048L * (1L << Math.clamp(amplifier * 2L, 0, 51));
             PlayerEntityMirthData.fromPlayer(player).addMirth(addMirth, maxMirth);
         }
