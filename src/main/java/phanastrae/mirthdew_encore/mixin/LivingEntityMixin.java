@@ -12,7 +12,10 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import phanastrae.mirthdew_encore.dreamtwirl.EntityDreamtwirlData;
+import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 
@@ -31,6 +34,17 @@ public abstract class LivingEntityMixin extends Entity implements Attackable {
                 if (player.getHungerManager().getFoodLevel() == 20) {
                     thisEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 3000, 2));
                 }
+            }
+        }
+    }
+
+    @Inject(method = "tickInVoid", at = @At(value = "HEAD"), cancellable = true)
+    private void mirthdew_encore$cancelVoidTick(CallbackInfo ci) {
+        LivingEntity thisEntity = (LivingEntity)(Object)this;
+        EntityDreamtwirlData dreamtwirlData = MirthdewEncoreEntityAttachment.fromEntity(thisEntity).getDreamtwirlEntityData();
+        if(dreamtwirlData.isInDreamtwirl() && dreamtwirlData.canLeave()) {
+            if(dreamtwirlData.leaveDreamtwirl()) {
+                ci.cancel();
             }
         }
     }

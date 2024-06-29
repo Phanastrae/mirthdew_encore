@@ -26,6 +26,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.EndPlatformFeature;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import phanastrae.mirthdew_encore.block.DreamseedBlock;
@@ -177,9 +178,18 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         ItemStack itemStack = blockEntity.getHeldItem();
         ItemStack newStack = MirthdewEncoreItems.SLUMBERING_EYE.getDefaultStack();
         newStack.applyChanges(itemStack.getComponentChanges());
+
         Random random = world.getRandom();
-        Vec3d targetPos = new Vec3d(regionPos.getCenterX() + 256 * random.nextDouble() - 128, 64, regionPos.getCenterZ() + 256 * random.nextDouble() - 128);
-        newStack.set(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT, LocationComponent.fromPosAndWorld(targetPos, stage.getWorld()));
+        BlockPos targetPos = new BlockPos(
+                regionPos.getCenterX() + random.nextInt(256) - 128,
+                64,
+                regionPos.getCenterZ() + random.nextInt(256) - 128
+        );
+        if(stage.getWorld() instanceof ServerWorld serverWorld) {
+            EndPlatformFeature.generate(serverWorld, targetPos, true);
+        }
+
+        newStack.set(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT, LocationComponent.fromPosAndWorld(targetPos.toBottomCenterPos(), stage.getWorld()));
         blockEntity.setHeldItem(newStack);
 
         Vec3d socketPos = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);

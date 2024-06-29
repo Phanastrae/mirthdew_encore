@@ -177,12 +177,6 @@ public class SlumberveilBlock extends Block implements Portal {
 
                     if(distance == minNeighborDistance + 1) {
                         return false;
-                    } else {
-                        distance = minNeighborDistance + 1;
-                        if(distance <= 15) {
-                            world.setBlockState(pos, state.with(DISTANCE, distance));
-                            return false;
-                        }
                     }
                 }
 
@@ -228,6 +222,11 @@ public class SlumberveilBlock extends Block implements Portal {
             entity.tryUsePortal(this, pos);
         }
         super.onEntityCollision(state, world, pos, entity);
+    }
+
+    @Override
+    public Effect getPortalEffect() {
+        return Effect.CONFUSION;
     }
 
     @Override

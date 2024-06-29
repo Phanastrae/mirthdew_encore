@@ -62,6 +62,11 @@
   "item.mirthdew_encore.spell_deck.id_card": "#%s > \"%s\"",
   "item.mirthdew_encore.mirthdew_vial": "Mirthdew Vial",
   "item.mirthdew_encore.slumbering_eye": "Slumbering Eye",
+  "item.mirthdew_encore.slumbering_eye.unbound": "Unbound",
+  "item.mirthdew_encore.slumbering_eye.bound": "Bound",
+  "item.mirthdew_encore.slumbering_eye.bound.to": "to %s",
+  "item.mirthdew_encore.slumbering_eye.bound.to.xyz": "x: %s, y: %s, z: %s",
+  "item.mirthdew_encore.slumbering_eye.bound.in": "in %s",
   "item.mirthdew_encore.spectral_candy": "Spectral Candy",
   "item.mirthdew_encore.spectral_candy.when_full": "When Full:",
 

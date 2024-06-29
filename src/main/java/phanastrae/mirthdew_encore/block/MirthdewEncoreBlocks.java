@@ -49,10 +49,9 @@ public class MirthdewEncoreBlocks {
 
     public static final Block SLUMBERVEIL = new SlumberveilBlock(createSettings()
             .noCollision()
-            .strength(-1.0F)
             .sounds(BlockSoundGroup.WOOL)
             .luminance(state -> 13)
-            .pistonBehavior(PistonBehavior.BLOCK)
+            .pistonBehavior(PistonBehavior.DESTROY)
             .replaceable()
     );
 

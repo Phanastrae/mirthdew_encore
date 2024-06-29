@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.HitResult;
@@ -77,10 +78,6 @@ public class EntityDreamtwirlData {
                     }
                 }
 
-                if(this.entity.getY() < world.getBottomY() - 64) {
-                    touchingBorder = true;
-                }
-
                 if (touchingBorder) {
                     if (this.canLeave()) {
                         if (leaveDreamtwirl()) {
@@ -121,7 +118,12 @@ public class EntityDreamtwirlData {
             return false;
         } else {
             Vec3d vec3d = new Vec3d(dreamtwirlRegion.getCenterX(), 64, dreamtwirlRegion.getCenterZ());
-            if(teleportEntity(entity, MirthdewEncoreDimensions.DREAMTWIRL_WORLD, vec3d)) {
+            TeleportTarget teleportTarget = createTeleportTarget(MirthdewEncoreDimensions.DREAMTWIRL_WORLD, vec3d);
+            if(teleportTarget == null) {
+                return false;
+            }
+
+            if(teleportEntity(this.entity, teleportTarget)) {
                 this.setDreamtwirlRegion(dreamtwirlRegion);
                 if(this.entity instanceof LivingEntity livingEntity) {
                     livingEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
@@ -137,21 +139,27 @@ public class EntityDreamtwirlData {
         if(!this.isInDreamtwirl()) {
             return false;
         } else {
-            World currentWorld = this.entity.getWorld();
-            if (!(currentWorld instanceof ServerWorld serverWorld)) {
-                return false;
-            }
-            RegistryKey<World> targetKey = World.OVERWORLD;
-            MinecraftServer server = currentWorld.getServer();
-            ServerWorld targetWorld = server.getWorld(targetKey);
-            if (targetWorld == null) {
-                return false;
+            TeleportTarget teleportTarget;
+            if(this.entity instanceof ServerPlayerEntity serverPlayerEntity) {
+                teleportTarget = serverPlayerEntity.getRespawnTarget(false, TeleportTarget.NO_OP);
+            } else {
+                World currentWorld = this.entity.getWorld();
+                if (!(currentWorld instanceof ServerWorld)) {
+                    return false;
+                }
+                RegistryKey<World> targetKey = World.OVERWORLD;
+                MinecraftServer server = currentWorld.getServer();
+                ServerWorld targetWorld = server.getWorld(targetKey);
+                if (targetWorld == null) {
+                    return false;
+                }
+
+                BlockPos blockPos = targetWorld.getSpawnPos();
+                Vec3d vec3d = this.entity.getWorldSpawnPos(targetWorld, blockPos).toBottomCenterPos();
+                teleportTarget = createTeleportTarget(targetWorld, vec3d);
             }
 
-            BlockPos blockPos = targetWorld.getSpawnPos();
-            Vec3d vec3d = this.entity.getWorldSpawnPos(targetWorld, blockPos).toBottomCenterPos();
-
-            if (teleportEntity(this.entity, World.OVERWORLD, vec3d)) {
+            if (teleportEntity(this.entity, teleportTarget)) {
                 this.setDreamtwirlRegion(null);
                 return true;
             } else {
@@ -199,32 +207,47 @@ public class EntityDreamtwirlData {
         return MEA.getDreamtwirlEntityData().leaveDreamtwirl();
     }
 
-    public static boolean teleportEntity(Entity entity, RegistryKey<World> worldKey, Vec3d position) {
+    public static boolean teleportEntity(Entity entity, TeleportTarget teleportTarget) {
         World currentWorld = entity.getWorld();
         if(!(currentWorld instanceof ServerWorld serverWorld)) {
             return false;
         }
         MinecraftServer server = currentWorld.getServer();
-        ServerWorld targetWorld = server.getWorld(worldKey);
-        if(targetWorld == null) {
-            return false;
-        }
-
-        TeleportTarget teleportTarget = new TeleportTarget(
-                targetWorld,
-                position,
-                entity.getVelocity(),
-                entity.getYaw(),
-                entity.getPitch(),
-                TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET.then(TeleportTarget.ADD_PORTAL_CHUNK_TICKET)
-        );
+        ServerWorld targetWorld = teleportTarget.world();
 
         if (server.isWorldAllowed(targetWorld)
                 && (targetWorld.getRegistryKey() == serverWorld.getRegistryKey() || entity.canTeleportBetween(serverWorld, targetWorld))) {
+            entity.fallDistance = 0;
             entity.teleportTo(teleportTarget);
             return true;
         } else {
             return false;
         }
+    }
+
+    @Nullable
+    public TeleportTarget createTeleportTarget(RegistryKey<World> worldKey, Vec3d position) {
+        World currentWorld = entity.getWorld();
+        if(!(currentWorld instanceof ServerWorld serverWorld)) {
+            return null;
+        }
+        MinecraftServer server = currentWorld.getServer();
+        ServerWorld targetWorld = server.getWorld(worldKey);
+        if(targetWorld == null) {
+            return null;
+        }
+
+        return createTeleportTarget(targetWorld, position);
+    }
+
+    public TeleportTarget createTeleportTarget(ServerWorld targetWorld, Vec3d position) {
+        return new TeleportTarget(
+                targetWorld,
+                position,
+                Vec3d.ZERO,
+                entity.getYaw(),
+                entity.getPitch(),
+                TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET.then(TeleportTarget.ADD_PORTAL_CHUNK_TICKET)
+        );
     }
 }

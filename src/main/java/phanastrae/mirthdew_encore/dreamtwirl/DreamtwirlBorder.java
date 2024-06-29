@@ -24,16 +24,25 @@ public class DreamtwirlBorder {
         this.maxX = regionPos.worldX + 512 - BORDER_SIZE;
         this.maxZ = regionPos.worldZ + 512 - BORDER_SIZE;
 
+        VoxelShape inside = VoxelShapes.cuboid(
+                minX,
+                Double.NEGATIVE_INFINITY,
+                minZ,
+                maxX,
+                Double.POSITIVE_INFINITY,
+                maxZ
+        );
+        VoxelShape outside = VoxelShapes.cuboid(
+                regionPos.worldX - BORDER_SIZE,
+                Double.NEGATIVE_INFINITY,
+                regionPos.worldZ - BORDER_SIZE,
+                regionPos.worldX + 512 + BORDER_SIZE,
+                Double.POSITIVE_INFINITY,
+                regionPos.worldZ + 512 + BORDER_SIZE
+        );
         this.voxelShape = VoxelShapes.combineAndSimplify(
-                VoxelShapes.UNBOUNDED,
-                VoxelShapes.cuboid(
-                        minX,
-                        Double.NEGATIVE_INFINITY,
-                        minZ,
-                        maxX,
-                        Double.POSITIVE_INFINITY,
-                        maxZ
-                ),
+                outside,
+                inside,
                 BooleanBiFunction.ONLY_FIRST
         );
     }
