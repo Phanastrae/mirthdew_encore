@@ -29,18 +29,20 @@ public class DreamtwirlWorldAttachment {
     }
 
     private void tickServer(ServerWorld serverWorld) {
-        EntityList serverEntityList = ((ServerWorldAccessor)serverWorld).getEntityList();
+        //EntityList serverEntityList = ((ServerWorldAccessor)serverWorld).getEntityList();
 
-        serverEntityList.forEach(this::tickEntity);
+        //serverEntityList.forEach(this::tickEntity);
 
         if(this.dreamtwirlStageManager != null) {
             this.dreamtwirlStageManager.tick();
         }
     }
 
+    /*
     public void tickEntity(Entity entity) {
 
     }
+    */
 
     @Nullable
     public DreamtwirlStageManager getDreamtwirlStageManager() {

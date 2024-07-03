@@ -108,6 +108,7 @@ public class MirthdewCommand {
                                 .then(literal("list")
                                         .executes(context -> list(context.getSource()))
                                 )
+                                /*
                                 .then(literal("edit")
                                         .then(argument("regionX", IntegerArgumentType.integer())
                                                 .then(argument("regionZ", IntegerArgumentType.integer())
@@ -125,6 +126,7 @@ public class MirthdewCommand {
                                                 )
                                         )
                                 )
+                                */
                         )
         );
     }
