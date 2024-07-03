@@ -18,6 +18,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.mixin.ProjectileEntityAccessor;
@@ -42,12 +43,12 @@ public class EntityDreamtwirlData {
             DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
             boolean nowInDreamtwirl = DTWA != null;
 
-            RegionPos entityRegion = RegionPos.fromEntity(this.entity);
+            RegionPos entityRegion = nowInDreamtwirl ? RegionPos.fromEntity(this.entity) : null;
             if (this.inDreamtwirl != nowInDreamtwirl) {
                 this.setDreamtwirlRegion(entityRegion);
             }
 
-            if (DTWA == null || !this.inDreamtwirl) return;
+            if (!nowInDreamtwirl) return;
             if (world.getTime() % 80L == 0L) {
                 if (this.entity instanceof LivingEntity livingEntity) {
                     livingEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
@@ -124,6 +125,9 @@ public class EntityDreamtwirlData {
             }
 
             if(teleportEntity(this.entity, teleportTarget)) {
+                if(this.entity instanceof PlayerEntity) {
+                    MirthdewEncore.LOGGER.info("Player {} was sent to the Dreamtwirl ({}, {})", this.entity.getName().getString(), dreamtwirlRegion.regionX, dreamtwirlRegion.regionZ);
+                }
                 this.setDreamtwirlRegion(dreamtwirlRegion);
                 if(this.entity instanceof LivingEntity livingEntity) {
                     livingEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
@@ -160,6 +164,9 @@ public class EntityDreamtwirlData {
             }
 
             if (teleportEntity(this.entity, teleportTarget)) {
+                if(this.entity instanceof PlayerEntity) {
+                    MirthdewEncore.LOGGER.info("Player {} was ejected from a Dreamtwirl", this.entity.getName().getString());
+                }
                 this.setDreamtwirlRegion(null);
                 return true;
             } else {
