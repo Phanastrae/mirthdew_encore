@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
+import phanastrae.mirthdew_encore.compat.Compat;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.component.SpellEffectComponentTypes;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
@@ -52,5 +53,7 @@ public class MirthdewEncore implements ModInitializer {
 
 		ServerTickEvents.START_WORLD_TICK.register((DreamtwirlWorldAttachment::tickWorld));
 		CommandRegistrationCallback.EVENT.register(MirthdewEncoreCommands::registerCommands);
+
+		Compat.init();
 	}
 }

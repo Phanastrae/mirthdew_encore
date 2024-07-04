@@ -36,7 +36,6 @@ public class DreamspeckEntity extends MobEntity {
     public DreamspeckEntity(EntityType<? extends MobEntity> type, World world) {
         super(type, world);
         this.moveControl = new DreamspeckEntity.DreamspeckMoveControl(this);
-        this.setNoGravity(true);
     }
 
     public static DefaultAttributeContainer.Builder createDreamspeckAttributes() {
@@ -118,10 +117,12 @@ public class DreamspeckEntity extends MobEntity {
                 );
 
                 this.discard();
+                return;
             }
         }
 
         super.tick();
+        this.setNoGravity(true);
     }
 
     @Override
