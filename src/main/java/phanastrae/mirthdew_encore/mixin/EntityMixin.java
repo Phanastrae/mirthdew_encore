@@ -72,7 +72,7 @@ public abstract class EntityMixin implements EntityDuckInterface {
             DreamtwirlWorldAttachment.findBorderCollision(thisEntity, thisEntity.getWorld(), builder);
             List<VoxelShape> list = builder.build();
             if(!list.isEmpty()) {
-                value = adjustMovementForCollisions(movement, box, list);
+                value = adjustMovementForCollisions(value, box, list);
             }
         }
         return value;
