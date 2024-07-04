@@ -8,6 +8,7 @@
 		"Phanastrae"
 	],
 	"contact": {
+		"homepage": "https://modrinth.com/mod/mirthdew-encore",
 		"sources": "https://github.com/Phanastrae/mirthdew_encore"
 	},
 	"license": "MIT",
