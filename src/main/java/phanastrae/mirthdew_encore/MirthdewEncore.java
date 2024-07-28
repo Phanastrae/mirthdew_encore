@@ -3,7 +3,7 @@ package phanastrae.mirthdew_encore;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
@@ -25,8 +25,8 @@ public class MirthdewEncore implements ModInitializer {
 	public static final String MOD_ID = "mirthdew_encore";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static Identifier id(String path) {
-    	return Identifier.of(MOD_ID, path);
+    public static ResourceLocation id(String path) {
+    	return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 
 	@Override

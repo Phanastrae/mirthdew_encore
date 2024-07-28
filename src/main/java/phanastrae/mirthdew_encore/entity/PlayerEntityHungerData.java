@@ -1,39 +1,40 @@
 package phanastrae.mirthdew_encore.entity;
 
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.HungerManager;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.util.math.MathHelper;
 import phanastrae.mirthdew_encore.duck.HungerManagerDuckInterface;
 
 import static phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodData;
+
 public class PlayerEntityHungerData {
 
-    private final PlayerEntity player;
+    private final Player player;
 
     private boolean isDreamyDieting = false;
     private int preDreamyDietFoodLevel = 20;
     private int dreamyDietTicks = 0;
 
-    public PlayerEntityHungerData(PlayerEntity player) {
+    public PlayerEntityHungerData(Player player) {
         this.player = player;
     }
 
     public void tick() {
-        if(!this.player.getWorld().isClient()) {
+        if(!this.player.level().isClientSide()) {
             if (this.isDreamyDieting()) {
-                if (!player.hasStatusEffect(DREAMY_DIET_ENTRY)) {
+                if (!player.hasEffect(DREAMY_DIET_ENTRY)) {
                     this.onEndDreamyDieting();
                 } else {
-                    player.getHungerManager().setFoodLevel(20);
+                    player.getFoodData().setFoodLevel(20);
                 }
 
-                StatusEffectInstance dietEffect = this.player.getStatusEffect(DREAMY_DIET_ENTRY);
+                MobEffectInstance dietEffect = this.player.getEffect(DREAMY_DIET_ENTRY);
                 if (dietEffect != null) {
-                    if(!player.isSpectator() && !player.getAbilities().creativeMode) {
+                    if(!player.isSpectator() && !player.getAbilities().instabuild) {
                         int amplifier = dietEffect.getAmplifier();
                         if (amplifier >= 0) {
                             this.dreamyDietTicks += (amplifier + 1);
@@ -41,7 +42,7 @@ public class PlayerEntityHungerData {
                     }
                 }
             }
-            HungerManager hungerManager = player.getHungerManager();
+            FoodData hungerManager = player.getFoodData();
             if (hungerManager.getFoodLevel() > 0 && this.getFoodLevelDebt() > 0) {
                 hungerManager.setFoodLevel(hungerManager.getFoodLevel() - 1);
                 this.setFoodLevelDebt(this.getFoodLevelDebt() - 1);
@@ -52,7 +53,7 @@ public class PlayerEntityHungerData {
     public void onStartDreamyDieting() {
         if(!this.isDreamyDieting) {
             this.isDreamyDieting = true;
-            HungerManager hungerManager = player.getHungerManager();
+            FoodData hungerManager = player.getFoodData();
             this.preDreamyDietFoodLevel = hungerManager.getFoodLevel() - this.getFoodLevelDebt();
             hungerManager.setFoodLevel(20);
             this.setFoodLevelDebt(0);
@@ -62,7 +63,7 @@ public class PlayerEntityHungerData {
     public void onEndDreamyDieting() {
         if(this.isDreamyDieting) {
             this.isDreamyDieting = false;
-            HungerManager hungerManager = player.getHungerManager();
+            FoodData hungerManager = player.getFoodData();
             hungerManager.setFoodLevel(Math.clamp(this.preDreamyDietFoodLevel, 0, 20));
             this.setFoodLevelDebt(Math.clamp(-this.preDreamyDietFoodLevel, 0, 20));
             this.preDreamyDietFoodLevel = 20;
@@ -71,11 +72,11 @@ public class PlayerEntityHungerData {
         }
     }
 
-    public void reduceHungerBasedOnTime(HungerManager hungerManager, int dietTicks) {
+    public void reduceHungerBasedOnTime(FoodData hungerManager, int dietTicks) {
         if(dietTicks < 0) return;
         if(dietTicks > 72000) dietTicks = 72000;
 
-        float exhaustion = hungerManager.getExhaustion();
+        float exhaustion = hungerManager.getExhaustionLevel();
         float saturationLevel = hungerManager.getSaturationLevel();
         int foodLevel = hungerManager.getFoodLevel();
 
@@ -84,10 +85,10 @@ public class PlayerEntityHungerData {
 
         exhaustion += gainedExhaustion;
 
-        int foodCost = MathHelper.floor(exhaustion / 4);
+        int foodCost = Mth.floor(exhaustion / 4);
         exhaustion -= foodCost * 4;
 
-        int maxRemovedSaturation = MathHelper.ceil(saturationLevel);
+        int maxRemovedSaturation = Mth.ceil(saturationLevel);
         int removedSaturation = Math.min(foodCost, maxRemovedSaturation);
         saturationLevel = Math.max(saturationLevel - removedSaturation, 0);
         foodCost -= removedSaturation;
@@ -98,31 +99,31 @@ public class PlayerEntityHungerData {
 
         hungerManager.setExhaustion(exhaustion);
         hungerManager.setFoodLevel(foodLevel);
-        hungerManager.setSaturationLevel(saturationLevel);
+        hungerManager.setSaturation(saturationLevel);
 
         if(foodCost > 0) {
             this.setFoodLevelDebt(Math.min(this.getFoodLevelDebt() + foodCost, 20));
         }
     }
 
-    public void writeNbt(NbtCompound nbtCompound) {
+    public void writeNbt(CompoundTag nbtCompound) {
         nbtCompound.putBoolean("IsDreamyDieting", this.isDreamyDieting);
         nbtCompound.putInt("PreDreamyDietFoodLevel", this.preDreamyDietFoodLevel);
         nbtCompound.putInt("DreamyDietTicks", this.dreamyDietTicks);
         nbtCompound.putInt("FoodLevelDebt", this.getFoodLevelDebt());
     }
 
-    public void readNbt(NbtCompound nbtCompound) {
-        if(nbtCompound.contains("IsDreamyDieting", NbtElement.BYTE_TYPE)) {
+    public void readNbt(CompoundTag nbtCompound) {
+        if(nbtCompound.contains("IsDreamyDieting", Tag.TAG_BYTE)) {
             this.isDreamyDieting = nbtCompound.getBoolean("IsDreamyDieting");
         }
-        if(nbtCompound.contains("PreDreamyDietFoodLevel", NbtElement.INT_TYPE)) {
+        if(nbtCompound.contains("PreDreamyDietFoodLevel", Tag.TAG_INT)) {
             this.preDreamyDietFoodLevel = nbtCompound.getInt("PreDreamyDietFoodLevel");
         }
-        if(nbtCompound.contains("DreamyDietTicks", NbtElement.INT_TYPE)) {
+        if(nbtCompound.contains("DreamyDietTicks", Tag.TAG_INT)) {
             this.dreamyDietTicks = nbtCompound.getInt("DreamyDietTicks");
         }
-        if(nbtCompound.contains("FoodLevelDebt", NbtElement.INT_TYPE)) {
+        if(nbtCompound.contains("FoodLevelDebt", Tag.TAG_INT)) {
             this.setFoodLevelDebt(nbtCompound.getInt("FoodLevelDebt"));
         }
     }
@@ -132,14 +133,14 @@ public class PlayerEntityHungerData {
     }
 
     public int getFoodLevelDebt() {
-        return ((HungerManagerDuckInterface)this.player.getHungerManager()).mirthdew_encore$getFoodLevelDebt();
+        return ((HungerManagerDuckInterface)this.player.getFoodData()).mirthdew_encore$getFoodLevelDebt();
     }
 
     public void setFoodLevelDebt(int foodLevelDebt) {
-        ((HungerManagerDuckInterface)this.player.getHungerManager()).mirthdew_encore$setFoodLevelDebt(foodLevelDebt);
+        ((HungerManagerDuckInterface)this.player.getFoodData()).mirthdew_encore$setFoodLevelDebt(foodLevelDebt);
     }
 
-    public static PlayerEntityHungerData fromPlayer(PlayerEntity player) {
+    public static PlayerEntityHungerData fromPlayer(Player player) {
         return MirthdewEncorePlayerEntityAttachment.fromPlayer(player).getHungerData();
     }
 }

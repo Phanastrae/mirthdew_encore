@@ -1,25 +1,5 @@
 package phanastrae.mirthdew_encore.item;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.StackReference;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.ClickType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 import phanastrae.mirthdew_encore.card_spell.SpellCast;
 import phanastrae.mirthdew_encore.card_spell.SpellCastHelper;
 import phanastrae.mirthdew_encore.component.type.SpellChargeComponent;
@@ -27,6 +7,26 @@ import phanastrae.mirthdew_encore.component.type.SpellDeckContentsComponent;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import static phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes.SPELL_CHARGE;
 import static phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes.SPELL_DECK_CONTENTS;
@@ -37,37 +37,37 @@ import static phanastrae.mirthdew_encore.item.MirthdewEncoreItems.SPELL_DECK;
 public abstract class SpellCardAbstractItem extends Item {
     public static final int MAX_CARD_STACK_SIZE = 32;
 
-    public SpellCardAbstractItem(Settings settings) {
+    public SpellCardAbstractItem(Properties settings) {
         super(settings);
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemStack = user.getStackInHand(hand);
-        user.setCurrentHand(hand);
-        return TypedActionResult.consume(itemStack);
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        ItemStack itemStack = user.getItemInHand(hand);
+        user.startUsingItem(hand);
+        return InteractionResultHolder.consume(itemStack);
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
+    public int getUseDuration(ItemStack stack, LivingEntity user) {
         return 72000;
     }
 
     @Override
-    public boolean isUsedOnRelease(ItemStack stack) {
+    public boolean useOnRelease(ItemStack stack) {
         return true;
     }
 
     @Override
-    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        Random random = user.getRandom();
+    public void onUseTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+        RandomSource random = user.getRandom();
         if(random.nextInt(3) == 0) {
-            SoundEvent soundEvent = random.nextBoolean() ? SoundEvents.ITEM_BUNDLE_INSERT : SoundEvents.ITEM_BUNDLE_REMOVE_ONE;
-            PlayerEntity player = (user instanceof PlayerEntity playerEntity) ? playerEntity : null;
-            world.playSound(player, user.getBlockPos(), soundEvent, SoundCategory.NEUTRAL, 0.8F, 1.4F + 0.4F * random.nextFloat());
+            SoundEvent soundEvent = random.nextBoolean() ? SoundEvents.BUNDLE_INSERT : SoundEvents.BUNDLE_REMOVE_ONE;
+            Player player = (user instanceof Player playerEntity) ? playerEntity : null;
+            world.playSound(player, user.blockPosition(), soundEvent, SoundSource.NEUTRAL, 0.8F, 1.4F + 0.4F * random.nextFloat());
         }
 
-        long worldTime = world.getTime();
+        long worldTime = world.getGameTime();
         SpellChargeComponent spellChargeComponent = stack.get(SPELL_CHARGE);
         if(spellChargeComponent == null || !spellChargeComponent.isDisabled(worldTime)) {
             if(tryToCastNext(world, user, stack)) {
@@ -75,7 +75,7 @@ public abstract class SpellCardAbstractItem extends Item {
             }
         }
 
-        for(ItemStack stack1 : user.getHandItems()) {
+        for(ItemStack stack1 : user.getHandSlots()) {
             if(stack1 != stack) {
                 if(tryToCastNext(world, user, stack1)) {
                     return;
@@ -84,15 +84,15 @@ public abstract class SpellCardAbstractItem extends Item {
         }
     }
 
-    public boolean tryToCastNext(World world, Entity user, ItemStack itemStack) {
-        long worldTime = world.getTime();
+    public boolean tryToCastNext(Level world, Entity user, ItemStack itemStack) {
+        long worldTime = world.getGameTime();
         SpellChargeComponent spellChargeComponent = itemStack.get(SPELL_CHARGE);
 
         if(spellChargeComponent != null && spellChargeComponent.isDisabled(worldTime)) {
             return false;
         }
 
-        if(!world.isClient && world instanceof ServerWorld serverWorld) {
+        if(!world.isClientSide && world instanceof ServerLevel serverWorld) {
             SpellChargeComponent.Builder builder;
             if (spellChargeComponent == null) {
                 List<SpellCast> spellCastList = SpellCastHelper.castListFromStack(itemStack);
@@ -113,9 +113,9 @@ public abstract class SpellCardAbstractItem extends Item {
                 boolean hadSuccess = spellInfoCollector.getHadSuccess();
                 boolean hadFailure = spellInfoCollector.getHadFailure();
                 if(hadFailure || !hadSuccess) {
-                    Vec3d pos = user.getEyePos();
+                    Vec3 pos = user.getEyePosition();
                     double spread = hadSuccess ? 0.02 : 0.1;
-                    serverWorld.spawnParticles(ParticleTypes.SMOKE,
+                    serverWorld.sendParticles(ParticleTypes.SMOKE,
                             pos.x,
                             pos.y - (hadSuccess ? 0.3 : 0.0),
                             pos.z,
@@ -128,8 +128,8 @@ public abstract class SpellCardAbstractItem extends Item {
                             pos.x,
                             pos.y,
                             pos.z,
-                            SoundEvents.BLOCK_FIRE_EXTINGUISH,
-                            SoundCategory.PLAYERS,
+                            SoundEvents.FIRE_EXTINGUISH,
+                            SoundSource.PLAYERS,
                             0.6F,
                             hadSuccess ? 1.0F : 0.3F);
                     if(!hadSuccess) {
@@ -137,8 +137,8 @@ public abstract class SpellCardAbstractItem extends Item {
                                 pos.x,
                                 pos.y,
                                 pos.z,
-                                SoundEvents.ENTITY_GENERIC_EXPLODE,
-                                SoundCategory.PLAYERS,
+                                SoundEvents.GENERIC_EXPLODE,
+                                SoundSource.PLAYERS,
                                 0.2F,
                                 1.0F);
                     }
@@ -152,7 +152,7 @@ public abstract class SpellCardAbstractItem extends Item {
             }
 
             if (totalDelayMs > 0) {
-                int tickDelay = MathHelper.ceil(totalDelayMs / 50F);
+                int tickDelay = Mth.ceil(totalDelayMs / 50F);
                 builder.setCooldown(worldTime, tickDelay);
             } else {
                 builder.setCooldown(0, 0);
@@ -163,10 +163,10 @@ public abstract class SpellCardAbstractItem extends Item {
     }
 
     @Override
-    public boolean onStackClicked(ItemStack heldStack, Slot slot, ClickType clickType, PlayerEntity player) {
-        ItemStack baseStack = slot.getStack();
+    public boolean overrideStackedOnOther(ItemStack heldStack, Slot slot, ClickAction clickType, Player player) {
+        ItemStack baseStack = slot.getItem();
         if(baseStack.isEmpty()) {
-            if(clickType == ClickType.RIGHT) {
+            if(clickType == ClickAction.SECONDARY) {
                 // Right click over an empty slot to remove the bottom-most card from the stack
                 SpellDeckContentsComponent spellDeckContentsComponent = heldStack.get(SPELL_DECK_CONTENTS);
                 if(spellDeckContentsComponent != null) {
@@ -179,16 +179,16 @@ public abstract class SpellCardAbstractItem extends Item {
                         } else {
                             heldStack.set(SPELL_DECK_CONTENTS, builder.build());
                         }
-                        slot.setStack(removedStack);
+                        slot.setByPlayer(removedStack);
 
                         heldStack.remove(SPELL_CHARGE);
                         if(builder.isEmpty()) {
                             // if the held item is no longer a deck, try to convert it to a card
-                            ScreenHandler screenHandler = player.currentScreenHandler;
+                            AbstractContainerMenu screenHandler = player.containerMenu;
                             if (screenHandler != null) {
-                                ItemStack screenHandlerCursorStack = screenHandler.getCursorStack();
+                                ItemStack screenHandlerCursorStack = screenHandler.getCarried();
                                 if (screenHandlerCursorStack == heldStack) {
-                                    screenHandler.setCursorStack(getStackWithCorrectItem(heldStack));
+                                    screenHandler.setCarried(getStackWithCorrectItem(heldStack));
                                 }
                             }
                         }
@@ -203,9 +203,9 @@ public abstract class SpellCardAbstractItem extends Item {
     }
 
     @Override
-    public boolean onClicked(ItemStack baseStack, ItemStack heldStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference) {
+    public boolean overrideOtherStackedOnMe(ItemStack baseStack, ItemStack heldStack, Slot slot, ClickAction clickType, Player player, SlotAccess cursorStackReference) {
         if(heldStack.isEmpty()) {
-            if (clickType == ClickType.RIGHT) {
+            if (clickType == ClickAction.SECONDARY) {
                 // Right click with an empty cursor to remove the top-most card from the stack
                 SpellDeckContentsComponent spellDeckContentsComponent = baseStack.get(SPELL_DECK_CONTENTS);
                 if (spellDeckContentsComponent != null) {
@@ -216,14 +216,14 @@ public abstract class SpellCardAbstractItem extends Item {
                         cursorStackReference.set(first);
 
                         ItemStack remainingDeck = stackListToDeckStack(stackList);
-                        slot.setStack(remainingDeck);
+                        slot.setByPlayer(remainingDeck);
                         this.playRemoveOneSound(player);
                         return true;
                     }
                 }
             }
         } else if(heldStack.getItem() instanceof SpellCardAbstractItem) {
-            if(clickType == ClickType.LEFT) {
+            if(clickType == ClickAction.PRIMARY) {
                 int maxAcceptedCards = getMaxAcceptedCards(baseStack);
                 if(maxAcceptedCards < 1) {
                     playInsertFailSound(player);
@@ -244,13 +244,13 @@ public abstract class SpellCardAbstractItem extends Item {
                     newBaseStackList.addAll(baseStackList);
 
                     cursorStackReference.set(stackListToDeckStack(newHeldStackList));
-                    slot.setStack(stackListToDeckStack(newBaseStackList));
+                    slot.setByPlayer(stackListToDeckStack(newBaseStackList));
 
                     this.playRemoveOneSound(player);
                     this.playInsertSound(player);
                     return true;
                 }
-            } else if(clickType == ClickType.RIGHT) {
+            } else if(clickType == ClickAction.SECONDARY) {
                 // Right click with a Card/Deck in cursor to remove the bottom item of the Card/Deck and place it on top of the stack
                 if(getMaxAcceptedCards(baseStack) < 1) {
                     playInsertFailSound(player);
@@ -274,7 +274,7 @@ public abstract class SpellCardAbstractItem extends Item {
 
                 if(removedStack != null) {
                     removedStack = removedStack.copy();
-                    slot.setStack(getMerged(removedStack, baseStack));
+                    slot.setByPlayer(getMerged(removedStack, baseStack));
                 }
 
                 this.playRemoveOneSound(player);
@@ -371,23 +371,23 @@ public abstract class SpellCardAbstractItem extends Item {
 
     public static ItemStack getStackWithCorrectItem(ItemStack stack) {
         SpellDeckContentsComponent spellDeckContentsComponent = stack.get(SPELL_DECK_CONTENTS);
-        if(stack.isOf(SPELL_CARD)) {
+        if(stack.is(SPELL_CARD)) {
             if(spellDeckContentsComponent != null) {
                 if(spellDeckContentsComponent.isEmpty()) {
                     ItemStack newStack = stack.copy();
                     newStack.set(SPELL_DECK_CONTENTS, null);
                     return newStack;
                 } else {
-                    ItemStack newStack = SPELL_DECK.getDefaultStack();
-                    newStack.applyChanges(stack.getComponentChanges());
+                    ItemStack newStack = SPELL_DECK.getDefaultInstance();
+                    newStack.applyComponentsAndValidate(stack.getComponentsPatch());
                     return newStack;
                 }
             }
-        } else if(stack.isOf(SPELL_DECK)) {
+        } else if(stack.is(SPELL_DECK)) {
             if(spellDeckContentsComponent == null || spellDeckContentsComponent.isEmpty()) {
 
-                ItemStack newStack = SPELL_CARD.getDefaultStack();
-                newStack.applyChanges(stack.getComponentChanges());
+                ItemStack newStack = SPELL_CARD.getDefaultInstance();
+                newStack.applyComponentsAndValidate(stack.getComponentsPatch());
                 if(spellDeckContentsComponent != null) {
                     newStack.set(SPELL_DECK_CONTENTS, null);
                 }
@@ -401,14 +401,14 @@ public abstract class SpellCardAbstractItem extends Item {
     }
 
     private void playRemoveOneSound(Entity entity) {
-        entity.playSound(SoundEvents.ITEM_BUNDLE_REMOVE_ONE, 0.8F, 1.0F + entity.getWorld().getRandom().nextFloat() * 0.4F);
+        entity.playSound(SoundEvents.BUNDLE_REMOVE_ONE, 0.8F, 1.0F + entity.level().getRandom().nextFloat() * 0.4F);
     }
 
     private void playInsertSound(Entity entity) {
-        entity.playSound(SoundEvents.ITEM_BUNDLE_INSERT, 0.8F, 1.0F + entity.getWorld().getRandom().nextFloat() * 0.4F);
+        entity.playSound(SoundEvents.BUNDLE_INSERT, 0.8F, 1.0F + entity.level().getRandom().nextFloat() * 0.4F);
     }
 
     private void playInsertFailSound(Entity entity) {
-        entity.playSound(SoundEvents.ITEM_BUNDLE_INSERT, 0.8F, 0.3F + entity.getWorld().getRandom().nextFloat() * 0.3F);
+        entity.playSound(SoundEvents.BUNDLE_INSERT, 0.8F, 0.3F + entity.level().getRandom().nextFloat() * 0.3F);
     }
 }

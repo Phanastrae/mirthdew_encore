@@ -1,11 +1,11 @@
 package phanastrae.mirthdew_encore.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.Minecraft;
 import phanastrae.mirthdew_encore.client.network.MirthdewEncoreClientPacketHandler;
 import phanastrae.mirthdew_encore.client.render.block.MirthdewEncoreBlockRenderLayers;
 import phanastrae.mirthdew_encore.client.render.block.entity.MirthdewEncoreBlockEntityRendererFactories;
@@ -32,14 +32,14 @@ public class MirthdewEncoreClient implements ClientModInitializer {
 
 		ClientLifecycleEvents.CLIENT_STOPPING.register(this::onClientStop);
 		WorldRenderEvents.AFTER_SETUP.register(context -> {
-			MatrixStack matrices = new MatrixStack();
-			matrices.multiplyPositionMatrix(context.positionMatrix());
+			PoseStack matrices = new PoseStack();
+			matrices.mulPose(context.positionMatrix());
 
 			DreamtwirlBorderRenderer.render(context.world(), context.camera(), matrices);
 		});
 	}
 
-	private void onClientStop(MinecraftClient minecraftClient) {
+	private void onClientStop(Minecraft minecraftClient) {
 		MirthdewEncoreDimensionEffects.getInstance().close();
 		DreamtwirlBorderRenderer.close();
 	}

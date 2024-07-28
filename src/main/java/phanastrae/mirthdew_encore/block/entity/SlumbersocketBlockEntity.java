@@ -1,32 +1,5 @@
 package phanastrae.mirthdew_encore.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.particle.ItemStackParticleEffect;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.EndPlatformFeature;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import phanastrae.mirthdew_encore.block.DreamseedBlock;
@@ -40,6 +13,33 @@ import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.EndPlatformFeature;
+import net.minecraft.world.phys.Vec3;
 
 public class SlumbersocketBlockEntity extends BlockEntity {
 
@@ -52,7 +52,7 @@ public class SlumbersocketBlockEntity extends BlockEntity {
 
     public long timer = 0;
 
-    private final DefaultedList<ItemStack> heldItem = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> heldItem = NonNullList.withSize(1, ItemStack.EMPTY);
 
     public SlumbersocketBlockEntity(BlockPos pos, BlockState state) {
         super(MirthdewEncoreBlockEntityTypes.SLUMBERSOCKET, pos, state);
@@ -64,32 +64,32 @@ public class SlumbersocketBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        Inventories.writeNbt(nbt, this.heldItem, true, registryLookup);
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        ContainerHelper.saveAllItems(nbt, this.heldItem, true, registryLookup);
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
         this.heldItem.clear();
-        Inventories.readNbt(nbt, this.heldItem, registryLookup);
+        ContainerHelper.loadAllItems(nbt, this.heldItem, registryLookup);
     }
 
     @Nullable
     @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        NbtCompound nbtCompound = this.createComponentlessNbt(registryLookup);
+    public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+        CompoundTag nbtCompound = this.saveCustomOnly(registryLookup);
 
         return nbtCompound;
     }
 
     public void setHeldItem(ItemStack itemStack) {
         this.heldItem.set(0, itemStack);
-        this.markDirty();
+        this.setChanged();
     }
 
     public ItemStack getHeldItem() {
@@ -100,30 +100,30 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         return !this.getHeldItem().isEmpty();
     }
 
-    public DefaultedList<ItemStack> getItems() {
+    public NonNullList<ItemStack> getItems() {
         return this.heldItem;
     }
 
     public void setDefaultLookTarget(BlockState state) {
-        Direction direction = state.contains(HorizontalFacingBlock.FACING) ? state.get(HorizontalFacingBlock.FACING) : Direction.NORTH;
-        this.targetYaw = direction.asRotation();
+        Direction direction = state.hasProperty(HorizontalDirectionalBlock.FACING) ? state.getValue(HorizontalDirectionalBlock.FACING) : Direction.NORTH;
+        this.targetYaw = direction.toYRot();
         this.targetPitch = 0;
     }
 
-    public void markForUpdate(ServerWorld world) {
-        world.getChunkManager().markForUpdate(this.getPos());
+    public void markForUpdate(ServerLevel world) {
+        world.getChunkSource().blockChanged(this.getBlockPos());
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, SlumbersocketBlockEntity blockEntity) {
-        if(world.isClient()) {
+    public static void tick(Level world, BlockPos pos, BlockState state, SlumbersocketBlockEntity blockEntity) {
+        if(world.isClientSide()) {
             double x = pos.getX() + 0.5;
             double y = pos.getY() + 0.5;
             double z = pos.getZ() + 0.5;
-            PlayerEntity playerEntity = world.getClosestPlayer(x, y, z, 16.0, false);
+            Player playerEntity = world.getNearestPlayer(x, y, z, 16.0, false);
             if (playerEntity != null) {
-                Vec3d offset = playerEntity.getEyePos().subtract(x, y, z).normalize();
-                blockEntity.targetYaw = (float)Math.toDegrees(MathHelper.atan2(offset.z, offset.x)) - 90;
-                blockEntity.targetPitch = (float)Math.toDegrees(MathHelper.atan2(offset.y, offset.horizontalLength()));
+                Vec3 offset = playerEntity.getEyePosition().subtract(x, y, z).normalize();
+                blockEntity.targetYaw = (float)Math.toDegrees(Mth.atan2(offset.z, offset.x)) - 90;
+                blockEntity.targetPitch = (float)Math.toDegrees(Mth.atan2(offset.y, offset.horizontalDistance()));
             } else {
                 blockEntity.setDefaultLookTarget(state);
             }
@@ -132,17 +132,17 @@ public class SlumbersocketBlockEntity extends BlockEntity {
             blockEntity.prevPitch = blockEntity.pitch;
 
             float turnSpeed = isDreaming(state) ? 0.015f : 0.07f;
-            blockEntity.yaw = MathHelper.lerpAngleDegrees(turnSpeed, blockEntity.yaw, blockEntity.targetYaw);
-            blockEntity.pitch = MathHelper.lerp(turnSpeed, blockEntity.pitch, blockEntity.targetPitch);
-        } else if(world instanceof ServerWorld serverWorld) {
+            blockEntity.yaw = Mth.rotLerp(turnSpeed, blockEntity.yaw, blockEntity.targetYaw);
+            blockEntity.pitch = Mth.lerp(turnSpeed, blockEntity.pitch, blockEntity.targetPitch);
+        } else if(world instanceof ServerLevel serverWorld) {
             blockEntity.timer++;
 
             if (blockEntity.timer % 100 == 0) {
-                if(state.contains(SlumbersocketBlock.DREAMING)) {
-                    boolean dreaming = state.get(SlumbersocketBlock.DREAMING);
+                if(state.hasProperty(SlumbersocketBlock.DREAMING)) {
+                    boolean dreaming = state.getValue(SlumbersocketBlock.DREAMING);
                     ItemStack heldItem = blockEntity.getHeldItem();
-                    if(!dreaming && (heldItem.isOf(Items.ENDER_EYE) || heldItem.isOf(MirthdewEncoreItems.SLUMBERING_EYE)) && !heldItem.contains(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
-                        if(world.getBlockState(pos.down()).isAir()) {
+                    if(!dreaming && (heldItem.is(Items.ENDER_EYE) || heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE)) && !heldItem.has(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
+                        if(world.getBlockState(pos.below()).isAir()) {
                             attemptEat(serverWorld, pos, state, blockEntity);
                         }
                     }
@@ -151,11 +151,11 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         }
     }
 
-    public static void attemptEat(ServerWorld world, BlockPos pos, BlockState state, SlumbersocketBlockEntity blockEntity) {
-        Optional<BlockPos> blockPosOptional = BlockPos.findClosest(pos, 8, 8, (blockPos -> {
+    public static void attemptEat(ServerLevel world, BlockPos pos, BlockState state, SlumbersocketBlockEntity blockEntity) {
+        Optional<BlockPos> blockPosOptional = BlockPos.findClosestMatch(pos, 8, 8, (blockPos -> {
             BlockState checkState = world.getBlockState(blockPos);
-            if(checkState.isOf(MirthdewEncoreBlocks.DREAMSEED)) {
-                return checkState.get(DreamseedBlock.LIT);
+            if(checkState.is(MirthdewEncoreBlocks.DREAMSEED)) {
+                return checkState.getValue(DreamseedBlock.LIT);
             } else {
                 return false;
             }
@@ -172,52 +172,52 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         RegionPos regionPos = stage.getRegionPos();
 
         BlockPos seedBlockPos = blockPosOptional.get();
-        world.setBlockState(seedBlockPos, Blocks.SOUL_FIRE.getDefaultState());
-        world.setBlockState(pos, state.with(SlumbersocketBlock.DREAMING, true));
+        world.setBlockAndUpdate(seedBlockPos, Blocks.SOUL_FIRE.defaultBlockState());
+        world.setBlockAndUpdate(pos, state.setValue(SlumbersocketBlock.DREAMING, true));
 
         ItemStack itemStack = blockEntity.getHeldItem();
-        ItemStack newStack = MirthdewEncoreItems.SLUMBERING_EYE.getDefaultStack();
-        newStack.applyChanges(itemStack.getComponentChanges());
+        ItemStack newStack = MirthdewEncoreItems.SLUMBERING_EYE.getDefaultInstance();
+        newStack.applyComponentsAndValidate(itemStack.getComponentsPatch());
 
-        Random random = world.getRandom();
+        RandomSource random = world.getRandom();
         BlockPos targetPos = new BlockPos(
                 regionPos.getCenterX() + random.nextInt(256) - 128,
                 64,
                 regionPos.getCenterZ() + random.nextInt(256) - 128
         );
-        if(stage.getWorld() instanceof ServerWorld serverWorld) {
-            EndPlatformFeature.generate(serverWorld, targetPos, true);
+        if(stage.getWorld() instanceof ServerLevel serverWorld) {
+            EndPlatformFeature.createEndPlatform(serverWorld, targetPos, true);
         }
 
-        newStack.set(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT, LocationComponent.fromPosAndWorld(targetPos.toBottomCenterPos(), stage.getWorld()));
+        newStack.set(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT, LocationComponent.fromPosAndWorld(targetPos.getBottomCenter(), stage.getWorld()));
         blockEntity.setHeldItem(newStack);
 
-        Vec3d socketPos = new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-        world.playSound(null, socketPos.x, socketPos.y, socketPos.z, SoundEvents.ENTITY_ENDERMAN_SCREAM, SoundCategory.BLOCKS, 0.3F, 0.3F);
+        Vec3 socketPos = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+        world.playSound(null, socketPos.x, socketPos.y, socketPos.z, SoundEvents.ENDERMAN_SCREAM, SoundSource.BLOCKS, 0.3F, 0.3F);
 
-        Vec3d seedOffset = new Vec3d(seedBlockPos.getX() + 0.5, seedBlockPos.getY() + 0.5, seedBlockPos.getZ() + 0.5).subtract(socketPos);
+        Vec3 seedOffset = new Vec3(seedBlockPos.getX() + 0.5, seedBlockPos.getY() + 0.5, seedBlockPos.getZ() + 0.5).subtract(socketPos);
 
-        ParticleEffect particleEffect = new ItemStackParticleEffect(ParticleTypes.ITEM, MirthdewEncoreItems.DREAMSEED.getDefaultStack());
+        ParticleOptions particleEffect = new ItemParticleOption(ParticleTypes.ITEM, MirthdewEncoreItems.DREAMSEED.getDefaultInstance());
 
-        if(world instanceof ServerWorld serverWorld) {
+        if(world instanceof ServerLevel serverWorld) {
             for (int i = 0; i < 4 + 10 * seedOffset.length(); i++) {
-                Vec3d particlePos = socketPos.add(seedOffset.multiply(random.nextFloat()));
+                Vec3 particlePos = socketPos.add(seedOffset.scale(random.nextFloat()));
 
-                serverWorld.spawnParticles(ParticleTypes.ENCHANT,
+                serverWorld.sendParticles(ParticleTypes.ENCHANT,
                         particlePos.x,
                         particlePos.y,
                         particlePos.z,
                         6,
                         0.1, 0.1, 0.1, 0.05);
 
-                serverWorld.spawnParticles(ParticleTypes.WITCH,
+                serverWorld.sendParticles(ParticleTypes.WITCH,
                         particlePos.x,
                         particlePos.y,
                         particlePos.z,
                         3,
                         0.1, 0.1, 0.1, 0.05);
 
-                serverWorld.spawnParticles(particleEffect,
+                serverWorld.sendParticles(particleEffect,
                         particlePos.x,
                         particlePos.y,
                         particlePos.z,
@@ -228,6 +228,6 @@ public class SlumbersocketBlockEntity extends BlockEntity {
     }
 
     public static boolean isDreaming(BlockState state) {
-        return state.contains(SlumbersocketBlock.DREAMING) ? state.get(SlumbersocketBlock.DREAMING) : false;
+        return state.hasProperty(SlumbersocketBlock.DREAMING) ? state.getValue(SlumbersocketBlock.DREAMING) : false;
     }
 }

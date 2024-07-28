@@ -1,6 +1,6 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
-import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.level.border.WorldBorder;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 public class DreamtwirlWorldBorder extends WorldBorder {
@@ -12,8 +12,8 @@ public class DreamtwirlWorldBorder extends WorldBorder {
     }
 
     @Override
-    public boolean contains(double x, double z, double margin) {
-        if(super.contains(x, z, margin)) {
+    public boolean isWithinBounds(double x, double z, double margin) {
+        if(super.isWithinBounds(x, z, margin)) {
             RegionPos regionPos = RegionPos.fromWorldCoordsDoubles(x, z);
             DreamtwirlBorder dreamtwirlBorder = this.dreamtwirlWorldAttachment.getDreamtwirlBorder(regionPos);
 
@@ -36,17 +36,17 @@ public class DreamtwirlWorldBorder extends WorldBorder {
     }
 
     @Override
-    public void interpolateSize(double fromSize, double toSize, long time) {
+    public void lerpSizeBetween(double fromSize, double toSize, long time) {
         // empty
     }
 
     @Override
-    public void setMaxRadius(int maxRadius) {
+    public void setAbsoluteMaxSize(int maxRadius) {
         // empty
     }
 
     @Override
-    public void setSafeZone(double safeZone) {
+    public void setDamageSafeZone(double safeZone) {
         // empty
     }
 

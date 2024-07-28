@@ -1,27 +1,27 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.function.BooleanBiFunction;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.TeleportTarget;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
-import phanastrae.mirthdew_encore.mixin.ProjectileEntityAccessor;
+import phanastrae.mirthdew_encore.mixin.ProjectileAccessor;
 import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
@@ -38,8 +38,8 @@ public class EntityDreamtwirlData {
     }
 
     public void tick() {
-        World world = this.entity.getWorld();
-        if(!world.isClient()) {
+        Level world = this.entity.level();
+        if(!world.isClientSide()) {
             DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
             boolean nowInDreamtwirl = DTWA != null;
 
@@ -49,12 +49,12 @@ public class EntityDreamtwirlData {
             }
 
             if (!nowInDreamtwirl) return;
-            if (world.getTime() % 80L == 0L) {
+            if (world.getGameTime() % 80L == 0L) {
                 if (this.entity instanceof LivingEntity livingEntity) {
-                    livingEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
+                    livingEntity.addEffect(new MobEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
                 }
                 if (this.entity instanceof LivingEntity livingEntity) {
-                    livingEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.MIRTHFUL_ENTRY, 200, 0, true, true));
+                    livingEntity.addEffect(new MobEffectInstance(MirthdewEncoreStatusEffects.MIRTHFUL_ENTRY, 200, 0, true, true));
                 }
             }
 
@@ -86,10 +86,10 @@ public class EntityDreamtwirlData {
                         }
                     }
 
-                    if (this.entity instanceof ProjectileEntity projectileEntity) {
-                        HitResult hitResult = dreamtwirlBorder.voxelShape.raycast(entity.getPos(), entity.getPos().add(entity.getVelocity()), BlockPos.ofFloored(entity.getPos()));
+                    if (this.entity instanceof Projectile projectileEntity) {
+                        HitResult hitResult = dreamtwirlBorder.voxelShape.clip(entity.position(), entity.position().add(entity.getDeltaMovement()), BlockPos.containing(entity.position()));
                         if (hitResult != null && !hitResult.getType().equals(HitResult.Type.MISS)) {
-                            ((ProjectileEntityAccessor) projectileEntity).invokeOnCollision(hitResult);
+                            ((ProjectileAccessor) projectileEntity).invokeOnHit(hitResult);
                         }
                     }
                 }
@@ -118,19 +118,19 @@ public class EntityDreamtwirlData {
         if(this.isInDreamtwirlRegion(dreamtwirlRegion)) {
             return false;
         } else {
-            Vec3d vec3d = new Vec3d(dreamtwirlRegion.getCenterX(), 64, dreamtwirlRegion.getCenterZ());
-            TeleportTarget teleportTarget = createTeleportTarget(MirthdewEncoreDimensions.DREAMTWIRL_WORLD, vec3d);
+            Vec3 vec3d = new Vec3(dreamtwirlRegion.getCenterX(), 64, dreamtwirlRegion.getCenterZ());
+            DimensionTransition teleportTarget = createTeleportTarget(MirthdewEncoreDimensions.DREAMTWIRL_WORLD, vec3d);
             if(teleportTarget == null) {
                 return false;
             }
 
             if(teleportEntity(this.entity, teleportTarget)) {
-                if(this.entity instanceof PlayerEntity) {
+                if(this.entity instanceof Player) {
                     MirthdewEncore.LOGGER.info("Player {} was sent to the Dreamtwirl ({}, {})", this.entity.getName().getString(), dreamtwirlRegion.regionX, dreamtwirlRegion.regionZ);
                 }
                 this.setDreamtwirlRegion(dreamtwirlRegion);
                 if(this.entity instanceof LivingEntity livingEntity) {
-                    livingEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
+                    livingEntity.addEffect(new MobEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
                 }
                 return true;
             } else {
@@ -143,28 +143,28 @@ public class EntityDreamtwirlData {
         if(!this.isInDreamtwirl()) {
             return false;
         } else {
-            TeleportTarget teleportTarget;
-            if(this.entity instanceof ServerPlayerEntity serverPlayerEntity) {
-                teleportTarget = serverPlayerEntity.getRespawnTarget(false, TeleportTarget.NO_OP);
+            DimensionTransition teleportTarget;
+            if(this.entity instanceof ServerPlayer serverPlayerEntity) {
+                teleportTarget = serverPlayerEntity.findRespawnPositionAndUseSpawnBlock(false, DimensionTransition.DO_NOTHING);
             } else {
-                World currentWorld = this.entity.getWorld();
-                if (!(currentWorld instanceof ServerWorld)) {
+                Level currentWorld = this.entity.level();
+                if (!(currentWorld instanceof ServerLevel)) {
                     return false;
                 }
-                RegistryKey<World> targetKey = World.OVERWORLD;
+                ResourceKey<Level> targetKey = Level.OVERWORLD;
                 MinecraftServer server = currentWorld.getServer();
-                ServerWorld targetWorld = server.getWorld(targetKey);
+                ServerLevel targetWorld = server.getLevel(targetKey);
                 if (targetWorld == null) {
                     return false;
                 }
 
-                BlockPos blockPos = targetWorld.getSpawnPos();
-                Vec3d vec3d = this.entity.getWorldSpawnPos(targetWorld, blockPos).toBottomCenterPos();
+                BlockPos blockPos = targetWorld.getSharedSpawnPos();
+                Vec3 vec3d = this.entity.adjustSpawnLocation(targetWorld, blockPos).getBottomCenter();
                 teleportTarget = createTeleportTarget(targetWorld, vec3d);
             }
 
             if (teleportEntity(this.entity, teleportTarget)) {
-                if(this.entity instanceof PlayerEntity) {
+                if(this.entity instanceof Player) {
                     MirthdewEncore.LOGGER.info("Player {} was ejected from a Dreamtwirl", this.entity.getName().getString());
                 }
                 this.setDreamtwirlRegion(null);
@@ -180,7 +180,7 @@ public class EntityDreamtwirlData {
     }
 
     public boolean canLeave() {
-        return this.entity.canUsePortals(true) && this.entity instanceof PlayerEntity;
+        return this.entity.canUsePortal(true) && this.entity instanceof Player;
     }
 
     public void setDreamtwirlRegion(@Nullable RegionPos region) {
@@ -189,7 +189,7 @@ public class EntityDreamtwirlData {
     }
 
     public static VoxelShape addCollisionsTo(@Nullable VoxelShape original, Entity entity) {
-        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(entity.getWorld());
+        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(entity.level());
         if(DTWA == null) {
             return original;
         }
@@ -200,7 +200,7 @@ public class EntityDreamtwirlData {
         if(original == null) {
             return newShape;
         } else {
-            return VoxelShapes.combine(original, newShape, BooleanBiFunction.OR);
+            return Shapes.joinUnoptimized(original, newShape, BooleanOp.OR);
         }
     }
 
@@ -214,18 +214,18 @@ public class EntityDreamtwirlData {
         return MEA.getDreamtwirlEntityData().leaveDreamtwirl();
     }
 
-    public static boolean teleportEntity(Entity entity, TeleportTarget teleportTarget) {
-        World currentWorld = entity.getWorld();
-        if(!(currentWorld instanceof ServerWorld serverWorld)) {
+    public static boolean teleportEntity(Entity entity, DimensionTransition teleportTarget) {
+        Level currentWorld = entity.level();
+        if(!(currentWorld instanceof ServerLevel serverWorld)) {
             return false;
         }
         MinecraftServer server = currentWorld.getServer();
-        ServerWorld targetWorld = teleportTarget.world();
+        ServerLevel targetWorld = teleportTarget.newLevel();
 
-        if (server.isWorldAllowed(targetWorld)
-                && (targetWorld.getRegistryKey() == serverWorld.getRegistryKey() || entity.canTeleportBetween(serverWorld, targetWorld))) {
+        if (server.isLevelEnabled(targetWorld)
+                && (targetWorld.dimension() == serverWorld.dimension() || entity.canChangeDimensions(serverWorld, targetWorld))) {
             entity.fallDistance = 0;
-            entity.teleportTo(teleportTarget);
+            entity.changeDimension(teleportTarget);
             return true;
         } else {
             return false;
@@ -233,13 +233,13 @@ public class EntityDreamtwirlData {
     }
 
     @Nullable
-    public TeleportTarget createTeleportTarget(RegistryKey<World> worldKey, Vec3d position) {
-        World currentWorld = entity.getWorld();
-        if(!(currentWorld instanceof ServerWorld serverWorld)) {
+    public DimensionTransition createTeleportTarget(ResourceKey<Level> worldKey, Vec3 position) {
+        Level currentWorld = entity.level();
+        if(!(currentWorld instanceof ServerLevel serverWorld)) {
             return null;
         }
         MinecraftServer server = currentWorld.getServer();
-        ServerWorld targetWorld = server.getWorld(worldKey);
+        ServerLevel targetWorld = server.getLevel(worldKey);
         if(targetWorld == null) {
             return null;
         }
@@ -247,14 +247,14 @@ public class EntityDreamtwirlData {
         return createTeleportTarget(targetWorld, position);
     }
 
-    public TeleportTarget createTeleportTarget(ServerWorld targetWorld, Vec3d position) {
-        return new TeleportTarget(
+    public DimensionTransition createTeleportTarget(ServerLevel targetWorld, Vec3 position) {
+        return new DimensionTransition(
                 targetWorld,
                 position,
-                Vec3d.ZERO,
-                entity.getYaw(),
-                entity.getPitch(),
-                TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET.then(TeleportTarget.ADD_PORTAL_CHUNK_TICKET)
+                Vec3.ZERO,
+                entity.getYRot(),
+                entity.getXRot(),
+                DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET)
         );
     }
 }

@@ -1,25 +1,25 @@
 package phanastrae.mirthdew_encore.network.packet;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 
-public record FoodDebtUpdatePayload(int foodLevelDebt) implements CustomPayload {
-    public static final PacketCodec<RegistryByteBuf, FoodDebtUpdatePayload> PACKET_CODEC = CustomPayload.codecOf(FoodDebtUpdatePayload::write, FoodDebtUpdatePayload::new);
-    public static final CustomPayload.Id<FoodDebtUpdatePayload> PACKET_ID = new CustomPayload.Id<>(MirthdewEncore.id("food_debt_update"));
+public record FoodDebtUpdatePayload(int foodLevelDebt) implements CustomPacketPayload {
+    public static final StreamCodec<RegistryFriendlyByteBuf, FoodDebtUpdatePayload> PACKET_CODEC = CustomPacketPayload.codec(FoodDebtUpdatePayload::write, FoodDebtUpdatePayload::new);
+    public static final CustomPacketPayload.Type<FoodDebtUpdatePayload> PACKET_ID = new CustomPacketPayload.Type<>(MirthdewEncore.id("food_debt_update"));
 
-    public FoodDebtUpdatePayload(PacketByteBuf buf) {
+    public FoodDebtUpdatePayload(FriendlyByteBuf buf) {
         this(buf.readInt());
     }
 
-    public void write(PacketByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeInt(this.foodLevelDebt);
     }
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 }

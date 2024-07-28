@@ -1,25 +1,29 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.network.ChunkDataSender;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerLightingProvider;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.LightType;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.*;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ThreadedLevelLightEngine;
+import net.minecraft.server.network.PlayerChunkSender;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.level.chunk.PalettedContainer;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.levelgen.Heightmap;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.util.RegionPos;
@@ -32,13 +36,13 @@ import java.util.Map;
 
 public class DreamtwirlStage {
 
-    private final World world;
+    private final Level world;
     private final long id;
     private final RegionPos regionPos;
     private final long timestamp;
     private boolean markDirty = false;
 
-    public DreamtwirlStage(World world, long id, long timestamp) {
+    public DreamtwirlStage(Level world, long id, long timestamp) {
         this.world = world;
         this.id = id;
         this.regionPos = new RegionPos(id);
@@ -50,73 +54,73 @@ public class DreamtwirlStage {
         return ((rp.regionX & 0x1) == 0) && ((rp.regionZ & 0x1) == 0);
     }
 
-    public void generate(ServerWorld serverWorld) {
+    public void generate(ServerLevel serverWorld) {
         DreamtwirlStageGenerator dreamtwirlStageGenerator = new DreamtwirlStageGenerator(this, serverWorld);
         dreamtwirlStageGenerator.generate();
     }
 
-    public void clear(ServerWorld serverWorld) {
+    public void clear(ServerLevel serverWorld) {
         DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(serverWorld);
         if(DTWA == null) {
             MirthdewEncore.LOGGER.warn("Someone tried to clear a non Dreamtwirl region???? how???");
             return;
         }
         // TODO this is a dubiously functional and safe debug command, delete or improve before release
-        ChunkPos regionChunkPos = ChunkPos.fromRegion(this.regionPos.regionX, this.regionPos.regionZ);
+        ChunkPos regionChunkPos = ChunkPos.minFromRegion(this.regionPos.regionX, this.regionPos.regionZ);
 
-        PalettedContainer<BlockState> airBlockStateContainer = new PalettedContainer<>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
-        PalettedContainer<BlockState> barrierBlockStateContainer = new PalettedContainer<>(Block.STATE_IDS, MirthdewEncoreBlocks.DREAMTWIRL_BARRIER.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
-        Registry<Biome> biomeRegistry = serverWorld.getRegistryManager().get(RegistryKeys.BIOME);
-        PalettedContainer<RegistryEntry<Biome>> biomeContainer = new PalettedContainer<>(
-                biomeRegistry.getIndexedEntries(), biomeRegistry.entryOf(MirthdewEncoreBiomes.DREAMTWIRL), PalettedContainer.PaletteProvider.BIOME
+        PalettedContainer<BlockState> airBlockStateContainer = new PalettedContainer<>(Block.BLOCK_STATE_REGISTRY, Blocks.AIR.defaultBlockState(), PalettedContainer.Strategy.SECTION_STATES);
+        PalettedContainer<BlockState> barrierBlockStateContainer = new PalettedContainer<>(Block.BLOCK_STATE_REGISTRY, MirthdewEncoreBlocks.DREAMTWIRL_BARRIER.defaultBlockState(), PalettedContainer.Strategy.SECTION_STATES);
+        Registry<Biome> biomeRegistry = serverWorld.registryAccess().registryOrThrow(Registries.BIOME);
+        PalettedContainer<Holder<Biome>> biomeContainer = new PalettedContainer<>(
+                biomeRegistry.asHolderIdMap(), biomeRegistry.getHolderOrThrow(MirthdewEncoreBiomes.DREAMTWIRL), PalettedContainer.Strategy.SECTION_BIOMES
         );
 
-        PacketByteBuf airBuf = PacketByteBufs.create();
+        FriendlyByteBuf airBuf = PacketByteBufs.create();
         airBuf.writeShort(0);
-        airBlockStateContainer.writePacket(airBuf);
-        biomeContainer.writePacket(airBuf);
+        airBlockStateContainer.write(airBuf);
+        biomeContainer.write(airBuf);
 
-        ServerLightingProvider serverLightingProvider = serverWorld.getChunkManager().getLightingProvider();
+        ThreadedLevelLightEngine serverLightingProvider = serverWorld.getChunkSource().getLightEngine();
         for(int i = 1; i < 31; i++) {
             for(int j = 1; j < 31; j++) {
 
                 ChunkPos chunkPos = new ChunkPos(regionChunkPos.x + i, regionChunkPos.z + j);
-                Chunk chunk = serverWorld.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.FULL, false);
-                if(chunk instanceof WorldChunk worldChunk) {
+                ChunkAccess chunk = serverWorld.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.FULL, false);
+                if(chunk instanceof LevelChunk worldChunk) {
                     int sectionsCleared = 0;
-                    ChunkSection[] sections = worldChunk.getSectionArray();
+                    LevelChunkSection[] sections = worldChunk.getSections();
                     for(int s = 0; s < sections.length; s++) {
-                        ChunkSection section = sections[s];
-                        if(section.isEmpty()) continue;
+                        LevelChunkSection section = sections[s];
+                        if(section.hasOnlyAir()) continue;
                         airBuf.resetReaderIndex();
-                        section.readDataPacket(airBuf);
-                        section.calculateCounts();
+                        section.read(airBuf);
+                        section.recalcBlockCounts();
                         sectionsCleared++;
 
-                        ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, s);
-                        serverLightingProvider.setSectionStatus(chunkSectionPos, true);
-                        serverLightingProvider.enqueueSectionData(LightType.BLOCK, chunkSectionPos, null);
-                        serverLightingProvider.enqueueSectionData(LightType.SKY, chunkSectionPos, null);
+                        SectionPos chunkSectionPos = SectionPos.of(chunkPos, s);
+                        serverLightingProvider.updateSectionStatus(chunkSectionPos, true);
+                        serverLightingProvider.queueSectionData(LightLayer.BLOCK, chunkSectionPos, null);
+                        serverLightingProvider.queueSectionData(LightLayer.SKY, chunkSectionPos, null);
                     }
                     if(sectionsCleared == 0) {
                         continue;
                     }
 
-                    List<Heightmap.Type> heightmapTypes = new ArrayList<>();
-                    for(Map.Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
+                    List<Heightmap.Types> heightmapTypes = new ArrayList<>();
+                    for(Map.Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
                         heightmapTypes.add(entry.getKey());
                     }
-                    EnumSet<Heightmap.Type> enumSet = EnumSet.copyOf(heightmapTypes);
-                    Heightmap.populateHeightmaps(chunk, enumSet);
+                    EnumSet<Heightmap.Types> enumSet = EnumSet.copyOf(heightmapTypes);
+                    Heightmap.primeHeightmaps(chunk, enumSet);
 
-                    worldChunk.clear();
-                    worldChunk.setNeedsSaving(true);
+                    worldChunk.clearAllBlockEntities();
+                    worldChunk.setUnsaved(true);
 
-                    List<ServerPlayerEntity> l = serverWorld.getChunkManager().chunkLoadingManager.getPlayersWatchingChunk(chunkPos, false);
+                    List<ServerPlayer> l = serverWorld.getChunkSource().chunkMap.getPlayers(chunkPos, false);
                     l.forEach(serverPlayerEntity -> {
-                        ChunkDataSender chunkDataSender = serverPlayerEntity.networkHandler.chunkDataSender;
-                        chunkDataSender.unload(serverPlayerEntity, chunkPos);
-                        chunkDataSender.add(worldChunk);
+                        PlayerChunkSender chunkDataSender = serverPlayerEntity.connection.chunkSender;
+                        chunkDataSender.dropChunk(serverPlayerEntity, chunkPos);
+                        chunkDataSender.markChunkPendingToSend(worldChunk);
                     });
 
                     // TODO clear pathnodetypecache if necessary? probably not though
@@ -125,7 +129,7 @@ public class DreamtwirlStage {
         }
     }
 
-    public void tick(ServerWorld world) {
+    public void tick(ServerLevel world) {
 
     }
 
@@ -153,17 +157,17 @@ public class DreamtwirlStage {
         return this.regionPos;
     }
 
-    public World getWorld() {
+    public Level getWorld() {
         return this.world;
     }
 
-    public NbtCompound writeNbt(NbtCompound nbt) {
+    public CompoundTag writeNbt(CompoundTag nbt) {
         nbt.putLong("Id", this.getId());
         nbt.putLong("Timestamp", this.getTimestamp());
         return nbt;
     }
 
-    public static DreamtwirlStage fromNbt(World world, NbtCompound nbt) {
+    public static DreamtwirlStage fromNbt(Level world, CompoundTag nbt) {
         long id = nbt.getLong("Id");
         long timestamp = nbt.getLong("Timestamp");
         return new DreamtwirlStage(world, id, timestamp);

@@ -1,25 +1,26 @@
 package phanastrae.mirthdew_encore.client.render.world;
 
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.gl.SimpleFramebuffer;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.chunk.ChunkBuilder;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
 import phanastrae.mirthdew_encore.client.render.shader.MirthdewEncoreShaders;
-import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlBorder;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
+import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
 import java.util.Objects;
@@ -27,23 +28,23 @@ import java.util.Objects;
 public class DreamtwirlBorderRenderer {
 
     @Nullable
-    private static Framebuffer framebuffer;
+    private static RenderTarget framebuffer;
     private static int fbWidth;
     private static int fbHeight;
 
-    public static void render(ClientWorld clientWorld, Camera camera, MatrixStack matrices) {
-        if(!clientWorld.getDimensionEntry().matchesKey(MirthdewEncoreDimensions.DREAMTWIRL_DIM_TYPE)) {
+    public static void render(ClientLevel clientWorld, Camera camera, PoseStack matrices) {
+        if(!clientWorld.dimensionTypeRegistration().is(MirthdewEncoreDimensions.DREAMTWIRL_DIM_TYPE)) {
             return;
         }
 
         RegionPos regionPos = getRegionPosFromEntityOrElseCamera(camera);
 
-        double camX = camera.getPos().x;
-        double camY = camera.getPos().y;
-        double camZ = camera.getPos().z;
+        double camX = camera.getPosition().x;
+        double camY = camera.getPosition().y;
+        double camZ = camera.getPosition().z;
 
         int centerX = regionPos.getCenterX();
-        int centerY = (MathHelper.floor(camY) >> 4) << 4;
+        int centerY = (Mth.floor(camY) >> 4) << 4;
         int centerZ = regionPos.getCenterZ();
 
         DreamtwirlBorder border = new DreamtwirlBorder(regionPos);
@@ -59,35 +60,35 @@ public class DreamtwirlBorderRenderer {
         RenderSystem.enableDepthTest();
         RenderSystem.colorMask(false, false, false, false);
 
-        RenderSystem.setShader(GameRenderer::getPositionProgram);
-        BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+        RenderSystem.setShader(GameRenderer::getPositionShader);
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
 
-        matrices.push();
+        matrices.pushPose();
         matrices.translate(centerX - camX, centerY - camY, centerZ - camZ);
-        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+        Matrix4f matrix4f = matrices.last().pose();
 
-        bufferBuilder.vertex(matrix4f, minX, maxY, minZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, minZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, minZ);
-        bufferBuilder.vertex(matrix4f, maxX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, minZ);
 
-        bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, maxZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, maxZ);
-        bufferBuilder.vertex(matrix4f, minX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, maxZ);
 
-        bufferBuilder.vertex(matrix4f, minX, maxY, maxZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, maxZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, minZ);
-        bufferBuilder.vertex(matrix4f, minX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, minZ);
 
-        bufferBuilder.vertex(matrix4f, maxX, maxY, minZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, minZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, maxZ);
-        bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, maxZ);
 
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-        matrices.pop();
+        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+        matrices.popPose();
 
         RenderSystem.colorMask(true, true, true, true);
 
@@ -98,124 +99,124 @@ public class DreamtwirlBorderRenderer {
         minZ = border.minZ - centerZ + 1/32F;
         maxZ = border.maxZ - centerZ - 1/32F;
 
-        MinecraftClient client = MinecraftClient.getInstance();
-        Framebuffer clientFramebuffer = client.getFramebuffer();
-        int width = clientFramebuffer.viewportWidth;
-        int height = clientFramebuffer.viewportHeight;
+        Minecraft client = Minecraft.getInstance();
+        RenderTarget clientFramebuffer = client.getMainRenderTarget();
+        int width = clientFramebuffer.viewWidth;
+        int height = clientFramebuffer.viewHeight;
         if(framebuffer == null) {
-            framebuffer = new SimpleFramebuffer(width, height, true, MinecraftClient.IS_SYSTEM_MAC);
+            framebuffer = new TextureTarget(width, height, true, Minecraft.ON_OSX);
             fbWidth = width;
             fbHeight = height;
         } else if(width != fbWidth || height != fbHeight) {
-            framebuffer.resize(width, height, MinecraftClient.IS_SYSTEM_MAC);
+            framebuffer.resize(width, height, Minecraft.ON_OSX);
             fbWidth = width;
             fbHeight = height;
         }
 
         framebuffer.setClearColor(0F, 0F, 0F, 0F);
-        framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+        framebuffer.clear(Minecraft.ON_OSX);
 
-        framebuffer.beginWrite(false);
+        framebuffer.bindWrite(false);
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.viewport(0, 0, width, height);
         RenderSystem.disableBlend();
 
-        ShaderProgram shaderProgram = Objects.requireNonNull(client.gameRenderer.blitScreenProgram, "Blit shader not loaded");
-        shaderProgram.addSampler("DiffuseSampler", clientFramebuffer.getColorAttachment());
-        shaderProgram.bind();
-        bufferBuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.DrawMode.QUADS, VertexFormats.BLIT_SCREEN);
-        bufferBuilder.vertex(0.0F, 0.0F, 0.0F);
-        bufferBuilder.vertex(1.0F, 0.0F, 0.0F);
-        bufferBuilder.vertex(1.0F, 1.0F, 0.0F);
-        bufferBuilder.vertex(0.0F, 1.0F, 0.0F);
-        BufferRenderer.draw(bufferBuilder.end());
-        shaderProgram.unbind();
+        ShaderInstance shaderProgram = Objects.requireNonNull(client.gameRenderer.blitShader, "Blit shader not loaded");
+        shaderProgram.setSampler("DiffuseSampler", clientFramebuffer.getColorTextureId());
+        shaderProgram.apply();
+        bufferBuilder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLIT_SCREEN);
+        bufferBuilder.addVertex(0.0F, 0.0F, 0.0F);
+        bufferBuilder.addVertex(1.0F, 0.0F, 0.0F);
+        bufferBuilder.addVertex(1.0F, 1.0F, 0.0F);
+        bufferBuilder.addVertex(0.0F, 1.0F, 0.0F);
+        BufferUploader.draw(bufferBuilder.buildOrThrow());
+        shaderProgram.clear();
 
         RenderSystem.enableBlend();
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
-        clientFramebuffer.beginWrite(false);
+        clientFramebuffer.bindWrite(false);
 
 
 
         RenderSystem.setShader(MirthdewEncoreShaders::getDreamtwirlBarrierShader);
-        bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-        RenderSystem.setShaderTexture(0, framebuffer.getColorAttachment());
+        bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+        RenderSystem.setShaderTexture(0, framebuffer.getColorTextureId());
 
-        matrices.push();
+        matrices.pushPose();
         matrices.translate(centerX - camX, centerY - camY, centerZ - camZ);
-        matrix4f = matrices.peek().getPositionMatrix();
+        matrix4f = matrices.last().pose();
 
-        bufferBuilder.vertex(matrix4f, minX, maxY, minZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, minZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, minZ);
-        bufferBuilder.vertex(matrix4f, maxX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, minZ);
 
-        bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, maxZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, maxZ);
-        bufferBuilder.vertex(matrix4f, minX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, maxZ);
 
-        bufferBuilder.vertex(matrix4f, minX, maxY, maxZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, maxZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, minZ);
-        bufferBuilder.vertex(matrix4f, minX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, minZ);
 
-        bufferBuilder.vertex(matrix4f, maxX, maxY, minZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, minZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, maxZ);
-        bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, maxZ);
 
 
-        bufferBuilder.vertex(matrix4f, minX, maxY, minZ);
-        bufferBuilder.vertex(matrix4f, maxX, maxY, minZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, minZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, minZ);
 
-        bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ);
-        bufferBuilder.vertex(matrix4f, minX, maxY, maxZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, maxZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, maxZ);
 
-        bufferBuilder.vertex(matrix4f, minX, maxY, maxZ);
-        bufferBuilder.vertex(matrix4f, minX, maxY, minZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, minZ);
-        bufferBuilder.vertex(matrix4f, minX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, minX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, minX, minY, maxZ);
 
-        bufferBuilder.vertex(matrix4f, maxX, maxY, minZ);
-        bufferBuilder.vertex(matrix4f, maxX, maxY, maxZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, maxZ);
-        bufferBuilder.vertex(matrix4f, maxX, minY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, minZ);
+        bufferBuilder.addVertex(matrix4f, maxX, maxY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, maxZ);
+        bufferBuilder.addVertex(matrix4f, maxX, minY, minZ);
 
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-        matrices.pop();
+        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+        matrices.popPose();
 
         RenderSystem.disableDepthTest();
     }
 
     public static void close() {
         if(framebuffer != null) {
-            framebuffer.delete();
+            framebuffer.destroyBuffers();
             fbWidth = 0;
             fbHeight = 0;
         }
     }
 
-    public static Vec3d getVec3dFromEntityOrElseDefault(Vec3d cameraPos) {
-        Entity entity = MinecraftClient.getInstance().getCameraEntity();
-        return entity == null ? cameraPos : entity.getPos();
+    public static Vec3 getVec3dFromEntityOrElseDefault(Vec3 cameraPos) {
+        Entity entity = Minecraft.getInstance().getCameraEntity();
+        return entity == null ? cameraPos : entity.position();
     }
 
-    public static RegionPos getRegionPosFromEntityOrElseVec3d(Vec3d cameraPos) {
+    public static RegionPos getRegionPosFromEntityOrElseVec3d(Vec3 cameraPos) {
         return RegionPos.fromVec3d(getVec3dFromEntityOrElseDefault(cameraPos));
     }
 
     public static RegionPos getRegionPosFromEntityOrElseCamera(Camera camera) {
-        return getRegionPosFromEntityOrElseVec3d(camera.getPos());
+        return getRegionPosFromEntityOrElseVec3d(camera.getPosition());
     }
 
-    public static void hideChunks(ObjectArrayList<ChunkBuilder.BuiltChunk> builtChunks, World world, int cameraChunkX, int cameraChunkZ) {
+    public static void hideChunks(ObjectArrayList<SectionRenderDispatcher.RenderSection> builtChunks, Level world, int cameraChunkX, int cameraChunkZ) {
         if(world == null) {
             return;
         }
@@ -224,7 +225,7 @@ public class DreamtwirlBorderRenderer {
             return;
         }
 
-        Vec3d cameraPos = new Vec3d(cameraChunkX << 4, 0, cameraChunkZ << 4);
+        Vec3 cameraPos = new Vec3(cameraChunkX << 4, 0, cameraChunkZ << 4);
         RegionPos cameraRegionPos = getRegionPosFromEntityOrElseVec3d(cameraPos);
 
         builtChunks.removeIf(builtChunk -> {
@@ -234,7 +235,7 @@ public class DreamtwirlBorderRenderer {
     }
 
     public static boolean shouldHideEntity(Entity entity, double cameraX, double cameraY, double cameraZ) {
-        World world = entity.getWorld();
+        Level world = entity.level();
         if(world == null) {
             return false;
         }
@@ -243,7 +244,7 @@ public class DreamtwirlBorderRenderer {
             return false;
         }
 
-        RegionPos currentRegion = getRegionPosFromEntityOrElseVec3d(new Vec3d(cameraX, cameraY, cameraZ));
+        RegionPos currentRegion = getRegionPosFromEntityOrElseVec3d(new Vec3(cameraX, cameraY, cameraZ));
         RegionPos entityRegion = RegionPos.fromEntity(entity);
         return !currentRegion.equals(entityRegion);
     }

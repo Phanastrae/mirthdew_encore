@@ -1,9 +1,9 @@
 package phanastrae.mirthdew_encore.entity;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 
 public class EntitySleepData {
     private static final long DEEP_SLEEP_TIME = 600;
@@ -20,7 +20,7 @@ public class EntitySleepData {
         this.entity = entity;
     }
 
-    public void writeNbt(NbtCompound nbt) {
+    public void writeNbt(CompoundTag nbt) {
         if(this.sleepStartTime >= 0) {
             nbt.putLong("SleepStartTime", this.sleepStartTime);
         }
@@ -29,25 +29,25 @@ public class EntitySleepData {
         }
     }
 
-    public void readNbt(NbtCompound nbt) {
-        if(nbt.contains("SleepStartTime", NbtElement.LONG_TYPE)) {
+    public void readNbt(CompoundTag nbt) {
+        if(nbt.contains("SleepStartTime", Tag.TAG_LONG)) {
             this.sleepStartTime = nbt.getLong("SleepStartTime");
         }
-        if(nbt.contains("LastDreamTime", NbtElement.LONG_TYPE)) {
+        if(nbt.contains("LastDreamTime", Tag.TAG_LONG)) {
             this.lastDreamTime = nbt.getLong("LastDreamTime");
         }
     }
 
     public void tick() {
-        World world = this.entity.getWorld();
-        if (!world.isClient()) {
+        Level world = this.entity.level();
+        if (!world.isClientSide()) {
             boolean sleeping = entity.isSleeping();
             if(sleeping) {
                 if(this.sleepStartTime < 0) {
                     this.startSleeping();
                 }
 
-                long sleepTime = world.getTimeOfDay() - this.sleepStartTime;
+                long sleepTime = world.getDayTime() - this.sleepStartTime;
                 if(sleepTime % ATTEMPT_DREAM_COOLDOWN == 0) {
                     if(this.entity.getRandom().nextInt(DREAM_RECIPROCAL_CHANCE) == 0) {
                         if(this.canEmitDreamspecks()) {
@@ -64,7 +64,7 @@ public class EntitySleepData {
     }
 
     public void startSleeping() {
-        this.sleepStartTime = this.entity.getWorld().getTimeOfDay();
+        this.sleepStartTime = this.entity.level().getDayTime();
     }
 
     public void stopSleeping() {
@@ -81,7 +81,7 @@ public class EntitySleepData {
     public boolean isDeepSleeping() {
         if(this.sleepStartTime < 0) return false;
 
-        long timeSlept = this.entity.getWorld().getTimeOfDay() - this.sleepStartTime;
+        long timeSlept = this.entity.level().getDayTime() - this.sleepStartTime;
 
         return timeSlept >= DEEP_SLEEP_TIME;
     }
@@ -89,20 +89,20 @@ public class EntitySleepData {
     public boolean readyToDream() {
         if(this.lastDreamTime < 0) return true;
 
-        long timeSinceLastDream = this.entity.getWorld().getTime() - this.lastDreamTime;
+        long timeSinceLastDream = this.entity.level().getGameTime() - this.lastDreamTime;
 
         return timeSinceLastDream >= DREAM_COOLDOWN;
     }
 
     public void emitDreamspecks() {
-        World world = this.entity.getWorld();
-        this.lastDreamTime = world.getTime();
+        Level world = this.entity.level();
+        this.lastDreamTime = world.getGameTime();
 
         DreamspeckEntity dreamspeckEntity = MirthdewEncoreEntityTypes.DREAM_SPECK.create(world);
         if(dreamspeckEntity != null) {
-            dreamspeckEntity.setPosition(this.entity.getEyePos());
-            dreamspeckEntity.setAngles(this.entity.getYaw(), this.entity.getPitch());
-            world.spawnEntity(dreamspeckEntity);
+            dreamspeckEntity.setPos(this.entity.getEyePosition());
+            dreamspeckEntity.absRotateTo(this.entity.getYRot(), this.entity.getXRot());
+            world.addFreshEntity(dreamspeckEntity);
         }
     }
 }

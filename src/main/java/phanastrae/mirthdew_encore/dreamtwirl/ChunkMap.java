@@ -1,15 +1,15 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.core.SectionPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 public class ChunkMap {
 
@@ -43,13 +43,13 @@ public class ChunkMap {
     }
 
     public void add(DreamtwirlRoom room) {
-        BlockBox box = room.getBoundingBox();
-        int minX = MathHelper.clamp((box.getMinX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
-        int minY = MathHelper.clamp((box.getMinY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
-        int minZ = MathHelper.clamp((box.getMinZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
-        int maxX = MathHelper.clamp((box.getMaxX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
-        int maxY = MathHelper.clamp((box.getMaxY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
-        int maxZ = MathHelper.clamp((box.getMaxZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
+        BoundingBox box = room.getBoundingBox();
+        int minX = Mth.clamp((box.minX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
+        int minY = Mth.clamp((box.minY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
+        int minZ = Mth.clamp((box.minZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
+        int maxX = Mth.clamp((box.maxX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
+        int maxY = Mth.clamp((box.maxY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
+        int maxZ = Mth.clamp((box.maxZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
 
         for(int x = minX; x <= maxX; x++) {
             for(int y = minY; y <= maxY; y++) {
@@ -62,13 +62,13 @@ public class ChunkMap {
     }
 
     public void remove(DreamtwirlRoom room) {
-        BlockBox box = room.getBoundingBox();
-        int minX = MathHelper.clamp((box.getMinX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
-        int minY = MathHelper.clamp((box.getMinY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
-        int minZ = MathHelper.clamp((box.getMinZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
-        int maxX = MathHelper.clamp((box.getMaxX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
-        int maxY = MathHelper.clamp((box.getMaxY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
-        int maxZ = MathHelper.clamp((box.getMaxZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
+        BoundingBox box = room.getBoundingBox();
+        int minX = Mth.clamp((box.minX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
+        int minY = Mth.clamp((box.minY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
+        int minZ = Mth.clamp((box.minZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
+        int maxX = Mth.clamp((box.maxX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
+        int maxY = Mth.clamp((box.maxY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
+        int maxZ = Mth.clamp((box.maxZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
 
         for(int x = minX; x <= maxX; x++) {
             for(int y = minY; y <= maxY; y++) {
@@ -80,13 +80,13 @@ public class ChunkMap {
         }
     }
 
-    public List<DreamtwirlRoom> getIntersections(BlockBox box, @Nullable DreamtwirlRoom exclude) {
-        int minX = MathHelper.clamp((box.getMinX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
-        int minY = MathHelper.clamp((box.getMinY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
-        int minZ = MathHelper.clamp((box.getMinZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
-        int maxX = MathHelper.clamp((box.getMaxX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
-        int maxY = MathHelper.clamp((box.getMaxY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
-        int maxZ = MathHelper.clamp((box.getMaxZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
+    public List<DreamtwirlRoom> getIntersections(BoundingBox box, @Nullable DreamtwirlRoom exclude) {
+        int minX = Mth.clamp((box.minX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
+        int minY = Mth.clamp((box.minY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
+        int minZ = Mth.clamp((box.minZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
+        int maxX = Mth.clamp((box.maxX() >> 4) - this.basePos.getX(), 0, this.sizeX - 1);
+        int maxY = Mth.clamp((box.maxY() >> 4) - this.basePos.getY(), 0, this.sizeY - 1);
+        int maxZ = Mth.clamp((box.maxZ() >> 4) - this.basePos.getZ(), 0, this.sizeZ - 1);
 
         ObjectArrayList<DreamtwirlRoom> collisionRooms = new ObjectArrayList<>();
         for(int x = minX; x <= maxX; x++) {
@@ -104,7 +104,7 @@ public class ChunkMap {
         return collisionRooms;
     }
 
-    public Optional<List<DreamtwirlRoom>> getListForChunk(ChunkSectionPos chunkSectionPos) {
+    public Optional<List<DreamtwirlRoom>> getListForChunk(SectionPos chunkSectionPos) {
         int x = chunkSectionPos.getX() - this.basePos.getX();
         int y = chunkSectionPos.getY() - this.basePos.getY();
         int z = chunkSectionPos.getZ() - this.basePos.getZ();

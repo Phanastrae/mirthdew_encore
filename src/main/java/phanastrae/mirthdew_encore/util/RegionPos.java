@@ -1,10 +1,10 @@
 package phanastrae.mirthdew_encore.util;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.phys.Vec3;
 
 public class RegionPos {
     public static final int REGION_SIZE_BITS = 9;
@@ -65,19 +65,19 @@ public class RegionPos {
     }
 
     public static RegionPos fromWorldCoordsDoubles(double x, double z) {
-        return fromWorldCoords((int)MathHelper.floor(x), (int)MathHelper.floor(z));
+        return fromWorldCoords((int)Mth.floor(x), (int)Mth.floor(z));
     }
 
     public static RegionPos fromBlockPos(BlockPos blockPos) {
         return RegionPos.fromWorldCoords(blockPos.getX(), blockPos.getZ());
     }
 
-    public static RegionPos fromVec3d(Vec3d vec3d) {
-        return RegionPos.fromWorldCoordsDoubles(vec3d.getX(), vec3d.getZ());
+    public static RegionPos fromVec3d(Vec3 vec3d) {
+        return RegionPos.fromWorldCoordsDoubles(vec3d.x(), vec3d.z());
     }
 
     public static RegionPos fromEntity(Entity entity) {
-        return RegionPos.fromVec3d(entity.getPos());
+        return RegionPos.fromVec3d(entity.position());
     }
 
     public static RegionPos fromChunkPos(ChunkPos chunkPos) {

@@ -2,23 +2,23 @@ package phanastrae.mirthdew_encore.component.type;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.item.Item;
-import net.minecraft.item.tooltip.TooltipAppender;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
 import phanastrae.mirthdew_encore.card_spell.CardSpell;
 
 import java.util.function.Consumer;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipProvider;
 
-public record CardSpellComponent(RegistryEntry<CardSpell> cardSpell, boolean showInTooltip) implements TooltipAppender {
+public record CardSpellComponent(Holder<CardSpell> cardSpell, boolean showInTooltip) implements TooltipProvider {
     public static final Codec<CardSpellComponent> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                             CardSpell.ENTRY_CODEC.fieldOf("card_spell").forGetter(CardSpellComponent::cardSpell),
@@ -26,41 +26,41 @@ public record CardSpellComponent(RegistryEntry<CardSpell> cardSpell, boolean sho
                     )
                     .apply(instance, CardSpellComponent::new)
     );
-    public static final PacketCodec<RegistryByteBuf, CardSpellComponent> PACKET_CODEC = PacketCodec.tuple(
+    public static final StreamCodec<RegistryFriendlyByteBuf, CardSpellComponent> PACKET_CODEC = StreamCodec.composite(
             CardSpell.ENTRY_PACKET_CODEC,
             CardSpellComponent::cardSpell,
-            PacketCodecs.BOOL,
+            ByteBufCodecs.BOOL,
             CardSpellComponent::showInTooltip,
             CardSpellComponent::new
     );
 
     @Override
-    public void appendTooltip(Item.TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void addToTooltip(Item.TooltipContext context, Consumer<Component> tooltip, TooltipFlag type) {
         if(!this.showInTooltip) return;
         boolean advanced = type.isAdvanced();
         CardSpell cardSpell = this.cardSpell.value();
         CardSpell.Definition definition = cardSpell.definition();
 
-        addValueToTooltip(tooltip, "mirthdew_encore.card_spell.tooltip.name", cardSpell.description(), Formatting.AQUA);
-        addIntValueToTooltip(tooltip, "mirthdew_encore.card_spell.tooltip.mirth_cost", definition.mirthCost(), Formatting.LIGHT_PURPLE, Formatting.DARK_GRAY, Formatting.YELLOW, true);
-        addIntValueToTooltip(tooltip, "mirthdew_encore.card_spell.tooltip.cast_delay_ms", definition.castDelayMs(), Formatting.RED, Formatting.DARK_GRAY, Formatting.GREEN, advanced);
-        addIntValueToTooltip(tooltip, "mirthdew_encore.card_spell.tooltip.recharge_delay_ms", definition.rechargeDelayMs(), Formatting.RED, Formatting.DARK_GRAY, Formatting.GREEN, advanced);
+        addValueToTooltip(tooltip, "mirthdew_encore.card_spell.tooltip.name", cardSpell.description(), ChatFormatting.AQUA);
+        addIntValueToTooltip(tooltip, "mirthdew_encore.card_spell.tooltip.mirth_cost", definition.mirthCost(), ChatFormatting.LIGHT_PURPLE, ChatFormatting.DARK_GRAY, ChatFormatting.YELLOW, true);
+        addIntValueToTooltip(tooltip, "mirthdew_encore.card_spell.tooltip.cast_delay_ms", definition.castDelayMs(), ChatFormatting.RED, ChatFormatting.DARK_GRAY, ChatFormatting.GREEN, advanced);
+        addIntValueToTooltip(tooltip, "mirthdew_encore.card_spell.tooltip.recharge_delay_ms", definition.rechargeDelayMs(), ChatFormatting.RED, ChatFormatting.DARK_GRAY, ChatFormatting.GREEN, advanced);
         if(advanced) {
-            addIntValueToTooltip(tooltip, "mirthdew_encore.card_spell.tooltip.input_count", definition.inputCount(), Formatting.AQUA, Formatting.DARK_GRAY, Formatting.DARK_RED, true);
+            addIntValueToTooltip(tooltip, "mirthdew_encore.card_spell.tooltip.input_count", definition.inputCount(), ChatFormatting.AQUA, ChatFormatting.DARK_GRAY, ChatFormatting.DARK_RED, true);
         }
     }
 
-    public void addIntValueToTooltip(Consumer<Text> tooltip, String translationKey, int value, Formatting positiveColor, Formatting zeroColor, Formatting negativeColor, boolean showIfZero) {
+    public void addIntValueToTooltip(Consumer<Component> tooltip, String translationKey, int value, ChatFormatting positiveColor, ChatFormatting zeroColor, ChatFormatting negativeColor, boolean showIfZero) {
         if(value != 0 || showIfZero) {
-            Formatting color = value > 0 ? positiveColor : (value == 0 ? zeroColor : negativeColor);
-            addValueToTooltip(tooltip, translationKey, Text.literal(String.valueOf(value)), color);
+            ChatFormatting color = value > 0 ? positiveColor : (value == 0 ? zeroColor : negativeColor);
+            addValueToTooltip(tooltip, translationKey, Component.literal(String.valueOf(value)), color);
         }
     }
 
-    public void addValueToTooltip(Consumer<Text> tooltip, String translationKey, Text text, Formatting color) {
-        Text valueText = text.copy().formatted(color);
-        MutableText mutableText = Text.translatable(translationKey, valueText);
-        Texts.setStyleIfAbsent(mutableText, Style.EMPTY.withColor(Formatting.GRAY));
+    public void addValueToTooltip(Consumer<Component> tooltip, String translationKey, Component text, ChatFormatting color) {
+        Component valueText = text.copy().withStyle(color);
+        MutableComponent mutableText = Component.translatable(translationKey, valueText);
+        ComponentUtils.mergeStyles(mutableText, Style.EMPTY.withColor(ChatFormatting.GRAY));
         tooltip.accept(mutableText);
     }
 

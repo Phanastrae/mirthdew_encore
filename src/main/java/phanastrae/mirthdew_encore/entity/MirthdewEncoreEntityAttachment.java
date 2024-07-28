@@ -1,9 +1,9 @@
 package phanastrae.mirthdew_encore.entity;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.dreamtwirl.EntityDreamtwirlData;
 import phanastrae.mirthdew_encore.duck.EntityDuckInterface;
@@ -19,18 +19,18 @@ public class MirthdewEncoreEntityAttachment {
         this.entitySleepData = (entity instanceof LivingEntity livingEntity) ? new EntitySleepData(livingEntity) : null;
     }
 
-    public void writeNbt(NbtCompound nbt) {
+    public void writeNbt(CompoundTag nbt) {
         if(this.entitySleepData != null) {
-            NbtCompound sleepData = new NbtCompound();
+            CompoundTag sleepData = new CompoundTag();
             this.entitySleepData.writeNbt(sleepData);
             nbt.put("SleepData", sleepData);
         }
     }
 
-    public void readNbt(NbtCompound nbt) {
+    public void readNbt(CompoundTag nbt) {
         if(this.entitySleepData != null) {
-            if(nbt.contains("SleepData", NbtElement.COMPOUND_TYPE)) {
-                NbtCompound sleepData = nbt.getCompound("SleepData");
+            if(nbt.contains("SleepData", Tag.TAG_COMPOUND)) {
+                CompoundTag sleepData = nbt.getCompound("SleepData");
                 this.entitySleepData.readNbt(sleepData);
             }
         }

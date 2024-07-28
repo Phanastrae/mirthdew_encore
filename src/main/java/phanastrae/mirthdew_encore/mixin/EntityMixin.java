@@ -2,14 +2,14 @@ package phanastrae.mirthdew_encore.mixin;
 
 import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,20 +31,20 @@ import java.util.List;
 public abstract class EntityMixin implements EntityDuckInterface {
 
     @Shadow
-    private static List<VoxelShape> findCollisionsForMovement(@Nullable Entity entity, World world, List<VoxelShape> regularCollisions, Box movingEntityBoundingBox) {
+    private static List<VoxelShape> collectColliders(@Nullable Entity entity, Level world, List<VoxelShape> regularCollisions, AABB movingEntityBoundingBox) {
         return List.of();
     }
 
     @Shadow
-    private static Vec3d adjustMovementForCollisions(Vec3d movement, Box entityBoundingBox, List<VoxelShape> collisions) {
-        return Vec3d.ZERO;
+    private static Vec3 collideWithShapes(Vec3 movement, AABB entityBoundingBox, List<VoxelShape> collisions) {
+        return Vec3.ZERO;
     }
 
     @Unique
     private MirthdewEncoreEntityAttachment mirthdew_encore$entityAttachment;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void mirthdew_encore$init(EntityType type, World world, CallbackInfo ci) {
+    private void mirthdew_encore$init(EntityType type, Level world, CallbackInfo ci) {
         this.mirthdew_encore$entityAttachment = new MirthdewEncoreEntityAttachment((Entity)(Object)this);
     }
 
@@ -53,47 +53,47 @@ public abstract class EntityMixin implements EntityDuckInterface {
         this.mirthdew_encore$entityAttachment.tick();
     }
 
-    @ModifyVariable(method = "adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;", at = @At(value = "STORE"), ordinal = 1)
-    private Vec3d mirthdew_encore$adjustMovementForCollisions(Vec3d value, @Local(ordinal = 0) Vec3d movement, @Local(ordinal = 0) List<VoxelShape> voxelShapeList) {
+    @ModifyVariable(method = "collide", at = @At(value = "STORE"), ordinal = 1)
+    private Vec3 mirthdew_encore$collide(Vec3 value, @Local(ordinal = 0) Vec3 movement, @Local(ordinal = 0) List<VoxelShape> voxelShapeList) {
         Entity thisEntity = (Entity) (Object) this;
-        Box box = thisEntity.getBoundingBox();
+        AABB box = thisEntity.getBoundingBox();
 
-        if(movement.lengthSquared() != 0.0) {
+        if(movement.lengthSqr() != 0.0) {
             if(Compat.USE_DREAMSPECK_COLLISION_COMPAT) {
                 // manually call findCollisionsForMovement
-                if (thisEntity.getType().isIn(MirthdewEncoreEntityTypeTags.USES_DREAMSPECK_COLLISION)) {
-                    List<VoxelShape> list = findCollisionsForMovement(thisEntity, thisEntity.getWorld(), voxelShapeList, box.stretch(movement));
-                    value = adjustMovementForCollisions(movement, box, list);
+                if (thisEntity.getType().is(MirthdewEncoreEntityTypeTags.USES_DREAMSPECK_COLLISION)) {
+                    List<VoxelShape> list = collectColliders(thisEntity, thisEntity.level(), voxelShapeList, box.expandTowards(movement));
+                    value = collideWithShapes(movement, box, list);
                 }
             }
 
             // dreamtwirl border collisions
             ImmutableList.Builder<VoxelShape> builder = new ImmutableList.Builder<>();
-            DreamtwirlWorldAttachment.findBorderCollision(thisEntity, thisEntity.getWorld(), builder);
+            DreamtwirlWorldAttachment.findBorderCollision(thisEntity, thisEntity.level(), builder);
             List<VoxelShape> list = builder.build();
             if(!list.isEmpty()) {
-                value = adjustMovementForCollisions(value, box, list);
+                value = collideWithShapes(value, box, list);
             }
         }
         return value;
     }
 
-    @Inject(method = "writeNbt", at = @At("RETURN"))
-    private void mirthdew_encore$writeNbt(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
-        if(nbt.contains("MirthdewEncore", NbtElement.COMPOUND_TYPE)) {
-            NbtCompound nbtCompound = nbt.getCompound("MirthdewEncore");
+    @Inject(method = "save", at = @At("RETURN"))
+    private void mirthdew_encore$writeNbt(CompoundTag nbt, CallbackInfoReturnable<CompoundTag> cir) {
+        if(nbt.contains("MirthdewEncore", Tag.TAG_COMPOUND)) {
+            CompoundTag nbtCompound = nbt.getCompound("MirthdewEncore");
             this.mirthdew_encore$entityAttachment.writeNbt(nbtCompound);
         } else {
-            NbtCompound nbtCompound = new NbtCompound();
+            CompoundTag nbtCompound = new CompoundTag();
             this.mirthdew_encore$entityAttachment.writeNbt(nbtCompound);
             nbt.put("MirthdewEncore", nbtCompound);
         }
     }
 
-    @Inject(method = "readNbt", at = @At("RETURN"))
-    private void mirthdew_encore$readNbt(NbtCompound nbt, CallbackInfo ci) {
-        if(nbt.contains("MirthdewEncore", NbtElement.COMPOUND_TYPE)) {
-            NbtCompound nbtCompound = nbt.getCompound("MirthdewEncore");
+    @Inject(method = "load", at = @At("RETURN"))
+    private void mirthdew_encore$readNbt(CompoundTag nbt, CallbackInfo ci) {
+        if(nbt.contains("MirthdewEncore", Tag.TAG_COMPOUND)) {
+            CompoundTag nbtCompound = nbt.getCompound("MirthdewEncore");
             this.mirthdew_encore$entityAttachment.readNbt(nbtCompound);
         }
     }

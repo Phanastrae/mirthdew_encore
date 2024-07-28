@@ -1,20 +1,25 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.block.Blocks;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.structure.*;
-import net.minecraft.structure.pool.StructurePoolElement;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.core.*;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.structure.*;
+import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
+import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
+import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.util.RegionPos;
@@ -26,16 +31,16 @@ import java.util.Optional;
 public class DreamtwirlStageGenerator {
 
     private final DreamtwirlStage dreamtwirlStage;
-    private final ServerWorld serverWorld;
+    private final ServerLevel serverWorld;
     private final BlockPos stageBlockCenter;
     private final ChunkPos stageChunkCenter;
     private final ChunkMap chunkMap;
-    private final BlockBox areaBox;
+    private final BoundingBox areaBox;
 
     //private final List<DreamtwirlRoom> rooms = new ArrayList<>();
     private final List<DreamtwirlRoomGroup> roomGroups = new ArrayList<>();
 
-    public DreamtwirlStageGenerator(DreamtwirlStage dreamtwirlStage, ServerWorld serverWorld) {
+    public DreamtwirlStageGenerator(DreamtwirlStage dreamtwirlStage, ServerLevel serverWorld) {
         this.dreamtwirlStage = dreamtwirlStage;
         this.serverWorld = serverWorld;
 
@@ -44,11 +49,11 @@ public class DreamtwirlStageGenerator {
         this.stageChunkCenter = new ChunkPos(stageBlockCenter);
 
         ChunkPos minCornerPos = regionPos.getChunkPos(1, 1);
-        this.chunkMap = new ChunkMap(new Vec3i(minCornerPos.x, serverWorld.getBottomY() >> 4, minCornerPos.z), 30, serverWorld.getHeight() >> 4, 30);
+        this.chunkMap = new ChunkMap(new Vec3i(minCornerPos.x, serverWorld.getMinBuildHeight() >> 4, minCornerPos.z), 30, serverWorld.getHeight() >> 4, 30);
 
-        BlockPos minPos = new BlockPos(regionPos.worldX + 16, serverWorld.getBottomY(), regionPos.worldZ + 16);
-        BlockPos maxPos = new BlockPos(regionPos.worldX + 16 * 31 - 1, serverWorld.getTopY() - 1, regionPos.worldZ + 16 * 31 - 1);
-        this.areaBox = new BlockBox(minPos.getX(), minPos.getY(), minPos.getZ(), maxPos.getX(), maxPos.getY(), maxPos.getZ());
+        BlockPos minPos = new BlockPos(regionPos.worldX + 16, serverWorld.getMinBuildHeight(), regionPos.worldZ + 16);
+        BlockPos maxPos = new BlockPos(regionPos.worldX + 16 * 31 - 1, serverWorld.getMaxBuildHeight() - 1, regionPos.worldZ + 16 * 31 - 1);
+        this.areaBox = new BoundingBox(minPos.getX(), minPos.getY(), minPos.getZ(), maxPos.getX(), maxPos.getY(), maxPos.getZ());
     }
 
     public ChunkMap getChunkMap() {
@@ -58,14 +63,14 @@ public class DreamtwirlStageGenerator {
     public void generate() {
         RegionPos region = this.dreamtwirlStage.getRegionPos();
         BlockPos regionMin = new BlockPos(region.worldX, 0, region.worldZ);
-        Random random = serverWorld.getRandom();
+        RandomSource random = serverWorld.getRandom();
 
-        BlockPos entrancePos = regionMin.add(128, 32, 256).add(random.nextInt(25) - 12, random.nextInt(15) - 7, random.nextInt(129) - 64);
-        BlockPos exitPos = regionMin.add(384, 192, 256).add(random.nextInt(25) - 12, random.nextInt(15) - 7, random.nextInt(129) - 64);
+        BlockPos entrancePos = regionMin.offset(128, 32, 256).offset(random.nextInt(25) - 12, random.nextInt(15) - 7, random.nextInt(129) - 64);
+        BlockPos exitPos = regionMin.offset(384, 192, 256).offset(random.nextInt(25) - 12, random.nextInt(15) - 7, random.nextInt(129) - 64);
 
-        Identifier entranceId = MirthdewEncore.id("test/entrance");
-        Identifier fourwayId = MirthdewEncore.id("test/fourway");
-        Identifier towerId = MirthdewEncore.id("test/tower");
+        ResourceLocation entranceId = MirthdewEncore.id("test/entrance");
+        ResourceLocation fourwayId = MirthdewEncore.id("test/fourway");
+        ResourceLocation towerId = MirthdewEncore.id("test/tower");
 
         Optional<DreamtwirlRoom> entranceOptional = getRoomOfType(entranceId);
         if(entranceOptional.isPresent()) {
@@ -88,18 +93,18 @@ public class DreamtwirlStageGenerator {
             this.addRoomGroup(exitRoomGroup);
         }
 
-        List<Pair<DreamtwirlRoomGroup, DreamtwirlRoomGroup>> edges = new ObjectArrayList<>();
+        List<Tuple<DreamtwirlRoomGroup, DreamtwirlRoomGroup>> edges = new ObjectArrayList<>();
         if(this.roomGroups.size() == 2) {
-            edges.add(new Pair<>(this.roomGroups.get(0), this.roomGroups.get(1)));
+            edges.add(new Tuple<>(this.roomGroups.get(0), this.roomGroups.get(1)));
         }
 
         for(int n = 0; n < 8; n++) {
-            List<Pair<DreamtwirlRoomGroup, DreamtwirlRoomGroup>> edgesCopy = new ObjectArrayList<>();
+            List<Tuple<DreamtwirlRoomGroup, DreamtwirlRoomGroup>> edgesCopy = new ObjectArrayList<>();
             edgesCopy.addAll(edges);
 
-            for (Pair<DreamtwirlRoomGroup, DreamtwirlRoomGroup> pair : edgesCopy) {
-                DreamtwirlRoomGroup group1 = pair.getLeft();
-                DreamtwirlRoomGroup group2 = pair.getRight();
+            for (Tuple<DreamtwirlRoomGroup, DreamtwirlRoomGroup> pair : edgesCopy) {
+                DreamtwirlRoomGroup group1 = pair.getA();
+                DreamtwirlRoomGroup group2 = pair.getB();
 
                 Optional<DreamtwirlRoom> closest1To2 = group1.getClosestRoomToPos(group2.center);
                 Optional<DreamtwirlRoom> closest2To1 = group1.getClosestRoomToPos(group1.center);
@@ -111,16 +116,16 @@ public class DreamtwirlStageGenerator {
                 BlockPos target1 = closest1To2.get().getBoundingBox().getCenter();
                 BlockPos target2 = closest2To1.get().getBoundingBox().getCenter();
                 Vec3i difference = target2.subtract(target1);
-                int bx = MathHelper.abs(difference.getX()) / 4;
-                int by = MathHelper.abs(difference.getY()) / 4;
-                int bz = MathHelper.abs(difference.getZ()) / 4;
+                int bx = Mth.abs(difference.getX()) / 4;
+                int by = Mth.abs(difference.getY()) / 4;
+                int bz = Mth.abs(difference.getZ()) / 4;
 
                 int rx = random.nextInt(bx * 2 + 1) - bx;
                 int ry = random.nextInt(by * 2 + 1) - by;
                 int rz = random.nextInt(bz * 2 + 1) - bz;
 
-                target1 = target1.add(rx, ry, rz);
-                target2 = target2.add(rx, ry, rz);
+                target1 = target1.offset(rx, ry, rz);
+                target2 = target2.offset(rx, ry, rz);
 
                 Optional<DreamtwirlRoom> closest1To2closest = group1.getClosestRoomToPos(target2);
                 Optional<DreamtwirlRoom> closest2To1closest = group2.getClosestRoomToPos(target1);
@@ -132,19 +137,19 @@ public class DreamtwirlStageGenerator {
                 BlockPos p1 = closest1To2closest.get().getBoundingBox().getCenter();
                 BlockPos p2 = closest2To1closest.get().getBoundingBox().getCenter();
 
-                Vec3i sum = p1.add(p2);
+                Vec3i sum = p1.offset(p2);
                 BlockPos center = new BlockPos(sum.getX() / 2, sum.getY() / 2, sum.getZ() / 2);
 
                 // want the cross product between center -> endpoint vector and a unit up vector
                 Vec3i centerToEndpoint = p2.subtract(center);
                 Vec3i unitUp = new Vec3i(0, 1, 0);
-                Vec3i cross = centerToEndpoint.crossProduct(unitUp);
+                Vec3i cross = centerToEndpoint.cross(unitUp);
                 if(random.nextBoolean()) { // randomly flip direction
                     cross = cross.multiply(-1);
                 }
-                BlockPos target = center.add(cross);
+                BlockPos target = center.offset(cross);
 
-                Identifier id = random.nextInt(8) == 0 ? towerId : fourwayId;
+                ResourceLocation id = random.nextInt(8) == 0 ? towerId : fourwayId;
                 Optional<DreamtwirlRoom> newRoomOptional = getRoomOfType(id);
                 if (newRoomOptional.isPresent()) {
                     DreamtwirlRoom room = newRoomOptional.get();
@@ -157,8 +162,8 @@ public class DreamtwirlStageGenerator {
                         this.addRoomGroup(roomGroup);
 
                         edges.remove(pair);
-                        edges.add(new Pair<>(group1, roomGroup));
-                        edges.add(new Pair<>(group2, roomGroup));
+                        edges.add(new Tuple<>(group1, roomGroup));
+                        edges.add(new Tuple<>(group2, roomGroup));
                     }
                 }
             }
@@ -173,19 +178,19 @@ public class DreamtwirlStageGenerator {
 
     public boolean isLocationValid(DreamtwirlRoom room) {
         List<DreamtwirlRoom> collisionRooms = this.chunkMap.getIntersections(room.getBoundingBox(), room);
-        BlockBox boundingBox = room.getBoundingBox();
+        BoundingBox boundingBox = room.getBoundingBox();
 
-        if(boundingBox.getMinX() < this.areaBox.getMinX()
-                || boundingBox.getMinY() < this.areaBox.getMinY()
-                || boundingBox.getMinZ() < this.areaBox.getMinZ()
-                || boundingBox.getMaxX() > this.areaBox.getMaxX()
-                || boundingBox.getMaxY() > this.areaBox.getMaxY()
-                || boundingBox.getMaxZ() > this.areaBox.getMaxZ()) {
+        if(boundingBox.minX() < this.areaBox.minX()
+                || boundingBox.minY() < this.areaBox.minY()
+                || boundingBox.minZ() < this.areaBox.minZ()
+                || boundingBox.maxX() > this.areaBox.maxX()
+                || boundingBox.maxY() > this.areaBox.maxY()
+                || boundingBox.maxZ() > this.areaBox.maxZ()) {
             return false;
         }
 
         for(DreamtwirlRoom collisionRoom : collisionRooms) {
-            BlockBox collisionBox = collisionRoom.getBoundingBox();
+            BoundingBox collisionBox = collisionRoom.getBoundingBox();
             if (boundingBox.intersects(collisionBox)) {
                 return false;
             }
@@ -194,14 +199,14 @@ public class DreamtwirlStageGenerator {
         return true;
     }
 
-    public void adjustPosition(DreamtwirlRoom room, Random random, @Nullable Direction preferredOffsetDirection) {
-        Vec3i vector = preferredOffsetDirection == null ? null : preferredOffsetDirection.getVector();
+    public void adjustPosition(DreamtwirlRoom room, RandomSource random, @Nullable Direction preferredOffsetDirection) {
+        Vec3i vector = preferredOffsetDirection == null ? null : preferredOffsetDirection.getNormal();
         for(int n = 0; n < 8; n++) {
             List<DreamtwirlRoom> collisionRooms = this.chunkMap.getIntersections(room.getBoundingBox(), room);
 
             boolean hadCollision = false;
             for(DreamtwirlRoom collisionRoom : collisionRooms) {
-                BlockBox collisionBox = collisionRoom.getBoundingBox();
+                BoundingBox collisionBox = collisionRoom.getBoundingBox();
 
                 for(int k = 0; k < 10; k++) {
                     if (room.getBoundingBox().intersects(collisionBox)) {
@@ -214,7 +219,7 @@ public class DreamtwirlStageGenerator {
                                 random.nextInt(2 * d + 1) - d
                         );
                         if(vector != null) {
-                            moveBy = moveBy.add(vector.multiply(d));
+                            moveBy = moveBy.offset(vector.multiply(d));
                         }
 
                         room.translate(moveBy);
@@ -233,7 +238,7 @@ public class DreamtwirlStageGenerator {
         this.roomGroups.add(dreamtwirlRoomGroup);
     }
 
-    public Optional<DreamtwirlRoom> getRoomOfType(Identifier identifier) {
+    public Optional<DreamtwirlRoom> getRoomOfType(ResourceLocation identifier) {
         Optional<StructureData> structureDataOptional = makeStructureData(identifier);
         if (structureDataOptional.isEmpty()) {
             return Optional.empty();
@@ -244,19 +249,19 @@ public class DreamtwirlStageGenerator {
         }
     }
 
-    public Optional<StructureData> makeStructureData(Identifier identifier) {
+    public Optional<StructureData> makeStructureData(ResourceLocation identifier) {
         Optional<Structure> structureOptional = getStructure(identifier);
         if(structureOptional.isEmpty()) {
             return Optional.empty();
         }
         Structure structure = structureOptional.get();
 
-        Optional<Structure.StructurePosition> optional = getStructurePosition(stageChunkCenter, structure);
+        Optional<Structure.GenerationStub> optional = getStructurePosition(stageChunkCenter, structure);
         if(optional.isEmpty()) {
             return Optional.empty();
         }
-        StructurePiecesCollector structurePiecesCollector = optional.get().generate();
-        StructurePiecesList structurePiecesList = structurePiecesCollector.toList();
+        StructurePiecesBuilder structurePiecesCollector = optional.get().getPiecesBuilder();
+        PiecesContainer structurePiecesList = structurePiecesCollector.build();
 
         return Optional.of(new StructureData(structure, structurePiecesList, this.stageBlockCenter));
     }
@@ -279,17 +284,17 @@ public class DreamtwirlStageGenerator {
 
     public void placeStructure(StructureData structureData) {
         Structure structure = structureData.structure;
-        StructurePiecesList structurePiecesList = structureData.structurePiecesList;
+        PiecesContainer structurePiecesList = structureData.structurePiecesList;
 
         StructureStart structureStart = new StructureStart(structure, this.stageChunkCenter, 0, structurePiecesList);
-        if(!structureStart.hasChildren()) {
+        if(!structureStart.isValid()) {
             return;
         }
 
-        BlockBox blockBox = structureStart.getBoundingBox();
-        ChunkPos chunkPosStart = new ChunkPos(ChunkSectionPos.getSectionCoord(blockBox.getMinX()), ChunkSectionPos.getSectionCoord(blockBox.getMinZ()));
-        ChunkPos chunkPosEnd = new ChunkPos(ChunkSectionPos.getSectionCoord(blockBox.getMaxX()), ChunkSectionPos.getSectionCoord(blockBox.getMaxZ()));
-        if (ChunkPos.stream(chunkPosStart, chunkPosEnd).anyMatch(p -> !serverWorld.canSetBlock(p.getStartPos()))) {
+        BoundingBox blockBox = structureStart.getBoundingBox();
+        ChunkPos chunkPosStart = new ChunkPos(SectionPos.blockToSectionCoord(blockBox.minX()), SectionPos.blockToSectionCoord(blockBox.minZ()));
+        ChunkPos chunkPosEnd = new ChunkPos(SectionPos.blockToSectionCoord(blockBox.maxX()), SectionPos.blockToSectionCoord(blockBox.maxZ()));
+        if (ChunkPos.rangeClosed(chunkPosStart, chunkPosEnd).anyMatch(p -> !serverWorld.isLoaded(p.getWorldPosition()))) {
             // return; // TODO handle this
         }
 
@@ -298,90 +303,90 @@ public class DreamtwirlStageGenerator {
             return;
         }
 
-        BlockBox firstPieceBB = list.getFirst().getBoundingBox();
+        BoundingBox firstPieceBB = list.getFirst().getBoundingBox();
 
         BlockPos firstPieceCenter = firstPieceBB.getCenter();
-        BlockPos firstPieceBasePosition = new BlockPos(firstPieceCenter.getX(), firstPieceBB.getMinY(), firstPieceCenter.getZ());
-        ChunkGenerator chunkGenerator = this.serverWorld.getChunkManager().getChunkGenerator();
-        StructureAccessor structureAccessor = this.serverWorld.getStructureAccessor();
-        Random random = this.serverWorld.getRandom();
+        BlockPos firstPieceBasePosition = new BlockPos(firstPieceCenter.getX(), firstPieceBB.minY(), firstPieceCenter.getZ());
+        ChunkGenerator chunkGenerator = this.serverWorld.getChunkSource().getGenerator();
+        StructureManager structureAccessor = this.serverWorld.structureManager();
+        RandomSource random = this.serverWorld.getRandom();
 
 
-        ChunkPos.stream(chunkPosStart, chunkPosEnd)
+        ChunkPos.rangeClosed(chunkPosStart, chunkPosEnd)
                 .forEach(
                         chunkPosx -> {
-                            if(!this.areaBox.contains(chunkPosx.getBlockPos(0, 0, 0))) {
+                            if(!this.areaBox.isInside(chunkPosx.getBlockAt(0, 0, 0))) {
                                 return;
                             }
-                            if(!serverWorld.canSetBlock(chunkPosx.getStartPos())) return; // TODO handle this
+                            if(!serverWorld.isLoaded(chunkPosx.getWorldPosition())) return; // TODO handle this
 
-                            BlockBox chunkBox = new BlockBox(chunkPosx.getStartX(), serverWorld.getBottomY(), chunkPosx.getStartZ(), chunkPosx.getEndX(), serverWorld.getTopY(), chunkPosx.getEndZ());
+                            BoundingBox chunkBox = new BoundingBox(chunkPosx.getMinBlockX(), serverWorld.getMinBuildHeight(), chunkPosx.getMinBlockZ(), chunkPosx.getMaxBlockX(), serverWorld.getMaxBuildHeight(), chunkPosx.getMaxBlockZ());
                             for(StructurePiece structurePiece : list) {
                                 if (structurePiece.getBoundingBox().intersects(chunkBox)) {
-                                    if(structurePiece instanceof PoolStructurePiece poolStructurePiece) {
-                                        this.generate(poolStructurePiece, serverWorld.getStructureTemplateManager(), serverWorld, structureAccessor, chunkGenerator, random, chunkBox, chunkPosx, firstPieceBasePosition);
+                                    if(structurePiece instanceof PoolElementStructurePiece poolStructurePiece) {
+                                        this.generate(poolStructurePiece, serverWorld.getStructureManager(), serverWorld, structureAccessor, chunkGenerator, random, chunkBox, chunkPosx, firstPieceBasePosition);
                                     } else {
-                                        structurePiece.generate(serverWorld, structureAccessor, chunkGenerator, random, chunkBox, chunkPosx, firstPieceBasePosition);
+                                        structurePiece.postProcess(serverWorld, structureAccessor, chunkGenerator, random, chunkBox, chunkPosx, firstPieceBasePosition);
                                     }
                                 }
                             }
-                            structure.postPlace(serverWorld, structureAccessor, chunkGenerator, random, chunkBox, chunkPosx, structurePiecesList);
+                            structure.afterPlace(serverWorld, structureAccessor, chunkGenerator, random, chunkBox, chunkPosx, structurePiecesList);
                         }
                 );
     }
 
-    public void generate(PoolStructurePiece structurePiece, StructureTemplateManager structureTemplateManager, ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-        StructurePoolElement poolElement = structurePiece.getPoolElement();
-        if(poolElement.generate(structureTemplateManager, world, structureAccessor, chunkGenerator, structurePiece.getPos(), pivot, structurePiece.getRotation(), chunkBox, random, StructureLiquidSettings.IGNORE_WATERLOGGING, false)) {
-            poolElement.getStructureBlockInfos(structureTemplateManager, structurePiece.getPos(), structurePiece.getRotation(), random);
-            List<StructureTemplate.StructureBlockInfo> gateInfos =  DreamtwirlRoom.getGates(poolElement, structureTemplateManager, structurePiece.getPos(), structurePiece.getRotation(), random);
+    public void generate(PoolElementStructurePiece structurePiece, StructureTemplateManager structureTemplateManager, ServerLevel world, StructureManager structureAccessor, ChunkGenerator chunkGenerator, RandomSource random, BoundingBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
+        StructurePoolElement poolElement = structurePiece.getElement();
+        if(poolElement.place(structureTemplateManager, world, structureAccessor, chunkGenerator, structurePiece.getPosition(), pivot, structurePiece.getRotation(), chunkBox, random, LiquidSettings.IGNORE_WATERLOGGING, false)) {
+            poolElement.getShuffledJigsawBlocks(structureTemplateManager, structurePiece.getPosition(), structurePiece.getRotation(), random);
+            List<StructureTemplate.StructureBlockInfo> gateInfos =  DreamtwirlRoom.getGates(poolElement, structureTemplateManager, structurePiece.getPosition(), structurePiece.getRotation(), random);
             for(StructureTemplate.StructureBlockInfo gateInfo : gateInfos) {
                 // TODO handle properly
                 // TODO get gates from the room directly?
-                world.setBlockState(gateInfo.pos(), Blocks.AIR.getDefaultState());
+                world.setBlockAndUpdate(gateInfo.pos(), Blocks.AIR.defaultBlockState());
             }
         }
     }
 
-    public Optional<Structure> getStructure(Identifier identifier) {
-        RegistryKey<Structure> registryKey = RegistryKey.of(RegistryKeys.STRUCTURE, identifier);
+    public Optional<Structure> getStructure(ResourceLocation identifier) {
+        ResourceKey<Structure> registryKey = ResourceKey.create(Registries.STRUCTURE, identifier);
 
-        Registry<Structure> structureRegistry = serverWorld.getRegistryManager().get(RegistryKeys.STRUCTURE);
-        return structureRegistry.getOrEmpty(registryKey);
+        Registry<Structure> structureRegistry = serverWorld.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        return structureRegistry.getOptional(registryKey);
     }
 
-    public Optional<Structure.StructurePosition> getStructurePosition(ChunkPos chunkPos, Structure structure) {
+    public Optional<Structure.GenerationStub> getStructurePosition(ChunkPos chunkPos, Structure structure) {
         long seed = serverWorld.getSeed() ^ serverWorld.getRandom().nextLong(); // TODO make this more consistent?
 
-        ChunkGenerator chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
-        Structure.Context context = new Structure.Context(
-                serverWorld.getRegistryManager(),
+        ChunkGenerator chunkGenerator = serverWorld.getChunkSource().getGenerator();
+        Structure.GenerationContext context = new Structure.GenerationContext(
+                serverWorld.registryAccess(),
                 chunkGenerator,
                 chunkGenerator.getBiomeSource(),
-                serverWorld.getChunkManager().getNoiseConfig(),
-                serverWorld.getStructureTemplateManager(),
+                serverWorld.getChunkSource().randomState(),
+                serverWorld.getStructureManager(),
                 seed,
                 chunkPos,
                 serverWorld,
                 biome -> true
         );
-        return structure.getValidStructurePosition(context);
+        return structure.findValidGenerationPoint(context);
     }
 
     public static class StructureData {
         public final Structure structure;
-        public final StructurePiecesList structurePiecesList;
+        public final PiecesContainer structurePiecesList;
         public BlockPos startPos;
-        public StructureData(Structure structure, StructurePiecesList structurePiecesList, BlockPos startPos) {
+        public StructureData(Structure structure, PiecesContainer structurePiecesList, BlockPos startPos) {
             this.structure = structure;
             this.structurePiecesList = structurePiecesList;
             this.startPos = startPos;
         }
 
         public void translate(int x, int y, int z) {
-            this.startPos = this.startPos.add(x, y, z);
+            this.startPos = this.startPos.offset(x, y, z);
             this.structurePiecesList.pieces().forEach(structurePiece -> {
-                structurePiece.translate(x, y, z);
+                structurePiece.move(x, y, z);
             });
         }
     }

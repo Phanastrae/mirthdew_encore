@@ -2,14 +2,14 @@ package phanastrae.mirthdew_encore.component.type;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.card_spell.SpellCast;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 public record SpellChargeComponent(long cooldownStart, int cooldownLength, int maxCasts, List<SpellCast> spellCasts, int storedRechargeDelayMs) {
     public static final Codec<SpellChargeComponent> CODEC = RecordCodecBuilder.create(
@@ -22,16 +22,16 @@ public record SpellChargeComponent(long cooldownStart, int cooldownLength, int m
                     )
                     .apply(instance, SpellChargeComponent::new)
     );
-    public static final PacketCodec<RegistryByteBuf, SpellChargeComponent> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.VAR_LONG,
+    public static final StreamCodec<RegistryFriendlyByteBuf, SpellChargeComponent> PACKET_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_LONG,
             SpellChargeComponent::cooldownStart,
-            PacketCodecs.INTEGER,
+            ByteBufCodecs.INT,
             SpellChargeComponent::cooldownLength,
-            PacketCodecs.INTEGER,
+            ByteBufCodecs.INT,
             SpellChargeComponent::maxCasts,
-            SpellCast.PACKET_CODEC.collect(PacketCodecs.toList()),
+            SpellCast.PACKET_CODEC.apply(ByteBufCodecs.list()),
             SpellChargeComponent::spellCasts,
-            PacketCodecs.INTEGER,
+            ByteBufCodecs.INT,
             SpellChargeComponent::storedRechargeDelayMs,
             SpellChargeComponent::new
     );

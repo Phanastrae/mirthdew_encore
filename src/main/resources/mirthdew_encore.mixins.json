@@ -3,20 +3,20 @@
   "package": "phanastrae.mirthdew_encore.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "CollisionViewMixin",
+    "CollisionGetterMixin",
     "EntityMixin",
-    "HungerManagerMixin",
+    "FoodDataMixin",
     "ListPoolElementAccessor",
     "LivingEntityMixin",
-    "PlayerEntityMixin",
-    "ProjectileEntityAccessor",
+    "PlayerMixin",
+    "ProjectileAccessor",
     "SculkBlockMixin",
-    "ServerPlayerEntityMixin",
-    "ServerPlayNetworkHandlerMixin",
-    "ServerWorldAccessor",
-    "ServerWorldMixin",
+    "ServerPlayerMixin",
+    "ServerGamePacketListenerImplMixin",
+    "ServerLevelAccessor",
+    "ServerLevelMixin",
     "SinglePoolElementAccesor",
-    "WorldMixin"
+    "LevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

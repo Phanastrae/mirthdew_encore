@@ -2,11 +2,18 @@ package phanastrae.mirthdew_encore.data;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
-import net.minecraft.data.client.*;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.data.models.BlockModelGenerators;
+import net.minecraft.data.models.ItemModelGenerators;
+import net.minecraft.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.data.models.blockstates.PropertyDispatch;
+import net.minecraft.data.models.blockstates.Variant;
+import net.minecraft.data.models.blockstates.VariantProperties;
+import net.minecraft.data.models.model.ModelLocationUtils;
+import net.minecraft.data.models.model.ModelTemplates;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 
@@ -16,13 +23,13 @@ public class ModelProvider extends FabricModelProvider {
     }
 
     @Override
-    public void generateBlockStateModels(BlockStateModelGenerator BSMG) {
-        BSMG.registerBuiltinWithParticle(MirthdewEncoreBlocks.DREAMTWIRL_BARRIER, Items.BARRIER);
+    public void generateBlockStateModels(BlockModelGenerators BSMG) {
+        BSMG.createAirLikeBlock(MirthdewEncoreBlocks.DREAMTWIRL_BARRIER, Items.BARRIER);
         this.registerSlumberveil(BSMG);
     }
 
     @Override
-    public void generateItemModels(ItemModelGenerator itemModelGenerator) {
+    public void generateItemModels(ItemModelGenerators itemModelGenerator) {
         registerGenerated(itemModelGenerator, MirthdewEncoreItems.SPELL_CARD);
         registerGenerated(itemModelGenerator, MirthdewEncoreItems.SPELL_DECK);
         registerGenerated(itemModelGenerator, MirthdewEncoreItems.MIRTHDEW_VIAL);
@@ -30,18 +37,18 @@ public class ModelProvider extends FabricModelProvider {
         registerGenerated(itemModelGenerator, MirthdewEncoreItems.SLUMBERING_EYE);
     }
 
-    private static void registerGenerated(ItemModelGenerator itemModelGenerator, Item item) {
-        itemModelGenerator.register(item, Models.GENERATED);
+    private static void registerGenerated(ItemModelGenerators itemModelGenerator, Item item) {
+        itemModelGenerator.generateFlatItem(item, ModelTemplates.FLAT_ITEM);
     }
 
-    private void registerSlumberveil(BlockStateModelGenerator BSMG) {
-        BSMG.blockStateCollector
+    private void registerSlumberveil(BlockModelGenerators BSMG) {
+        BSMG.blockStateOutput
                 .accept(
-                        VariantsBlockStateSupplier.create(MirthdewEncoreBlocks.SLUMBERVEIL)
-                                .coordinate(
-                                        BlockStateVariantMap.create(Properties.HORIZONTAL_AXIS)
-                                                .register(Direction.Axis.X, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(MirthdewEncoreBlocks.SLUMBERVEIL, "_ns")))
-                                                .register(Direction.Axis.Z, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(MirthdewEncoreBlocks.SLUMBERVEIL, "_ew")))
+                        MultiVariantGenerator.multiVariant(MirthdewEncoreBlocks.SLUMBERVEIL)
+                                .with(
+                                        PropertyDispatch.property(BlockStateProperties.HORIZONTAL_AXIS)
+                                                .select(Direction.Axis.X, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(MirthdewEncoreBlocks.SLUMBERVEIL, "_ns")))
+                                                .select(Direction.Axis.Z, Variant.variant().with(VariantProperties.MODEL, ModelLocationUtils.getModelLocation(MirthdewEncoreBlocks.SLUMBERVEIL, "_ew")))
                                 )
                 );
     }

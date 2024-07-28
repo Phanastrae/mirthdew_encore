@@ -1,9 +1,9 @@
 package phanastrae.mirthdew_encore.client.render.block.entity;
 
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
 
 public class MirthdewEncoreBlockEntityRendererFactories {
@@ -13,7 +13,7 @@ public class MirthdewEncoreBlockEntityRendererFactories {
         register(MirthdewEncoreBlockEntityTypes.VERIC_DREAMSNARE, VericDreamsnareBlockEntityRenderer::new);
     }
 
-    public static <T extends BlockEntity> void register(BlockEntityType<? extends T> type, BlockEntityRendererFactory<T> factory) {
-        BlockEntityRendererFactories.register(type, factory);
+    public static <T extends BlockEntity> void register(BlockEntityType<? extends T> type, BlockEntityRendererProvider<T> factory) {
+        BlockEntityRenderers.register(type, factory);
     }
 }

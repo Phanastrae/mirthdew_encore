@@ -2,15 +2,18 @@ package phanastrae.mirthdew_encore.data;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
-import net.minecraft.registry.Registerable;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.sound.MusicType;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.world.biome.*;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.sounds.Musics;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeGenerationSettings;
+import net.minecraft.world.level.biome.BiomeSpecialEffects;
+import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.dimension.DimensionType;
 import phanastrae.mirthdew_encore.world.biome.MirthdewEncoreBiomes;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
@@ -19,14 +22,14 @@ import java.util.concurrent.CompletableFuture;
 
 public class WorldGenerationProvider extends FabricDynamicRegistryProvider {
 
-    public WorldGenerationProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+    public WorldGenerationProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup registries, Entries entries) {
-        entries.addAll(registries.getWrapperOrThrow(RegistryKeys.BIOME));
-        entries.addAll(registries.getWrapperOrThrow(RegistryKeys.DIMENSION_TYPE));
+    protected void configure(HolderLookup.Provider registries, Entries entries) {
+        entries.addAll(registries.lookupOrThrow(Registries.BIOME));
+        entries.addAll(registries.lookupOrThrow(Registries.DIMENSION_TYPE));
     }
 
     @Override
@@ -34,30 +37,30 @@ public class WorldGenerationProvider extends FabricDynamicRegistryProvider {
         return "World Generation";
     }
 
-    public static void bootstrapBiomes(Registerable<Biome> context) {
-        BiomeEffects.Builder builder = new BiomeEffects.Builder()
+    public static void bootstrapBiomes(BootstrapContext<Biome> context) {
+        BiomeSpecialEffects.Builder builder = new BiomeSpecialEffects.Builder()
                 .fogColor(0x031717)
                 .waterColor(0x0FEFFF)
                 .waterFogColor(0x021414)
                 .skyColor(0x074F4F)
-                .foliageColor(0xFF165E6E)
-                .grassColor(0xFF328BA6)
-                .music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_SOUL_SAND_VALLEY));
+                .foliageColorOverride(0xFF165E6E)
+                .grassColorOverride(0xFF328BA6)
+                .backgroundMusic(Musics.createGameMusic(SoundEvents.MUSIC_BIOME_SOUL_SAND_VALLEY));
 
         context.register(
                 MirthdewEncoreBiomes.DREAMTWIRL,
-                new Biome.Builder()
-                        .precipitation(false)
+                new Biome.BiomeBuilder()
+                        .hasPrecipitation(false)
                         .temperature(0.5F)
                         .downfall(0.0F)
-                        .effects(builder.build())
-                        .spawnSettings(SpawnSettings.INSTANCE)
-                        .generationSettings(GenerationSettings.INSTANCE)
+                        .specialEffects(builder.build())
+                        .mobSpawnSettings(MobSpawnSettings.EMPTY)
+                        .generationSettings(BiomeGenerationSettings.EMPTY)
                         .build()
         );
     }
 
-    public static void bootstrapDimensionTypes(Registerable<DimensionType> context) {
+    public static void bootstrapDimensionTypes(BootstrapContext<DimensionType> context) {
         context.register(
                 MirthdewEncoreDimensions.DREAMTWIRL_DIM_TYPE,
                 new DimensionType(
@@ -75,7 +78,7 @@ public class WorldGenerationProvider extends FabricDynamicRegistryProvider {
                         BlockTags.INFINIBURN_OVERWORLD,
                         MirthdewEncoreDimensions.DREAMTWIRL_ID,
                         0.2F,
-                        new DimensionType.MonsterSettings(true, false, UniformIntProvider.create(0, 7), 0)
+                        new DimensionType.MonsterSettings(true, false, UniformInt.of(0, 7), 0)
                 ));
     }
 }

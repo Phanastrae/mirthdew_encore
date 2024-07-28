@@ -1,37 +1,37 @@
 package phanastrae.mirthdew_encore.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.*;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryOps;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.GameEventTags;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.GameEventTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.RaycastContext;
-import net.minecraft.world.World;
-import net.minecraft.world.event.BlockPositionSource;
-import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.event.PositionSource;
-import net.minecraft.world.event.Vibrations;
-import net.minecraft.world.event.listener.GameEventListener;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.gameevent.BlockPositionSource;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.gameevent.GameEventListener;
+import net.minecraft.world.level.gameevent.PositionSource;
+import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import phanastrae.mirthdew_encore.MirthdewEncore;
@@ -41,18 +41,18 @@ import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 
 import static phanastrae.mirthdew_encore.entity.MirthdewEncoreDamageTypes.DREAMSNARE_TONGUE;
 
-public class VericDreamsnareBlockEntity extends BlockEntity implements GameEventListener.Holder<Vibrations.VibrationListener>, Vibrations {
-    private static final Vec3d CENTER_POS = new Vec3d(0.5, 0.5, 0.5);
+public class VericDreamsnareBlockEntity extends BlockEntity implements GameEventListener.Provider<VibrationSystem.Listener>, VibrationSystem {
+    private static final Vec3 CENTER_POS = new Vec3(0.5, 0.5, 0.5);
     private static final Logger LOGGER = MirthdewEncore.LOGGER;
-    private final Vibrations.Callback vibrationCallback = new VericDreamsnareBlockEntity.VibrationCallback();
-    private Vibrations.ListenerData vibrationListenerData = new Vibrations.ListenerData();
-    private final Vibrations.VibrationListener vibrationListener = new Vibrations.VibrationListener(this);
+    private final VibrationSystem.User vibrationCallback = new VericDreamsnareBlockEntity.VibrationCallback();
+    private VibrationSystem.Data vibrationListenerData = new VibrationSystem.Data();
+    private final VibrationSystem.Listener vibrationListener = new VibrationSystem.Listener(this);
 
-    private Vec3d baseOffset = CENTER_POS;
-    private Vec3d tongueBaseOffset = CENTER_POS;
+    private Vec3 baseOffset = CENTER_POS;
+    private Vec3 tongueBaseOffset = CENTER_POS;
 
-    private Vec3d tongueTargetOffset = CENTER_POS;
-    private Vec3d tongueOffset = CENTER_POS;
+    private Vec3 tongueTargetOffset = CENTER_POS;
+    private Vec3 tongueOffset = CENTER_POS;
 
     private boolean tongueExtended = false;
     private boolean entitySnared = false;
@@ -60,7 +60,7 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
     @Nullable
     private Entity snaredEntity = null;
 
-    private final DefaultedList<ItemStack> heldItem = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    private final NonNullList<ItemStack> heldItem = NonNullList.withSize(1, ItemStack.EMPTY);
 
     private double tongueDistance = 0;
     private double prevTongueDistance = 0;
@@ -71,59 +71,59 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
     }
 
     @Override
-    public Vibrations.ListenerData getVibrationListenerData() {
+    public VibrationSystem.Data getVibrationData() {
         return this.vibrationListenerData;
     }
 
     @Override
-    public Vibrations.Callback getVibrationCallback() {
+    public VibrationSystem.User getVibrationUser() {
         return this.vibrationCallback;
     }
 
-    public Vibrations.VibrationListener getEventListener() {
+    public VibrationSystem.Listener getListener() {
         return this.vibrationListener;
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
+    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.loadAdditional(nbt, registryLookup);
 
-        RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
-        if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
-            Vibrations.ListenerData.CODEC
+        RegistryOps<Tag> registryOps = registryLookup.createSerializationContext(NbtOps.INSTANCE);
+        if (nbt.contains("listener", Tag.TAG_COMPOUND)) {
+            VibrationSystem.Data.CODEC
                     .parse(registryOps, nbt.getCompound("listener"))
                     .resultOrPartial(string -> LOGGER.error("Failed to parse vibration listener for Sculk Shrieker: '{}'", string))
                     .ifPresent(vibrationListener -> this.vibrationListenerData = vibrationListener);
         }
 
-        if(nbt.contains("tongue_target_offset", NbtElement.LIST_TYPE)) {
-            NbtList nbtList = nbt.getList("tongue_target_offset", NbtElement.DOUBLE_TYPE);
+        if(nbt.contains("tongue_target_offset", Tag.TAG_LIST)) {
+            ListTag nbtList = nbt.getList("tongue_target_offset", Tag.TAG_DOUBLE);
             if (nbtList != null && nbtList.size() == 3) {
                 double x = nbtList.getDouble(0);
                 double y = nbtList.getDouble(1);
                 double z = nbtList.getDouble(2);
-                this.tongueTargetOffset = new Vec3d(x, y, z);
+                this.tongueTargetOffset = new Vec3(x, y, z);
             }
         }
-        if(nbt.contains("tongue_extended", NbtElement.BYTE_TYPE)) {
+        if(nbt.contains("tongue_extended", Tag.TAG_BYTE)) {
             this.tongueExtended = nbt.getBoolean("tongue_extended");
         }
-        if(nbt.contains("entity_snared", NbtElement.BYTE_TYPE)) {
+        if(nbt.contains("entity_snared", Tag.TAG_BYTE)) {
             this.entitySnared = nbt.getBoolean("entity_snared");
         }
-        if(nbt.contains("tongue_distance", NbtElement.DOUBLE_TYPE)) {
+        if(nbt.contains("tongue_distance", Tag.TAG_DOUBLE)) {
             this.tongueDistance = nbt.getDouble("tongue_distance");
         }
 
         this.heldItem.clear();
-        Inventories.readNbt(nbt, this.heldItem, registryLookup);
+        ContainerHelper.loadAllItems(nbt, this.heldItem, registryLookup);
     }
 
     @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        RegistryOps<NbtElement> registryOps = registryLookup.getOps(NbtOps.INSTANCE);
-        Vibrations.ListenerData.CODEC
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        super.saveAdditional(nbt, registryLookup);
+        RegistryOps<Tag> registryOps = registryLookup.createSerializationContext(NbtOps.INSTANCE);
+        VibrationSystem.Data.CODEC
                 .encodeStart(registryOps, this.vibrationListenerData)
                 .resultOrPartial(string -> LOGGER.error("Failed to encode vibration listener for Sculk Shrieker: '{}'", string))
                 .ifPresent(nbtElement -> nbt.put("listener", nbtElement));
@@ -133,75 +133,75 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         nbt.putBoolean("entity_snared", this.entitySnared);
         nbt.putDouble("tongue_distance", this.tongueDistance);
 
-        Inventories.writeNbt(nbt, this.heldItem, true, registryLookup);
+        ContainerHelper.saveAllItems(nbt, this.heldItem, true, registryLookup);
     }
 
-    protected NbtList toNbtList(double... values) {
-        NbtList nbtList = new NbtList();
+    protected ListTag toNbtList(double... values) {
+        ListTag nbtList = new ListTag();
 
         for(double d : values) {
-            nbtList.add(NbtDouble.of(d));
+            nbtList.add(DoubleTag.valueOf(d));
         }
 
         return nbtList;
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        NbtCompound nbtCompound = this.createComponentlessNbt(registryLookup);
+    public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+        CompoundTag nbtCompound = this.saveCustomOnly(registryLookup);
         nbtCompound.remove("listener");
         return nbtCompound;
     }
 
     @Nullable
     @Override
-    public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public void setCachedState(BlockState state) {
-        super.setCachedState(state);
+    public void setBlockState(BlockState state) {
+        super.setBlockState(state);
         this.updateCachedPositions(state);
     }
 
     public void updateCachedPositions(BlockState state) {
-        Direction facingDirection = state.contains(Properties.FACING) ? state.get(Properties.FACING) : Direction.UP;
-        Vec3d directionVector = new Vec3d(facingDirection.getUnitVector());
+        Direction facingDirection = state.hasProperty(BlockStateProperties.FACING) ? state.getValue(BlockStateProperties.FACING) : Direction.UP;
+        Vec3 directionVector = new Vec3(facingDirection.step());
 
-        this.baseOffset = CENTER_POS.add(directionVector.multiply(-0.5));
-        this.tongueBaseOffset = this.baseOffset.add(directionVector.multiply(3/16F));
+        this.baseOffset = CENTER_POS.add(directionVector.scale(-0.5));
+        this.tongueBaseOffset = this.baseOffset.add(directionVector.scale(3/16F));
     }
 
-    public void setTongueTargetOffset(Vec3d value) {
+    public void setTongueTargetOffset(Vec3 value) {
         this.tongueTargetOffset = value;
-        this.markDirty();
+        this.setChanged();
     }
 
     public void setTongueExtended(boolean value) {
         this.tongueExtended = value;
-        this.markDirty();
+        this.setChanged();
     }
 
     public void setEntitySnared(boolean value) {
         this.entitySnared = value;
-        this.markDirty();
+        this.setChanged();
     }
 
     public void setTongueDistance(double value) {
         this.tongueDistance = value;
-        this.markDirty();
+        this.setChanged();
     }
 
-    public Vec3d getBaseOffset() {
+    public Vec3 getBaseOffset() {
         return this.baseOffset;
     }
 
-    public Vec3d getTongueBaseOffset() {
+    public Vec3 getTongueBaseOffset() {
         return this.tongueBaseOffset;
     }
 
-    public Vec3d getTongueTargetOffset() {
+    public Vec3 getTongueTargetOffset() {
         return this.tongueTargetOffset;
     }
 
@@ -209,13 +209,13 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         return this.prevTongueDistance + tickDelta * (this.tongueDistance - this.prevTongueDistance);
     }
 
-    public void markForUpdate(ServerWorld world) {
-        world.getChunkManager().markForUpdate(this.getPos());
+    public void markForUpdate(ServerLevel world) {
+        world.getChunkSource().blockChanged(this.getBlockPos());
     }
 
     public void setHeldItem(ItemStack itemStack) {
         this.heldItem.set(0, itemStack);
-        this.markDirty();
+        this.setChanged();
     }
 
     public ItemStack getHeldItem() {
@@ -226,7 +226,7 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         return !this.getHeldItem().isEmpty();
     }
 
-    public DefaultedList<ItemStack> getItems() {
+    public NonNullList<ItemStack> getItems() {
         return this.heldItem;
     }
 
@@ -234,13 +234,13 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         return this.snaredEntity;
     }
 
-    public static void tick(World world, BlockPos pos, BlockState state, VericDreamsnareBlockEntity snare) {
+    public static void tick(Level world, BlockPos pos, BlockState state, VericDreamsnareBlockEntity snare) {
         snare.tick(world, pos, state);
     }
 
-    public void tick(World world, BlockPos pos, BlockState state) {
-        if(!world.isClient()) {
-            Vibrations.Ticker.tick(world, this.getVibrationListenerData(), this.getVibrationCallback());
+    public void tick(Level world, BlockPos pos, BlockState state) {
+        if(!world.isClientSide()) {
+            VibrationSystem.Ticker.tick(world, this.getVibrationData(), this.getVibrationUser());
         }
 
         if(this.tongueDistance <= 0 && !this.tongueExtended) {
@@ -248,7 +248,7 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         }
 
         this.prevTongueDistance = this.tongueDistance;
-        Vec3d offset = this.tongueTargetOffset.subtract(this.tongueBaseOffset);
+        Vec3 offset = this.tongueTargetOffset.subtract(this.tongueBaseOffset);
         double offsetLength = offset.length();
         if (this.tongueExtended) {
             this.setTongueDistance(Math.min(this.tongueDistance + 0.05 + 0.25 * (offsetLength - this.tongueDistance), offsetLength));
@@ -256,26 +256,26 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
             this.setTongueDistance(Math.max(this.tongueDistance - (this.entitySnared ? 0.1 : 0.3), 0));
         }
 
-        if(!world.isClient() && world instanceof ServerWorld serverWorld) {
+        if(!world.isClientSide() && world instanceof ServerLevel serverWorld) {
             if(this.tongueDistance != this.prevTongueDistance) {
-                this.tongueOffset = this.tongueBaseOffset.add(offset.multiply(this.tongueDistance / offsetLength));
+                this.tongueOffset = this.tongueBaseOffset.add(offset.scale(this.tongueDistance / offsetLength));
             }
 
             if(this.tongueExtended) {
-                Vec3d tonguePos = new Vec3d(pos.getX(), pos.getY(), pos.getZ()).add(this.tongueOffset);
-                Vec3d tMin = tonguePos.subtract(0.2, 0.2, 0.2);
-                Vec3d tMax = tonguePos.add(0.2, 0.2, 0.2);
-                Box box = new Box(tMin, tMax);
-                for(Entity entity : world.getOtherEntities(null, box)) {
+                Vec3 tonguePos = new Vec3(pos.getX(), pos.getY(), pos.getZ()).add(this.tongueOffset);
+                Vec3 tMin = tonguePos.subtract(0.2, 0.2, 0.2);
+                Vec3 tMax = tonguePos.add(0.2, 0.2, 0.2);
+                AABB box = new AABB(tMin, tMax);
+                for(Entity entity : world.getEntities(null, box)) {
                     if(entity instanceof DreamspeckEntity dreamspeckEntity && !dreamspeckEntity.isSnared()) {
-                        dreamspeckEntity.setSnare(this.getPos());
+                        dreamspeckEntity.setSnare(this.getBlockPos());
                         this.snaredEntity = entity;
                         this.setEntitySnared(true);
                         this.setTongueExtended(false);
                         this.markForUpdate(serverWorld);
                     } else {
                         if(!(entity instanceof ItemEntity)) {
-                            entity.damage(MirthdewEncoreDamageTypes.of(world, DREAMSNARE_TONGUE), 2);
+                            entity.hurt(MirthdewEncoreDamageTypes.of(world, DREAMSNARE_TONGUE), 2);
                         }
                     }
                 }
@@ -288,7 +288,7 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
 
             if(this.entitySnared) {
                 if(this.snaredEntity != null) {
-                    this.snaredEntity.setPosition(new Vec3d(pos.getX(), pos.getY() - this.snaredEntity.getHeight() * 0.5, pos.getZ()).add(this.tongueOffset));
+                    this.snaredEntity.setPos(new Vec3(pos.getX(), pos.getY() - this.snaredEntity.getBbHeight() * 0.5, pos.getZ()).add(this.tongueOffset));
                 }
                 if(this.tongueDistance <= 0) {
                     if(this.snaredEntity instanceof DreamspeckEntity dreamspeckEntity) {
@@ -307,44 +307,44 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         }
     }
 
-    public void eatEntity(ServerWorld world, Entity entity) {
+    public void eatEntity(ServerLevel world, Entity entity) {
         entity.discard();
-        this.setHeldItem(MirthdewEncoreItems.DREAMSEED.getDefaultStack());
-        world.spawnParticles(ParticleTypes.SCULK_CHARGE_POP, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 100, 0.25, 0.25, 0.25, 0.02);
+        this.setHeldItem(MirthdewEncoreItems.DREAMSEED.getDefaultInstance());
+        world.sendParticles(ParticleTypes.SCULK_CHARGE_POP, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5, 100, 0.25, 0.25, 0.25, 0.02);
     }
 
-    public void attack(ServerWorld world, @Nullable Entity entity) {
+    public void attack(ServerLevel world, @Nullable Entity entity) {
         if (entity == null) return;
         if (world.getDifficulty() == Difficulty.PEACEFUL && !(entity instanceof DreamspeckEntity)) return;
 
-        BlockPos blockPos = this.getPos();
-        world.emitGameEvent(GameEvent.SHRIEK, blockPos, GameEvent.Emitter.of(entity));
+        BlockPos blockPos = this.getBlockPos();
+        world.gameEvent(GameEvent.SHRIEK, blockPos, GameEvent.Context.of(entity));
 
-        Vec3d target = entity.getPos().add(0, entity.getHeight() * 0.5, 0);
+        Vec3 target = entity.position().add(0, entity.getBbHeight() * 0.5, 0);
         this.attack(world, target);
     }
 
-    public void attack(ServerWorld world, Vec3d target) {
-        BlockPos pos = this.getPos();
-        Vec3d tongueBasePos = new Vec3d(pos.getX(), pos.getY(), pos.getZ()).add(this.tongueBaseOffset);
+    public void attack(ServerLevel world, Vec3 target) {
+        BlockPos pos = this.getBlockPos();
+        Vec3 tongueBasePos = new Vec3(pos.getX(), pos.getY(), pos.getZ()).add(this.tongueBaseOffset);
 
-        BlockHitResult blockHitResult = world.raycast(new RaycastContext(
+        BlockHitResult blockHitResult = world.clip(new ClipContext(
                 tongueBasePos,
                 target,
-                RaycastContext.ShapeType.COLLIDER,
-                RaycastContext.FluidHandling.NONE,
-                ShapeContext.absent()
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.NONE,
+                CollisionContext.empty()
         ));
 
-        Vec3d offset = blockHitResult.getPos().subtract(tongueBasePos);
+        Vec3 offset = blockHitResult.getLocation().subtract(tongueBasePos);
         double offsetLength = offset.length();
         if(offsetLength > 9.0) {
             return;
         }
-        BlockState state = this.getCachedState();
-        Direction direction = state.contains(Properties.FACING) ? state.get(Properties.FACING) : Direction.UP;
+        BlockState state = this.getBlockState();
+        Direction direction = state.hasProperty(BlockStateProperties.FACING) ? state.getValue(BlockStateProperties.FACING) : Direction.UP;
 
-        double dot = new Vec3d(direction.getUnitVector()).dotProduct(offset.normalize());
+        double dot = new Vec3(direction.step()).dot(offset.normalize());
         if(dot < 0.6) {
             return;
         }
@@ -361,22 +361,22 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
 
         if(entity.isSpectator()) {
             return false;
-        } else if(entity instanceof PlayerEntity player && player.getAbilities().creativeMode) {
+        } else if(entity instanceof Player player && player.getAbilities().instabuild) {
             return false;
         } else {
             return true;
         }
     }
 
-    class VibrationCallback implements Vibrations.Callback {
+    class VibrationCallback implements VibrationSystem.User {
         private static final int RANGE = 8;
-        private final PositionSource positionSource = new BlockPositionSource(VericDreamsnareBlockEntity.this.pos);
+        private final PositionSource positionSource = new BlockPositionSource(VericDreamsnareBlockEntity.this.worldPosition);
 
         public VibrationCallback() {
         }
 
         @Override
-        public int getRange() {
+        public int getListenerRadius() {
             return RANGE;
         }
 
@@ -386,29 +386,29 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         }
 
         @Override
-        public TagKey<GameEvent> getTag() {
+        public TagKey<GameEvent> getListenableEvents() {
             return GameEventTags.SHRIEKER_CAN_LISTEN;
         }
 
         @Override
-        public boolean accepts(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter) {
+        public boolean canReceiveVibration(ServerLevel world, BlockPos pos, Holder<GameEvent> event, GameEvent.Context emitter) {
             Entity entity = emitter.sourceEntity();
             if(entity == null) return false;
             return VericDreamsnareBlockEntity.this.canAttack(entity);
         }
 
         @Override
-        public void accept(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
+        public void onReceiveVibration(ServerLevel world, BlockPos pos, Holder<GameEvent> event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
             VericDreamsnareBlockEntity.this.attack(world, sourceEntity);
         }
 
         @Override
-        public void onListen() {
-            VericDreamsnareBlockEntity.this.markDirty();
+        public void onDataChanged() {
+            VericDreamsnareBlockEntity.this.setChanged();
         }
 
         @Override
-        public boolean requiresTickingChunksAround() {
+        public boolean requiresAdjacentChunksToBeTicking() {
             return true;
         }
     }

@@ -1,25 +1,25 @@
 package phanastrae.mirthdew_encore.network.packet;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 
-public record MirthUpdatePayload(long mirth) implements CustomPayload {
-    public static final PacketCodec<RegistryByteBuf, MirthUpdatePayload> PACKET_CODEC = CustomPayload.codecOf(MirthUpdatePayload::write, MirthUpdatePayload::new);
-    public static final Id<MirthUpdatePayload> PACKET_ID = new Id<>(MirthdewEncore.id("mirth_update"));
+public record MirthUpdatePayload(long mirth) implements CustomPacketPayload {
+    public static final StreamCodec<RegistryFriendlyByteBuf, MirthUpdatePayload> PACKET_CODEC = CustomPacketPayload.codec(MirthUpdatePayload::write, MirthUpdatePayload::new);
+    public static final Type<MirthUpdatePayload> PACKET_ID = new Type<>(MirthdewEncore.id("mirth_update"));
 
-    public MirthUpdatePayload(PacketByteBuf buf) {
+    public MirthUpdatePayload(FriendlyByteBuf buf) {
         this(buf.readLong());
     }
 
-    public void write(PacketByteBuf buf) {
+    public void write(FriendlyByteBuf buf) {
         buf.writeLong(this.mirth);
     }
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return PACKET_ID;
     }
 }

@@ -1,29 +1,29 @@
 package phanastrae.mirthdew_encore.item;
 
-import net.minecraft.component.type.FoodComponent;
-import net.minecraft.component.type.PotionContentsComponent;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 
 import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.alchemy.PotionContents;
 
 public class SpectralCandyItem extends Item {
-    public static final FoodComponent FOOD_COMPONENT = new FoodComponent.Builder().nutrition(1).saturationModifier(4F).alwaysEdible().build();
+    public static final FoodProperties FOOD_COMPONENT = new FoodProperties.Builder().nutrition(1).saturationModifier(4F).alwaysEdible().build();
 
-    public SpectralCandyItem(Settings settings) {
+    public SpectralCandyItem(Properties settings) {
         super(settings);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type) {
-        super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(Text.translatable("item.mirthdew_encore.spectral_candy.when_full").formatted(Formatting.GRAY));
-        List<StatusEffectInstance> list = List.of(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 3000, 2));
-        PotionContentsComponent.buildTooltip(list, tooltip::add, 1.0F, context.getUpdateTickRate());
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+        super.appendHoverText(stack, context, tooltip, type);
+        tooltip.add(Component.translatable("item.mirthdew_encore.spectral_candy.when_full").withStyle(ChatFormatting.GRAY));
+        List<MobEffectInstance> list = List.of(new MobEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 3000, 2));
+        PotionContents.addPotionTooltip(list, tooltip::add, 1.0F, context.tickRate());
     }
 }

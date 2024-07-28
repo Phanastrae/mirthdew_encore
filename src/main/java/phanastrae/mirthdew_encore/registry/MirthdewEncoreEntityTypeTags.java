@@ -1,8 +1,8 @@
 package phanastrae.mirthdew_encore.registry;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 
 public class MirthdewEncoreEntityTypeTags {
@@ -10,6 +10,6 @@ public class MirthdewEncoreEntityTypeTags {
     public static final TagKey<EntityType<?>> USES_DREAMSPECK_COLLISION = of("uses_dreamspeck_collision");
 
     private static TagKey<EntityType<?>> of(String id) {
-        return TagKey.of(RegistryKeys.ENTITY_TYPE, MirthdewEncore.id(id));
+        return TagKey.create(Registries.ENTITY_TYPE, MirthdewEncore.id(id));
     }
 }

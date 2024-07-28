@@ -1,62 +1,62 @@
 package phanastrae.mirthdew_encore.entity;
 
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.tag.DamageTypeTags;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.block.entity.VericDreamsnareBlockEntity;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreEntityTypeTags;
 
-public class DreamspeckEntity extends MobEntity {
+public class DreamspeckEntity extends Mob {
 
     private boolean snared = false;
     @Nullable
     private BlockPos snarePos = null;
     private int decayTimer = 0;
 
-    public DreamspeckEntity(EntityType<? extends MobEntity> type, World world) {
+    public DreamspeckEntity(EntityType<? extends Mob> type, Level world) {
         super(type, world);
         this.moveControl = new DreamspeckEntity.DreamspeckMoveControl(this);
     }
 
-    public static DefaultAttributeContainer.Builder createDreamspeckAttributes() {
-        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.15);
+    public static AttributeSupplier.Builder createDreamspeckAttributes() {
+        return Mob.createMobAttributes().add(Attributes.MOVEMENT_SPEED, 0.15);
     }
 
     @Override
-    protected void initGoals() {
-        this.goalSelector.add(1, new FlyRandomlyGoal(this));
+    protected void registerGoals() {
+        this.goalSelector.addGoal(1, new FlyRandomlyGoal(this));
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
+    public void addAdditionalSaveData(CompoundTag nbt) {
+        super.addAdditionalSaveData(nbt);
         nbt.putInt("decay_timer", this.decayTimer);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        if(nbt.contains("decay_timer", NbtElement.INT_TYPE)) {
+    public void readAdditionalSaveData(CompoundTag nbt) {
+        super.readAdditionalSaveData(nbt);
+        if(nbt.contains("decay_timer", Tag.TAG_INT)) {
             this.decayTimer = nbt.getInt("decay_timer");
         }
     }
@@ -64,30 +64,30 @@ public class DreamspeckEntity extends MobEntity {
     @Override
     public void tick() {
         if (this.random.nextInt(36) == 0 && !this.isSilent()) {
-            this.getWorld()
-                    .playSound(
+            this.level()
+                    .playLocalSound(
                             this.getX() + 0.5,
                             this.getY() + 0.5,
                             this.getZ() + 0.5,
-                            SoundEvents.BLOCK_AMETHYST_BLOCK_RESONATE,
-                            this.getSoundCategory(),
+                            SoundEvents.AMETHYST_BLOCK_RESONATE,
+                            this.getSoundSource(),
                             0.5F + this.random.nextFloat() * 0.2F,
                             0.3F + this.random.nextFloat() * 1.5F,
                             false
                     );
-            this.getWorld().emitGameEvent(this, GameEvent.STEP, this.getPos());
+            this.level().gameEvent(this, GameEvent.STEP, this.position());
         }
 
-        if (this.getWorld().isClient) {
+        if (this.level().isClientSide) {
             for(int i = 0; i < 2; ++i) {
-                this.getWorld().addParticle(ParticleTypes.WITCH, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), 0.0, 0.0, 0.0);
-                this.getWorld().addParticle(ParticleTypes.ENCHANT, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), 0.0, 0.0, 0.0);
+                this.level().addParticle(ParticleTypes.WITCH, this.getRandomX(0.5), this.getRandomY(), this.getRandomZ(0.5), 0.0, 0.0, 0.0);
+                this.level().addParticle(ParticleTypes.ENCHANT, this.getRandomX(0.5), this.getRandomY(), this.getRandomZ(0.5), 0.0, 0.0, 0.0);
             }
         }
 
-        if(!this.getWorld().isClient && this.getWorld() instanceof ServerWorld serverWorld) {
-            if(this.snared && this.age % 20 == 0) {
-                BlockEntity blockEntity = this.getWorld().getBlockEntity(snarePos);
+        if(!this.level().isClientSide && this.level() instanceof ServerLevel serverWorld) {
+            if(this.snared && this.tickCount % 20 == 0) {
+                BlockEntity blockEntity = this.level().getBlockEntity(snarePos);
                 if(!(blockEntity instanceof VericDreamsnareBlockEntity dreamsnareBlockEntity) || dreamsnareBlockEntity.getSnaredEntity() != this) {
                     this.setSnare(null);
                 }
@@ -103,11 +103,11 @@ public class DreamspeckEntity extends MobEntity {
                 }
             }
 
-            if(this.decayTimer > 4200 && !this.isPersistent()) {
-                serverWorld.spawnParticles(
+            if(this.decayTimer > 4200 && !this.isPersistenceRequired()) {
+                serverWorld.sendParticles(
                         ParticleTypes.PORTAL,
                         this.getX(),
-                        this.getY() + this.getHeight() * 0.5,
+                        this.getY() + this.getBbHeight() * 0.5,
                         this.getZ(),
                         80,
                         0.1,
@@ -127,7 +127,7 @@ public class DreamspeckEntity extends MobEntity {
 
     @Override
     public boolean isInvulnerableTo(DamageSource damageSource) {
-        if(!damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !damageSource.isSourceCreativePlayer()) {
+        if(!damageSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && !damageSource.isCreativePlayer()) {
             return true;
         } else {
             return super.isInvulnerableTo(damageSource);
@@ -135,41 +135,41 @@ public class DreamspeckEntity extends MobEntity {
     }
 
     @Override
-    public void pushAwayFrom(Entity entity) {
-        if(entity.getType().isIn(MirthdewEncoreEntityTypeTags.DREAMSPECK_OPAQUE)) {
-            super.pushAwayFrom(entity);
+    public void push(Entity entity) {
+        if(entity.getType().is(MirthdewEncoreEntityTypeTags.DREAMSPECK_OPAQUE)) {
+            super.push(entity);
         }
     }
 
     @Override
-    protected void pushAway(Entity entity) {
-        if(entity.getType().isIn(MirthdewEncoreEntityTypeTags.DREAMSPECK_OPAQUE)) {
-            super.pushAway(entity);
+    protected void doPush(Entity entity) {
+        if(entity.getType().is(MirthdewEncoreEntityTypeTags.DREAMSPECK_OPAQUE)) {
+            super.doPush(entity);
         }
     }
 
     @Override
-    public boolean canAvoidTraps() {
+    public boolean isIgnoringBlockTriggers() {
         return true;
     }
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.INTENTIONALLY_EMPTY;
+        return SoundEvents.EMPTY;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.INTENTIONALLY_EMPTY;
+        return SoundEvents.EMPTY;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.INTENTIONALLY_EMPTY;
+        return SoundEvents.EMPTY;
     }
 
     @Override
-    public float getBrightnessAtEyes() {
+    public float getLightLevelDependentMagicValue() {
         return 1.0F;
     }
 
@@ -184,27 +184,27 @@ public class DreamspeckEntity extends MobEntity {
 
     static class FlyRandomlyGoal extends Goal {
 
-        private final MobEntity entity;
+        private final Mob entity;
 
-        public FlyRandomlyGoal(MobEntity entity) {
+        public FlyRandomlyGoal(Mob entity) {
             this.entity = entity;
         }
 
         @Override
-        public boolean canStart() {
+        public boolean canUse() {
             return true;
         }
 
         @Override
         public void tick() {
-            Random random = this.entity.getRandom();
+            RandomSource random = this.entity.getRandom();
             MoveControl moveControl = this.entity.getMoveControl();
-            if(!moveControl.isMoving() || random.nextInt(toGoalTicks(10)) == 0) {
-                moveControl.moveTo(this.entity.getX() + getRandomFloat(random, 8), this.entity.getY() + getRandomFloat(random, 8) - 1, this.entity.getZ() + getRandomFloat(random, 8), 1);
+            if(!moveControl.hasWanted() || random.nextInt(reducedTickDelay(10)) == 0) {
+                moveControl.setWantedPosition(this.entity.getX() + getRandomFloat(random, 8), this.entity.getY() + getRandomFloat(random, 8) - 1, this.entity.getZ() + getRandomFloat(random, 8), 1);
             }
         }
 
-        public float getRandomFloat(Random random, float distance) {
+        public float getRandomFloat(RandomSource random, float distance) {
             return (random.nextFloat() - random.nextFloat()) * distance;
         }
     }
@@ -219,17 +219,17 @@ public class DreamspeckEntity extends MobEntity {
 
         @Override
         public void tick() {
-            if (this.state == MoveControl.State.MOVE_TO) {
-                Vec3d targetOffset = new Vec3d(this.targetX - this.entity.getX(), this.targetY - this.entity.getY(), this.targetZ - this.entity.getZ());
+            if (this.operation == MoveControl.Operation.MOVE_TO) {
+                Vec3 targetOffset = new Vec3(this.wantedX - this.entity.getX(), this.wantedY - this.entity.getY(), this.wantedZ - this.entity.getZ());
                 double targetOffsetLength = targetOffset.length();
-                if (targetOffsetLength < this.entity.getBoundingBox().getAverageSideLength()) {
-                    this.state = MoveControl.State.WAIT;
+                if (targetOffsetLength < this.entity.getBoundingBox().getSize()) {
+                    this.operation = MoveControl.Operation.WAIT;
                 } else {
-                    this.entity.setVelocity(this.entity.getVelocity().add(targetOffset.multiply(this.speed * 0.05 / targetOffsetLength)));
+                    this.entity.setDeltaMovement(this.entity.getDeltaMovement().add(targetOffset.scale(this.speedModifier * 0.05 / targetOffsetLength)));
 
-                    Vec3d velocity = this.entity.getVelocity();
-                    this.entity.setYaw(-((float) MathHelper.atan2(velocity.x, velocity.z)) * (180.0F / (float)Math.PI));
-                    this.entity.bodyYaw = this.entity.getYaw();
+                    Vec3 velocity = this.entity.getDeltaMovement();
+                    this.entity.setYRot(-((float) Mth.atan2(velocity.x, velocity.z)) * (180.0F / (float)Math.PI));
+                    this.entity.yBodyRot = this.entity.getYRot();
                 }
             }
         }

@@ -1,26 +1,32 @@
 package phanastrae.mirthdew_encore.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Portal;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.EnumProperty;
-import net.minecraft.state.property.IntProperty;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Portal;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
 import phanastrae.mirthdew_encore.block.entity.SlumbersocketBlockEntity;
@@ -32,31 +38,31 @@ import phanastrae.mirthdew_encore.util.RegionPos;
 import java.util.Optional;
 
 public class SlumberveilBlock extends Block implements Portal {
-    public static final EnumProperty<Direction.Axis> AXIS = Properties.HORIZONTAL_AXIS;
-    public static final BooleanProperty SUPPORTING = BooleanProperty.of("supporting");
-    public static final IntProperty DISTANCE = IntProperty.of("distance", 0, 15);
-    protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 0.0, 7.0, 16.0, 16.0, 9.0);
-    protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(7.0, 0.0, 0.0, 9.0, 16.0, 16.0);
+    public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
+    public static final BooleanProperty SUPPORTING = BooleanProperty.create("supporting");
+    public static final IntegerProperty DISTANCE = IntegerProperty.create("distance", 0, 15);
+    protected static final VoxelShape X_SHAPE = Block.box(0.0, 0.0, 7.0, 16.0, 16.0, 9.0);
+    protected static final VoxelShape Z_SHAPE = Block.box(7.0, 0.0, 0.0, 9.0, 16.0, 16.0);
 
-    public SlumberveilBlock(Settings settings) {
+    public SlumberveilBlock(Properties settings) {
         super(settings);
-        this.setDefaultState(this.getDefaultState()
-                .with(AXIS, Direction.Axis.X)
-                .with(SUPPORTING, false)
-                .with(DISTANCE, 0));
+        this.registerDefaultState(this.defaultBlockState()
+                .setValue(AXIS, Direction.Axis.X)
+                .setValue(SUPPORTING, false)
+                .setValue(DISTANCE, 0));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(AXIS, SUPPORTING, DISTANCE);
     }
 
     @Override
-    protected BlockState rotate(BlockState state, BlockRotation rotation) {
+    protected BlockState rotate(BlockState state, Rotation rotation) {
         return switch (rotation) {
-            case COUNTERCLOCKWISE_90, CLOCKWISE_90 -> switch (state.get(AXIS)) {
-                case Z -> state.with(AXIS, Direction.Axis.X);
-                case X -> state.with(AXIS, Direction.Axis.Z);
+            case COUNTERCLOCKWISE_90, CLOCKWISE_90 -> switch (state.getValue(AXIS)) {
+                case Z -> state.setValue(AXIS, Direction.Axis.X);
+                case X -> state.setValue(AXIS, Direction.Axis.Z);
                 default -> state;
             };
             default -> state;
@@ -64,21 +70,21 @@ public class SlumberveilBlock extends Block implements Portal {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return switch (state.get(AXIS)) {
+    protected VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+        return switch (state.getValue(AXIS)) {
             case Z -> Z_SHAPE;
             default -> X_SHAPE;
         };
     }
 
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-        Direction.Axis axis = state.get(AXIS);
+    public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
+        Direction.Axis axis = state.getValue(AXIS);
         for (int i = 0; i < 5; i++) {
             double x = (double)pos.getX() + random.nextDouble();
             double y = (double)pos.getY() + random.nextDouble();
@@ -102,72 +108,72 @@ public class SlumberveilBlock extends Block implements Portal {
     }
 
     @Override
-    protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        world.scheduleBlockTick(pos, this, 2 + world.getRandom().nextInt(3));
+    protected void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
+        world.scheduleTick(pos, this, 2 + world.getRandom().nextInt(3));
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(
-            BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+    protected BlockState updateShape(
+            BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos
     ) {
-        world.scheduleBlockTick(pos, this, 2 + world.getRandom().nextInt(3));
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        world.scheduleTick(pos, this, 2 + world.getRandom().nextInt(3));
+        return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
         boolean blockBroken = updateBlock(state, world, pos);
         if(!blockBroken) {
             spreadVeil(state, world, pos);
         }
     }
 
-    public boolean updateBlock(BlockState state, ServerWorld world, BlockPos pos) {
-        Direction.Axis axis = state.get(AXIS);
-        boolean supporting = state.get(SUPPORTING);
-        int distance = state.get(DISTANCE);
+    public boolean updateBlock(BlockState state, ServerLevel world, BlockPos pos) {
+        Direction.Axis axis = state.getValue(AXIS);
+        boolean supporting = state.getValue(SUPPORTING);
+        int distance = state.getValue(DISTANCE);
 
-        BlockPos upPos = pos.up();
+        BlockPos upPos = pos.above();
         if(!supporting) {
             // check for support above
             BlockState supportState = world.getBlockState(upPos);
-            if(supportState.isOf(this)) {
-                if(axis == supportState.get(AXIS)) {
-                    boolean supporting2 = supportState.get(SUPPORTING);
-                    int targetDistance = supporting2 ? 0 : supportState.get(DISTANCE) + 1;
+            if(supportState.is(this)) {
+                if(axis == supportState.getValue(AXIS)) {
+                    boolean supporting2 = supportState.getValue(SUPPORTING);
+                    int targetDistance = supporting2 ? 0 : supportState.getValue(DISTANCE) + 1;
                     if(distance == targetDistance) {
                         return false;
                     } else {
                         distance = targetDistance;
                         if(distance <= 15) {
-                            world.setBlockState(pos, state.with(DISTANCE, distance));
+                            world.setBlockAndUpdate(pos, state.setValue(DISTANCE, distance));
                             return false;
                         }
                     }
                 }
             }
 
-            world.breakBlock(pos, false);
+            world.destroyBlock(pos, false);
             return true;
         } else {
             BlockState supportState = world.getBlockState(upPos);
             // check for support above and distance values of neighbors
-            if(supportState.isOf(MirthdewEncoreBlocks.SLUMBERSOCKET) && supportState.get(SlumbersocketBlock.DREAMING)) {
+            if(supportState.is(MirthdewEncoreBlocks.SLUMBERSOCKET) && supportState.getValue(SlumbersocketBlock.DREAMING)) {
                 if(distance != 0) {
-                    world.setBlockState(pos, state.with(DISTANCE, 0));
+                    world.setBlockAndUpdate(pos, state.setValue(DISTANCE, 0));
                 }
                 return false;
             } else {
-                if (Block.sideCoversSmallSquare(world, upPos, Direction.DOWN)) {
+                if (Block.canSupportCenter(world, upPos, Direction.DOWN)) {
                     int minNeighborDistance = 15;
                     for (Direction direction : Direction.values()) {
                         Direction.Axis axis2 = direction.getAxis();
                         if (axis2.isVertical() || axis != axis2) continue;
 
-                        BlockState neighborState = world.getBlockState(pos.offset(direction));
-                        if (neighborState.isOf(this)) {
-                            if(neighborState.get(SUPPORTING)) {
-                                int neighborDistance = neighborState.get(DISTANCE);
+                        BlockState neighborState = world.getBlockState(pos.relative(direction));
+                        if (neighborState.is(this)) {
+                            if(neighborState.getValue(SUPPORTING)) {
+                                int neighborDistance = neighborState.getValue(DISTANCE);
                                 if (neighborDistance < minNeighborDistance) {
                                     minNeighborDistance = neighborDistance;
                                 }
@@ -180,16 +186,16 @@ public class SlumberveilBlock extends Block implements Portal {
                     }
                 }
 
-                world.breakBlock(pos, false);
+                world.destroyBlock(pos, false);
                 return true;
             }
         }
     }
 
-    public void spreadVeil(BlockState state, ServerWorld world, BlockPos pos) {
-        int distance = state.get(DISTANCE);
-        Direction.Axis axis = state.get(AXIS);
-        boolean supporting = state.get(SUPPORTING);
+    public void spreadVeil(BlockState state, ServerLevel world, BlockPos pos) {
+        int distance = state.getValue(DISTANCE);
+        Direction.Axis axis = state.getValue(AXIS);
+        boolean supporting = state.getValue(SUPPORTING);
 
         // spread sideways
         if(supporting && distance <= 14) {
@@ -197,60 +203,60 @@ public class SlumberveilBlock extends Block implements Portal {
                 Direction.Axis axis2 = direction.getAxis();
                 if(axis2.isVertical() || axis != axis2) continue;
 
-                BlockPos pos2 = pos.offset(direction);
+                BlockPos pos2 = pos.relative(direction);
                 BlockState neighborState = world.getBlockState(pos2);
-                if(!neighborState.isOf(this) && neighborState.isAir() && Block.sideCoversSmallSquare(world, pos2.offset(Direction.UP), Direction.DOWN)) {
-                    world.setBlockState(pos2, state.with(DISTANCE, distance + 1));
+                if(!neighborState.is(this) && neighborState.isAir() && Block.canSupportCenter(world, pos2.relative(Direction.UP), Direction.DOWN)) {
+                    world.setBlockAndUpdate(pos2, state.setValue(DISTANCE, distance + 1));
                 }
             }
         }
 
         // spread downwards
         if(supporting || distance <= 14) {
-            BlockPos downPos = pos.down();
+            BlockPos downPos = pos.below();
             BlockState downState = world.getBlockState(downPos);
-            if (!downState.isOf(this) && downState.isAir()) {
+            if (!downState.is(this) && downState.isAir()) {
                 int targetDistance = supporting ? 0 : distance + 1;
-                world.setBlockState(downPos, state.with(SUPPORTING, false).with(DISTANCE, targetDistance));
+                world.setBlockAndUpdate(downPos, state.setValue(SUPPORTING, false).setValue(DISTANCE, targetDistance));
             }
         }
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if (entity.canUsePortals(false)) {
-            entity.tryUsePortal(this, pos);
+    protected void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
+        if (entity.canUsePortal(false)) {
+            entity.setAsInsidePortal(this, pos);
         }
-        super.onEntityCollision(state, world, pos, entity);
+        super.entityInside(state, world, pos, entity);
     }
 
     @Override
-    public Effect getPortalEffect() {
-        return Effect.CONFUSION;
+    public Transition getLocalTransition() {
+        return Transition.CONFUSION;
     }
 
     @Override
-    public int getPortalDelay(ServerWorld world, Entity entity) {
-        return entity instanceof PlayerEntity playerEntity
+    public int getPortalTransitionTime(ServerLevel world, Entity entity) {
+        return entity instanceof Player playerEntity
                 ? Math.max(
                 1,
                 world.getGameRules()
-                        .getInt(playerEntity.getAbilities().invulnerable ? GameRules.PLAYERS_NETHER_PORTAL_CREATIVE_DELAY : GameRules.PLAYERS_NETHER_PORTAL_DEFAULT_DELAY)
+                        .getInt(playerEntity.getAbilities().invulnerable ? GameRules.RULE_PLAYERS_NETHER_PORTAL_CREATIVE_DELAY : GameRules.RULE_PLAYERS_NETHER_PORTAL_DEFAULT_DELAY)
         )
                 : 0;
     }
 
     @Nullable
     @Override
-    public TeleportTarget createTeleportTarget(ServerWorld world, Entity entity, BlockPos pos) {
+    public DimensionTransition getPortalDestination(ServerLevel world, Entity entity, BlockPos pos) {
         Optional<SlumbersocketBlockEntity> slumbersocketBlockEntityOptional = findVeilSocket(world, pos);
         if(slumbersocketBlockEntityOptional.isPresent()) {
             SlumbersocketBlockEntity slumbersocketBlockEntity = slumbersocketBlockEntityOptional.get();
             ItemStack itemStack = slumbersocketBlockEntity.getHeldItem();
-            if(!itemStack.isEmpty() && itemStack.contains(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
+            if(!itemStack.isEmpty() && itemStack.has(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
                 LocationComponent locationComponent = itemStack.get(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT);
-                Vec3d targetPos = locationComponent.getPos();
-                World targetWorld = locationComponent.getWorld(world.getServer());
+                Vec3 targetPos = locationComponent.getPos();
+                Level targetWorld = locationComponent.getWorld(world.getServer());
                 if(targetWorld != null) {
                     boolean validTarget = true;
                     DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getDreamtwirlStageManager(targetWorld);
@@ -261,14 +267,14 @@ public class SlumberveilBlock extends Block implements Portal {
                     }
 
                     if(validTarget) {
-                        if (targetWorld instanceof ServerWorld serverWorld) {
-                            return new TeleportTarget(
+                        if (targetWorld instanceof ServerLevel serverWorld) {
+                            return new DimensionTransition(
                                     serverWorld,
                                     targetPos,
-                                    entity.getVelocity(),
-                                    entity.getYaw(),
-                                    entity.getPitch(),
-                                    TeleportTarget.SEND_TRAVEL_THROUGH_PORTAL_PACKET.then(TeleportTarget.ADD_PORTAL_CHUNK_TICKET)
+                                    entity.getDeltaMovement(),
+                                    entity.getYRot(),
+                                    entity.getXRot(),
+                                    DimensionTransition.PLAY_PORTAL_SOUND.then(DimensionTransition.PLACE_PORTAL_TICKET)
                             );
                         }
                     }
@@ -279,22 +285,22 @@ public class SlumberveilBlock extends Block implements Portal {
         return null;
     }
 
-    public Optional<SlumbersocketBlockEntity> findVeilSocket(World world, BlockPos pos) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
+    public Optional<SlumbersocketBlockEntity> findVeilSocket(Level world, BlockPos pos) {
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
         mutable.set(pos);
 
         BlockState state = world.getBlockState(pos);
 
-        if(!state.contains(SUPPORTING) || !state.contains(DISTANCE)) return Optional.empty();
-        int distance = state.get(DISTANCE);
-        boolean supporting = state.get(SUPPORTING);
+        if(!state.hasProperty(SUPPORTING) || !state.hasProperty(DISTANCE)) return Optional.empty();
+        int distance = state.getValue(DISTANCE);
+        boolean supporting = state.getValue(SUPPORTING);
 
         if(!supporting) {
             // go to top
             for (int i = 0; i < distance + 1; i++) {
-                mutable.set(mutable, 0, 1, 0);
-                if (!world.getBlockState(mutable).isOf(this)) {
-                    mutable.set(mutable, 0, -1, 0);
+                mutable.setWithOffset(mutable, 0, 1, 0);
+                if (!world.getBlockState(mutable).is(this)) {
+                    mutable.setWithOffset(mutable, 0, -1, 0);
                     break;
                 }
             }
@@ -302,28 +308,28 @@ public class SlumberveilBlock extends Block implements Portal {
 
         // go to lowest distance veil block
         state = world.getBlockState(mutable);
-        if(!state.contains(DISTANCE)) return Optional.empty();
-        distance = state.get(DISTANCE);
+        if(!state.hasProperty(DISTANCE)) return Optional.empty();
+        distance = state.getValue(DISTANCE);
         for(int j = 0; j < 15; j++) {
             for(Direction direction : Direction.values()) {
-                mutable.set(mutable, direction);
+                mutable.setWithOffset(mutable, direction);
                 BlockState adjState = world.getBlockState(mutable);
-                if(adjState.isOf(this) && adjState.get(SUPPORTING)) {
-                    int adjDistance = adjState.get(DISTANCE);
+                if(adjState.is(this) && adjState.getValue(SUPPORTING)) {
+                    int adjDistance = adjState.getValue(DISTANCE);
                     if(adjDistance < distance) {
                         distance = adjDistance;
                         break;
                     }
                 }
-                mutable.set(mutable, direction.getOpposite());
+                mutable.setWithOffset(mutable, direction.getOpposite());
             }
         }
 
         // check block above
-        mutable.set(mutable, 0, 1, 0);
+        mutable.setWithOffset(mutable, 0, 1, 0);
         BlockState socketState = world.getBlockState(mutable);
-        if(socketState.isOf(MirthdewEncoreBlocks.SLUMBERSOCKET)) {
-            if(socketState.get(SlumbersocketBlock.DREAMING)) {
+        if(socketState.is(MirthdewEncoreBlocks.SLUMBERSOCKET)) {
+            if(socketState.getValue(SlumbersocketBlock.DREAMING)) {
                 return world.getBlockEntity(mutable, MirthdewEncoreBlockEntityTypes.SLUMBERSOCKET);
             }
         }

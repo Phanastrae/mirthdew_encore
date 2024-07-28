@@ -1,11 +1,11 @@
 package phanastrae.mirthdew_encore.world.gen.chunk;
 
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 
 public class MirthdewEncoreChunkGenerators {
     public static void init() {
-        Registry.register(Registries.CHUNK_GENERATOR, MirthdewEncore.id("dreamtwirl"), DreamtwirlChunkGenerator.CODEC);
+        Registry.register(BuiltInRegistries.CHUNK_GENERATOR, MirthdewEncore.id("dreamtwirl"), DreamtwirlChunkGenerator.CODEC);
     }
 }

@@ -3,10 +3,10 @@
   "package": "phanastrae.mirthdew_encore.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "DrawContextMixin",
-    "InGameHudMixin",
-    "MinecraftClientMixin",
-    "WorldRendererMixin"
+    "GuiGraphicsMixin",
+    "GuiMixin",
+    "MinecraftMixin",
+    "LevelRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

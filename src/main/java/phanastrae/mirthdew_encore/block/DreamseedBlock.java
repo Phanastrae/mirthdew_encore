@@ -1,187 +1,190 @@
 package phanastrae.mirthdew_encore.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.EnchantmentTags;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.function.BooleanBiFunction;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.EnchantmentTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.*;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.entity.DreamspeckEntity;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 
 public class DreamseedBlock extends Block {
-    public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-    public static final BooleanProperty LIT = Properties.LIT;
-    protected static final VoxelShape SHAPE = VoxelShapes.combine(
-            Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 9.0, 12.0),
-            Block.createCuboidShape(7.0, 9.0, 7.0, 9.0, 12.0, 9.0),
-            BooleanBiFunction.OR);
+    public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+    public static final BooleanProperty LIT = BlockStateProperties.LIT;
+    protected static final VoxelShape SHAPE = Shapes.joinUnoptimized(
+            Block.box(4.0, 0.0, 4.0, 12.0, 9.0, 12.0),
+            Block.box(7.0, 9.0, 7.0, 9.0, 12.0, 9.0),
+            BooleanOp.OR);
 
-    public DreamseedBlock(Settings settings) {
+    public DreamseedBlock(Properties settings) {
         super(settings);
-        this.setDefaultState(this.getDefaultState()
-                .with(WATERLOGGED, false)
-                .with(LIT, false));
+        this.registerDefaultState(this.defaultBlockState()
+                .setValue(WATERLOGGED, false)
+                .setValue(LIT, false));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(WATERLOGGED, LIT);
     }
 
     @Override
     protected FluidState getFluidState(BlockState state) {
-        return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
+        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override
-    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        return world.getBlockState(pos.down()).isSideSolidFullSquare(world, pos, Direction.UP);
+    protected boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+        return world.getBlockState(pos.below()).isFaceSturdy(world, pos, Direction.UP);
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        World world = ctx.getWorld();
-        BlockPos pos = ctx.getBlockPos();
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+        Level world = ctx.getLevel();
+        BlockPos pos = ctx.getClickedPos();
         FluidState fluidState = world.getFluidState(pos);
         BlockState blockState = world.getBlockState(pos);
-        return this.getDefaultState()
-                .with(LIT, blockState.isOf(Blocks.SOUL_FIRE))
-                .with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        return this.defaultBlockState()
+                .setValue(LIT, blockState.is(Blocks.SOUL_FIRE))
+                .setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(
-            BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+    protected BlockState updateShape(
+            BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos
     ) {
-        if(state.get(WATERLOGGED)) {
-            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        if(state.getValue(WATERLOGGED)) {
+            world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
 
-        if(state.get(LIT) && !canLight(world, state, pos)) {
-            return state.with(LIT, false);
+        if(state.getValue(LIT) && !canLight(world, state, pos)) {
+            return state.setValue(LIT, false);
         } else {
             return state;
         }
     }
 
-    public boolean canLight(WorldAccess world, BlockState state, BlockPos pos) {
-        return world.getBlockState(pos.down()).isIn(BlockTags.SOUL_FIRE_BASE_BLOCKS) && !state.get(WATERLOGGED);
+    public boolean canLight(LevelAccessor world, BlockState state, BlockPos pos) {
+        return world.getBlockState(pos.below()).is(BlockTags.SOUL_FIRE_BASE_BLOCKS) && !state.getValue(WATERLOGGED);
     }
 
     @Override
-    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if(state.get(LIT)) {
-            if (!world.isClient()) {
-                world.syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, pos, 0);
+    public BlockState playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
+        if(state.getValue(LIT)) {
+            if (!world.isClientSide()) {
+                world.levelEvent(null, LevelEvent.SOUND_EXTINGUISH_FIRE, pos, 0);
             }
         }
 
-        return super.onBreak(world, pos, state, player);
+        return super.playerWillDestroy(world, pos, state, player);
     }
 
     @Override
-    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-        super.afterBreak(world, player, pos, state, blockEntity, tool);
-        if (!world.isClient) {
-            if (!EnchantmentHelper.hasAnyEnchantmentsIn(tool, EnchantmentTags.PREVENTS_DECORATED_POT_SHATTERING)) {
+    public void playerDestroy(Level world, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+        super.playerDestroy(world, player, pos, state, blockEntity, tool);
+        if (!world.isClientSide) {
+            if (!EnchantmentHelper.hasTag(tool, EnchantmentTags.PREVENTS_DECORATED_POT_SHATTERING)) {
                 DreamspeckEntity dreamspeckEntity = MirthdewEncoreEntityTypes.DREAM_SPECK.create(world);
                 if(dreamspeckEntity != null) {
-                    dreamspeckEntity.setPosition(pos.toBottomCenterPos());
-                    world.spawnEntity(dreamspeckEntity);
+                    dreamspeckEntity.setPos(pos.getBottomCenter());
+                    world.addFreshEntity(dreamspeckEntity);
                 }
             }
         }
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        if(state.get(LIT)) {
-            if (!entity.isFireImmune()) {
-                entity.setFireTicks(entity.getFireTicks() + 1);
-                if (entity.getFireTicks() == 0) {
-                    entity.setOnFireFor(8.0F);
+    protected void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
+        if(state.getValue(LIT)) {
+            if (!entity.fireImmune()) {
+                entity.setRemainingFireTicks(entity.getRemainingFireTicks() + 1);
+                if (entity.getRemainingFireTicks() == 0) {
+                    entity.igniteForSeconds(8.0F);
                 }
             }
 
-            entity.damage(world.getDamageSources().inFire(), 2.0F);
+            entity.hurt(world.damageSources().inFire(), 2.0F);
         }
-        super.onEntityCollision(state, world, pos, entity);
+        super.entityInside(state, world, pos, entity);
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (state.get(LIT) || (!stack.isOf(Items.FLINT_AND_STEEL) && !stack.isOf(Items.FIRE_CHARGE))) {
-            return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        if (state.getValue(LIT) || (!stack.is(Items.FLINT_AND_STEEL) && !stack.is(Items.FIRE_CHARGE))) {
+            return super.useItemOn(stack, state, world, pos, player, hand, hit);
         } else {
-            world.playSound(player, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
-            world.setBlockState(pos, state.with(LIT,  true), Block.NOTIFY_ALL_AND_REDRAW);
-            world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            world.playSound(player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
+            world.setBlock(pos, state.setValue(LIT,  true), Block.UPDATE_ALL_IMMEDIATE);
+            world.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 
             Item item = stack.getItem();
-            if (stack.isOf(Items.FLINT_AND_STEEL)) {
-                stack.damage(1, player, LivingEntity.getSlotForHand(hand));
+            if (stack.is(Items.FLINT_AND_STEEL)) {
+                stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
             } else {
-                stack.decrementUnlessCreative(1, player);
+                stack.consume(1, player);
             }
 
-            player.incrementStat(Stats.USED.getOrCreateStat(item));
-            return ItemActionResult.success(world.isClient);
+            player.awardStat(Stats.ITEM_USED.get(item));
+            return ItemInteractionResult.sidedSuccess(world.isClientSide);
         }
     }
 
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-        if(state.get(LIT)) {
+    public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
+        if(state.getValue(LIT)) {
             if (random.nextInt(24) == 0) {
-                world.playSound(
+                world.playLocalSound(
                         (double)pos.getX() + 0.5,
                         (double)pos.getY() + 0.5,
                         (double)pos.getZ() + 0.5,
-                        SoundEvents.BLOCK_FIRE_AMBIENT,
-                        SoundCategory.BLOCKS,
+                        SoundEvents.FIRE_AMBIENT,
+                        SoundSource.BLOCKS,
                         1.0F + random.nextFloat(),
                         random.nextFloat() * 0.7F + 0.3F,
                         false
                 );
             }
             if (random.nextInt(5) == 0) {
-                world.playSound(
+                world.playLocalSound(
                         (double)pos.getX() + 0.5,
                         (double)pos.getY() + 0.5,
                         (double)pos.getZ() + 0.5,
-                        SoundEvents.BLOCK_AMETHYST_BLOCK_RESONATE,
-                        SoundCategory.BLOCKS,
+                        SoundEvents.AMETHYST_BLOCK_RESONATE,
+                        SoundSource.BLOCKS,
                         0.5F + random.nextFloat() * 0.2F,
                         0.3F + random.nextFloat() * 1.5F,
                         false
@@ -205,7 +208,7 @@ public class DreamseedBlock extends Block {
     }
 
     @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 }

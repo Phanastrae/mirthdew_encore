@@ -1,26 +1,30 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.enums.Orientation;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.EnumProperty;
-import net.minecraft.state.property.Properties;
-import net.minecraft.structure.*;
-import net.minecraft.structure.pool.ListPoolElement;
-import net.minecraft.structure.pool.SinglePoolElement;
-import net.minecraft.structure.pool.StructurePoolElement;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Nullables;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.Optionull;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.FrontAndTop;
+import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.structure.pools.ListPoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.mixin.ListPoolElementAccessor;
 import phanastrae.mirthdew_encore.mixin.SinglePoolElementAccesor;
@@ -53,14 +57,14 @@ public class DreamtwirlRoom {
         }
     }
 
-    public void collectGates(ServerWorld serverWorld) {
-        StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
-        Random random = serverWorld.getRandom();
+    public void collectGates(ServerLevel serverWorld) {
+        StructureTemplateManager structureTemplateManager = serverWorld.getStructureManager();
+        RandomSource random = serverWorld.getRandom();
 
         for(StructurePiece piece : this.structureData.structurePiecesList.pieces()) {
-            if(piece instanceof PoolStructurePiece poolStructurePiece) {
-                StructurePoolElement poolElement = poolStructurePiece.getPoolElement();
-                ObjectArrayList<StructureTemplate.StructureBlockInfo> list = getGates(poolElement, structureTemplateManager, poolStructurePiece.getPos(), piece.getRotation(), random);
+            if(piece instanceof PoolElementStructurePiece poolStructurePiece) {
+                StructurePoolElement poolElement = poolStructurePiece.getElement();
+                ObjectArrayList<StructureTemplate.StructureBlockInfo> list = getGates(poolElement, structureTemplateManager, poolStructurePiece.getPosition(), piece.getRotation(), random);
                 for(StructureTemplate.StructureBlockInfo info : list) {
                     Optional<Gate> gateOptional = getGateFromInfo(info);
                     gateOptional.ifPresent(this::addGate);
@@ -69,16 +73,16 @@ public class DreamtwirlRoom {
         }
     }
 
-    public Optional<Gate> getRandomEmptyGate(Random random) {
+    public Optional<Gate> getRandomEmptyGate(RandomSource random) {
         return getRandomGateFrom(this.emptyGates, random);
     }
 
-    public Optional<Gate> getRandomEmptyGateMatching(Random random, Orientation orientation) {
-        Direction targetOrientation = orientation.getFacing().getOpposite(); // TODO account for the multiple up and down orientations?
+    public Optional<Gate> getRandomEmptyGateMatching(RandomSource random, FrontAndTop orientation) {
+        Direction targetOrientation = orientation.front().getOpposite(); // TODO account for the multiple up and down orientations?
 
         List<Gate> valid = new ArrayList<>();
         for(Gate gate : this.emptyGates) {
-            if(gate.orientation.getFacing().equals(targetOrientation)) {
+            if(gate.orientation.front().equals(targetOrientation)) {
                 valid.add(gate);
             }
         }
@@ -86,7 +90,7 @@ public class DreamtwirlRoom {
         return getRandomGateFrom(valid, random);
     }
 
-    public static Optional<Gate> getRandomGateFrom(List<Gate> gateList, Random random) {
+    public static Optional<Gate> getRandomGateFrom(List<Gate> gateList, RandomSource random) {
         if(gateList.isEmpty()) {
             return Optional.empty();
         } else {
@@ -95,7 +99,7 @@ public class DreamtwirlRoom {
     }
 
     public void matchGates(Gate thisGate, Gate targetGate, DreamtwirlRoom target) {
-        BlockPos targetPos = targetGate.pos.offset(targetGate.orientation.getFacing());
+        BlockPos targetPos = targetGate.pos.relative(targetGate.orientation.front());
         BlockPos currentPos = thisGate.pos;
         this.translate(targetPos.subtract(currentPos));
 
@@ -131,31 +135,31 @@ public class DreamtwirlRoom {
         }
     }
 
-    public BlockBox getBoundingBox() {
-        return this.structureData.structurePiecesList.getBoundingBox();
+    public BoundingBox getBoundingBox() {
+        return this.structureData.structurePiecesList.calculateBoundingBox();
     }
 
     private static Optional<Gate> getGateFromInfo(StructureTemplate.StructureBlockInfo info) {
         BlockState state = info.state();
-        EnumProperty<Orientation> property = Properties.ORIENTATION;
-        if(!state.contains(property)) {
+        EnumProperty<FrontAndTop> property = BlockStateProperties.ORIENTATION;
+        if(!state.hasProperty(property)) {
             return Optional.empty();
         }
-        Orientation orientation = state.get(property);
+        FrontAndTop orientation = state.getValue(property);
         BlockPos pos = info.pos();
-        NbtCompound nbt = info.nbt();
+        CompoundTag nbt = info.nbt();
         Gate gate = new Gate(pos, orientation);
         return Optional.of(gate);
     }
 
-    public static ObjectArrayList<StructureTemplate.StructureBlockInfo> getGates(StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, Random random) {
+    public static ObjectArrayList<StructureTemplate.StructureBlockInfo> getGates(StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos pos, Rotation rotation, RandomSource random) {
         if(poolElement instanceof SinglePoolElement singlePoolElement) {
-            StructureTemplate structureTemplate = ((SinglePoolElementAccesor)singlePoolElement).invokeGetStructure(structureTemplateManager);
-            ObjectArrayList<StructureTemplate.StructureBlockInfo> objectArrayList = structureTemplate.getInfosForBlock(
-                    pos, new StructurePlacementData().setRotation(rotation), GATE_BLOCK, true
+            StructureTemplate structureTemplate = ((SinglePoolElementAccesor)singlePoolElement).invokeGetTemplate(structureTemplateManager);
+            ObjectArrayList<StructureTemplate.StructureBlockInfo> objectArrayList = structureTemplate.filterBlocks(
+                    pos, new StructurePlaceSettings().setRotation(rotation), GATE_BLOCK, true
             );
             Util.shuffle(objectArrayList, random);
-            objectArrayList.sort(Comparator.<StructureTemplate.StructureBlockInfo>comparingInt(block -> Nullables.mapOrElse(block.nbt(), nbt -> nbt.getInt("selection_priority"), 0)).reversed());
+            objectArrayList.sort(Comparator.<StructureTemplate.StructureBlockInfo>comparingInt(block -> Optionull.mapOrDefault(block.nbt(), nbt -> nbt.getInt("selection_priority"), 0)).reversed());
             return objectArrayList;
         } else if(poolElement instanceof ListPoolElement listPoolElement) {
             List<StructurePoolElement> elements = ((ListPoolElementAccessor)listPoolElement).getElements();
@@ -167,15 +171,15 @@ public class DreamtwirlRoom {
 
     public static class Gate {
         BlockPos pos;
-        Orientation orientation;
+        FrontAndTop orientation;
 
-        public Gate(BlockPos pos, Orientation orientation) {
+        public Gate(BlockPos pos, FrontAndTop orientation) {
             this.pos = pos;
             this.orientation = orientation;
         }
 
         public void translate(int x, int y, int z) {
-            this.pos = this.pos.add(x, y, z);
+            this.pos = this.pos.offset(x, y, z);
         }
     }
 }

@@ -1,61 +1,67 @@
 package phanastrae.mirthdew_encore.client.render.block.entity;
 
-import net.minecraft.block.BlockState;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.state.BlockState;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.entity.SlumbersocketBlockEntity;
 import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntityModelLayers;
 
 public class SlumbersocketBlockEntityRenderer implements BlockEntityRenderer<SlumbersocketBlockEntity> {
-    private static final Identifier TEXTURE = MirthdewEncore.id("textures/entity/slumbersocket/eye.png");
-    private static final Identifier TEXTURE_DREAMING = MirthdewEncore.id("textures/entity/slumbersocket/eye_dreaming.png");
+    private static final ResourceLocation TEXTURE = MirthdewEncore.id("textures/entity/slumbersocket/eye.png");
+    private static final ResourceLocation TEXTURE_DREAMING = MirthdewEncore.id("textures/entity/slumbersocket/eye_dreaming.png");
 
     private final ModelPart eye;
 
-    public SlumbersocketBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-        this.eye = context.getLayerModelPart(MirthdewEncoreEntityModelLayers.SLUMBERSOCKET_EYE);
+    public SlumbersocketBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+        this.eye = context.bakeLayer(MirthdewEncoreEntityModelLayers.SLUMBERSOCKET_EYE);
     }
 
     @Override
-    public void render(SlumbersocketBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(SlumbersocketBlockEntity entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
         if(entity.isHoldingItem()) {
-            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(this.getTexture(entity.getCachedState())));
+            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entityCutout(this.getTexture(entity.getBlockState())));
 
-            matrices.push();
+            matrices.pushPose();
             matrices.translate(0.5, 0.5, 0.5);
 
-            float yaw = -MathHelper.lerpAngleDegrees(tickDelta, entity.prevYaw, entity.yaw);
-            float pitch = MathHelper.lerp(tickDelta, entity.prevPitch, entity.pitch);
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
-            matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(pitch));
+            float yaw = -Mth.rotLerp(tickDelta, entity.prevYaw, entity.yaw);
+            float pitch = Mth.lerp(tickDelta, entity.prevPitch, entity.pitch);
+            matrices.mulPose(Axis.YP.rotationDegrees(yaw));
+            matrices.mulPose(Axis.XN.rotationDegrees(pitch));
 
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
+            matrices.mulPose(Axis.XP.rotationDegrees(180));
             this.eye.render(matrices, vertexConsumer, light, overlay);
 
-            matrices.pop();
+            matrices.popPose();
         }
     }
 
-    public Identifier getTexture(BlockState state) {
+    public ResourceLocation getTexture(BlockState state) {
         return (SlumbersocketBlockEntity.isDreaming(state)) ? TEXTURE_DREAMING : TEXTURE;
     }
-    public static TexturedModelData getTexturedModelData() {
-        ModelData modelData = new ModelData();
-        ModelPartData modelPartData = modelData.getRoot();
-        ModelPartData eye = modelPartData.addChild(
+    public static LayerDefinition getTexturedModelData() {
+        MeshDefinition modelData = new MeshDefinition();
+        PartDefinition modelPartData = modelData.getRoot();
+        PartDefinition eye = modelPartData.addOrReplaceChild(
                 "eye",
-                ModelPartBuilder.create().uv(0, 0)
-                        .cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F),
-                ModelTransform.pivot(0.0F, 0.0F, 0.0F));
-        return TexturedModelData.of(modelData, 32, 16);
+                CubeListBuilder.create().texOffs(0, 0)
+                        .addBox(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        return LayerDefinition.create(modelData, 32, 16);
     }
 }

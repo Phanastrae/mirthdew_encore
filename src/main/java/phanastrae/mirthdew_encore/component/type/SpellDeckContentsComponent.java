@@ -2,21 +2,21 @@ package phanastrae.mirthdew_encore.component.type;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.ItemStack;
 
 public class SpellDeckContentsComponent {
     public static final Codec<SpellDeckContentsComponent> CODEC = ItemStack.CODEC.listOf().xmap(SpellDeckContentsComponent::new, component -> component.stacks);
-    public static final PacketCodec<RegistryByteBuf, SpellDeckContentsComponent> PACKET_CODEC = ItemStack.PACKET_CODEC
-            .collect(PacketCodecs.toList())
-            .xmap(SpellDeckContentsComponent::new, component -> component.stacks);
+    public static final StreamCodec<RegistryFriendlyByteBuf, SpellDeckContentsComponent> PACKET_CODEC = ItemStack.STREAM_CODEC
+            .apply(ByteBufCodecs.list())
+            .map(SpellDeckContentsComponent::new, component -> component.stacks);
 
     final List<ItemStack> stacks;
 
@@ -53,12 +53,12 @@ public class SpellDeckContentsComponent {
         } else if (!(o instanceof SpellDeckContentsComponent)) {
             return false;
         } else {
-            return ItemStack.stacksEqual(this.stacks, ((SpellDeckContentsComponent)o).stacks);
+            return ItemStack.listMatches(this.stacks, ((SpellDeckContentsComponent)o).stacks);
         }
     }
 
     public int hashCode() {
-        return ItemStack.listHashCode(this.stacks);
+        return ItemStack.hashStackList(this.stacks);
     }
 
     public String toString() {

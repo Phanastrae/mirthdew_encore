@@ -1,182 +1,185 @@
 package phanastrae.mirthdew_encore.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.util.*;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
 import phanastrae.mirthdew_encore.block.entity.SlumbersocketBlockEntity;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 
-public class SlumbersocketBlock extends BlockWithEntity {
-    public static final MapCodec<SlumbersocketBlock> CODEC = createCodec(SlumbersocketBlock::new);
-    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-    public static final BooleanProperty DREAMING = BooleanProperty.of("dreaming");
+public class SlumbersocketBlock extends BaseEntityBlock {
+    public static final MapCodec<SlumbersocketBlock> CODEC = simpleCodec(SlumbersocketBlock::new);
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final BooleanProperty DREAMING = BooleanProperty.create("dreaming");
 
     @Override
-    protected MapCodec<? extends BlockWithEntity> getCodec() {
+    protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
 
-    public SlumbersocketBlock(Settings settings) {
+    public SlumbersocketBlock(Properties settings) {
         super(settings);
-        this.setDefaultState(this.stateManager.getDefaultState()
-                .with(FACING, Direction.NORTH)
-                .with(DREAMING, false));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(DREAMING, false));
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, DREAMING);
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         boolean dreaming = false;
 
-        World world = ctx.getWorld();
-        if(!world.isClient()) {
-            ItemStack itemStack = ctx.getStack();
-            NbtComponent nbtComponent = itemStack.getOrDefault(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.DEFAULT);
+        Level world = ctx.getLevel();
+        if(!world.isClientSide()) {
+            ItemStack itemStack = ctx.getItemInHand();
+            CustomData nbtComponent = itemStack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY);
 
-            DefaultedList<ItemStack> heldItem = DefaultedList.ofSize(1, ItemStack.EMPTY);
-            Inventories.readNbt(nbtComponent.copyNbt(), heldItem, world.getRegistryManager());
+            NonNullList<ItemStack> heldItem = NonNullList.withSize(1, ItemStack.EMPTY);
+            ContainerHelper.loadAllItems(nbtComponent.copyTag(), heldItem, world.registryAccess());
             ItemStack heldStack = heldItem.getFirst();
-            if(!heldStack.isEmpty() && heldStack.isOf(MirthdewEncoreItems.SLUMBERING_EYE)) {
+            if(!heldStack.isEmpty() && heldStack.is(MirthdewEncoreItems.SLUMBERING_EYE)) {
                 dreaming = true;
             }
         }
-        return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(DREAMING, dreaming);
+        return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite()).setValue(DREAMING, dreaming);
     }
 
     @Override
-    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        world.scheduleBlockTick(pos, this, 4);
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        world.scheduleTick(pos, this, 4);
 
-        super.onPlaced(world, pos, state, placer, itemStack);
+        super.setPlacedBy(world, pos, state, placer, itemStack);
     }
 
     @Override
-    protected BlockState rotate(BlockState state, BlockRotation rotation) {
-        return state.with(FACING, rotation.rotate(state.get(FACING)));
+    protected BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @Override
-    protected BlockState mirror(BlockState state, BlockMirror mirror) {
-        return state.rotate(mirror.getRotation(state.get(FACING)));
+    protected BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        world.scheduleBlockTick(pos, this, 4);
+    protected void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean moved) {
+        world.scheduleTick(pos, this, 4);
 
-        if (!state.isOf(newState.getBlock())) {
+        if (!state.is(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof SlumbersocketBlockEntity slumberSocketBlockEntity) {
-                ItemScatterer.spawn(world, pos, slumberSocketBlockEntity.getItems());
+                Containers.dropContents(world, pos, slumberSocketBlockEntity.getItems());
             }
 
-            super.onStateReplaced(state, world, pos, newState, moved);
+            super.onRemove(state, world, pos, newState, moved);
         }
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(
-            BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+    protected BlockState updateShape(
+            BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos
     ) {
-        world.scheduleBlockTick(pos, this, 4);
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        world.scheduleTick(pos, this, 4);
+        return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if(state.get(DREAMING)) {
-            BlockPos downPos = pos.down();
+    protected void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
+        if(state.getValue(DREAMING)) {
+            BlockPos downPos = pos.below();
             BlockState downState = world.getBlockState(downPos);
-            if (!downState.isOf(this) && downState.isAir()) {
-                world.setBlockState(downPos,
-                        MirthdewEncoreBlocks.SLUMBERVEIL.getDefaultState()
-                                .with(SlumberveilBlock.DISTANCE, 0)
-                                .with(SlumberveilBlock.SUPPORTING, true)
-                                .with(SlumberveilBlock.AXIS, state.get(FACING).rotateYClockwise().getAxis()));
+            if (!downState.is(this) && downState.isAir()) {
+                world.setBlockAndUpdate(downPos,
+                        MirthdewEncoreBlocks.SLUMBERVEIL.defaultBlockState()
+                                .setValue(SlumberveilBlock.DISTANCE, 0)
+                                .setValue(SlumberveilBlock.SUPPORTING, true)
+                                .setValue(SlumberveilBlock.AXIS, state.getValue(FACING).getClockWise().getAxis()));
             }
         }
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof SlumbersocketBlockEntity slumberSocketBlockEntity) {
             if(!slumberSocketBlockEntity.isHoldingItem()) {
-                ItemStack itemStack = player.getStackInHand(hand);
-                if(itemStack.isOf(Items.ENDER_EYE) || (itemStack.isOf(MirthdewEncoreItems.SLUMBERING_EYE) && itemStack.contains(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT))) {
-                    if (!world.isClient) {
-                        player.getWorld().playSoundFromEntity(null, player, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1.0F, 1.0F);
-                        player.emitGameEvent(GameEvent.BLOCK_PLACE, player);
+                ItemStack itemStack = player.getItemInHand(hand);
+                if(itemStack.is(Items.ENDER_EYE) || (itemStack.is(MirthdewEncoreItems.SLUMBERING_EYE) && itemStack.has(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT))) {
+                    if (!world.isClientSide) {
+                        player.level().playSound(null, player, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
+                        player.gameEvent(GameEvent.BLOCK_PLACE, player);
 
                         ItemStack newStack = itemStack.copyWithCount(1);
-                        itemStack.decrementUnlessCreative(1, player);
+                        itemStack.consume(1, player);
                         slumberSocketBlockEntity.setHeldItem(newStack);
-                        if(newStack.isOf(MirthdewEncoreItems.SLUMBERING_EYE)) {
-                            world.setBlockState(pos, state.with(SlumbersocketBlock.DREAMING, true));
+                        if(newStack.is(MirthdewEncoreItems.SLUMBERING_EYE)) {
+                            world.setBlockAndUpdate(pos, state.setValue(SlumbersocketBlock.DREAMING, true));
                         }
-                        if(world instanceof ServerWorld serverWorld) {
+                        if(world instanceof ServerLevel serverWorld) {
                             slumberSocketBlockEntity.markForUpdate(serverWorld);
                         }
 
-                        return ItemActionResult.SUCCESS;
+                        return ItemInteractionResult.SUCCESS;
                     } else {
                         slumberSocketBlockEntity.setDefaultLookTarget(state);
                     }
 
-                    return ItemActionResult.CONSUME;
+                    return ItemInteractionResult.CONSUME;
                 }
             }
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Nullable
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new SlumbersocketBlockEntity(pos, state);
     }
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, MirthdewEncoreBlockEntityTypes.SLUMBERSOCKET, SlumbersocketBlockEntity::tick);
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+        return createTickerHelper(type, MirthdewEncoreBlockEntityTypes.SLUMBERSOCKET, SlumbersocketBlockEntity::tick);
     }
 }

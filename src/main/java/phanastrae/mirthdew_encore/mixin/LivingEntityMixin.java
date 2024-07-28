@@ -1,14 +1,14 @@
 package phanastrae.mirthdew_encore.mixin;
 
-import net.minecraft.component.type.FoodComponent;
-import net.minecraft.entity.Attackable;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Attackable;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,23 +22,23 @@ import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity implements Attackable {
 
-    public LivingEntityMixin(EntityType<?> type, World world) {
+    public LivingEntityMixin(EntityType<?> type, Level world) {
         super(type, world);
     }
 
-    @Inject(method = "eatFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;applyFoodEffects(Lnet/minecraft/component/type/FoodComponent;)V", shift = At.Shift.AFTER))
-    private void mirthdew_encore$applySpectralCandyEffect(World world, ItemStack stack, FoodComponent foodComponent, CallbackInfoReturnable<ItemStack> cir) {
-        if(stack.isOf(MirthdewEncoreItems.SPECTRAL_CANDY)) { // TODO make this an item component in the future
+    @Inject(method = "eat(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/food/FoodProperties;)Lnet/minecraft/world/item/ItemStack;", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEatEffect(Lnet/minecraft/world/food/FoodProperties;)V", shift = At.Shift.AFTER))
+    private void mirthdew_encore$applySpectralCandyEffect(Level world, ItemStack stack, FoodProperties foodComponent, CallbackInfoReturnable<ItemStack> cir) {
+        if(stack.is(MirthdewEncoreItems.SPECTRAL_CANDY)) { // TODO make this an item component in the future
             LivingEntity thisEntity = (LivingEntity) (Object) this;
-            if (thisEntity instanceof PlayerEntity player) {
-                if (player.getHungerManager().getFoodLevel() == 20) {
-                    thisEntity.addStatusEffect(new StatusEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 3000, 2));
+            if (thisEntity instanceof Player player) {
+                if (player.getFoodData().getFoodLevel() == 20) {
+                    thisEntity.addEffect(new MobEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 3000, 2));
                 }
             }
         }
     }
 
-    @Inject(method = "tickInVoid", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "onBelowWorld", at = @At(value = "HEAD"), cancellable = true)
     private void mirthdew_encore$cancelVoidTick(CallbackInfo ci) {
         LivingEntity thisEntity = (LivingEntity)(Object)this;
         EntityDreamtwirlData dreamtwirlData = MirthdewEncoreEntityAttachment.fromEntity(thisEntity).getDreamtwirlEntityData();

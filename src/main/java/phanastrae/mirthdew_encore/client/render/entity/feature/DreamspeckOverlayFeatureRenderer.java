@@ -1,44 +1,44 @@
 package phanastrae.mirthdew_encore.client.render.entity.feature;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.render.entity.model.EntityModelLoader;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.world.entity.LivingEntity;
 import phanastrae.mirthdew_encore.client.render.entity.model.DreamspeckEntityModel;
 import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntityModelLayers;
 
-public class DreamspeckOverlayFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, DreamspeckEntityModel<T>> {
+public class DreamspeckOverlayFeatureRenderer<T extends LivingEntity> extends RenderLayer<T, DreamspeckEntityModel<T>> {
     private final EntityModel<T> model;
 
-    public DreamspeckOverlayFeatureRenderer(FeatureRendererContext<T, DreamspeckEntityModel<T>> context, EntityModelLoader loader) {
+    public DreamspeckOverlayFeatureRenderer(RenderLayerParent<T, DreamspeckEntityModel<T>> context, EntityModelSet loader) {
         super(context);
-        this.model = new DreamspeckEntityModel<>(loader.getModelPart(MirthdewEncoreEntityModelLayers.DREAMSPECK_OUTER));
+        this.model = new DreamspeckEntityModel<>(loader.bakeLayer(MirthdewEncoreEntityModelLayers.DREAMSPECK_OUTER));
     }
 
     public void render(
-            MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch
+            PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch
     ) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        boolean renderOnlyOutline = client.hasOutline(entity) && entity.isInvisible();
+        Minecraft client = Minecraft.getInstance();
+        boolean renderOnlyOutline = client.shouldEntityAppearGlowing(entity) && entity.isInvisible();
         if (!entity.isInvisible() || renderOnlyOutline) {
             VertexConsumer vertexConsumer;
             if (renderOnlyOutline) {
-                vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getOutline(this.getTexture(entity)));
+                vertexConsumer = vertexConsumerProvider.getBuffer(RenderType.outline(this.getTextureLocation(entity)));
             } else {
-                vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(this.getTexture(entity)));
+                vertexConsumer = vertexConsumerProvider.getBuffer(RenderType.entityTranslucent(this.getTextureLocation(entity)));
             }
 
-            this.getContextModel().copyStateTo(this.model);
-            this.model.animateModel(entity, limbAngle, limbDistance, tickDelta);
-            this.model.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
-            this.model.render(matrixStack, vertexConsumer, light, LivingEntityRenderer.getOverlay(entity, 0.0F));
+            this.getParentModel().copyPropertiesTo(this.model);
+            this.model.prepareMobModel(entity, limbAngle, limbDistance, tickDelta);
+            this.model.setupAnim(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+            this.model.renderToBuffer(matrixStack, vertexConsumer, light, LivingEntityRenderer.getOverlayCoords(entity, 0.0F));
         }
     }
 }

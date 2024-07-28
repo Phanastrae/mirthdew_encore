@@ -1,17 +1,17 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import com.google.common.collect.Maps;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.PersistentState;
-import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.util.RegionPos;
@@ -22,27 +22,27 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-public class DreamtwirlStageManager extends PersistentState {
+public class DreamtwirlStageManager extends SavedData {
 
     private final Map<Long, DreamtwirlStage> dreamtwirls = Maps.newHashMap();
-    private final ServerWorld world;
-    private final Random random = Random.create();
+    private final ServerLevel world;
+    private final RandomSource random = RandomSource.create();
 
-    public static Type<DreamtwirlStageManager> getPersistentStateType(ServerWorld world) {
-        return new Type<>(
+    public static Factory<DreamtwirlStageManager> getPersistentStateType(ServerLevel world) {
+        return new Factory<>(
                 () -> new DreamtwirlStageManager(world),
                 (nbt, registryLookup) -> fromNbt(world, nbt),
                 null
         );
     }
 
-    public static String nameFor(RegistryEntry<DimensionType> dimensionTypeEntry) {
+    public static String nameFor(Holder<DimensionType> dimensionTypeEntry) {
         return "mirthdew_encore_dreamtwirls";
     }
 
-    public DreamtwirlStageManager(ServerWorld world) {
+    public DreamtwirlStageManager(ServerLevel world) {
         this.world = world;
-        this.markDirty();
+        this.setDirty();
     }
 
     @Nullable
@@ -70,7 +70,7 @@ public class DreamtwirlStageManager extends PersistentState {
         }
 
         if(markDirty) {
-            this.markDirty();
+            this.setDirty();
         }
     }
 
@@ -121,19 +121,19 @@ public class DreamtwirlStageManager extends PersistentState {
         if(this.dreamtwirls.containsKey(id)) {
             return this.getDreamtwirl(id);
         } else {
-            DreamtwirlStage dreamtwirlStage = new DreamtwirlStage(this.world, id, this.world.getTime());
+            DreamtwirlStage dreamtwirlStage = new DreamtwirlStage(this.world, id, this.world.getGameTime());
             this.dreamtwirls.put(id, dreamtwirlStage);
-            this.markDirty();
+            this.setDirty();
             return dreamtwirlStage;
         }
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        NbtList nbtList = new NbtList();
+    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        ListTag nbtList = new ListTag();
 
         for(DreamtwirlStage dreamtwirlStage : this.dreamtwirls.values()) {
-            NbtCompound nbtCompound = new NbtCompound();
+            CompoundTag nbtCompound = new CompoundTag();
             dreamtwirlStage.writeNbt(nbtCompound);
             nbtList.add(nbtCompound);
         }
@@ -143,13 +143,13 @@ public class DreamtwirlStageManager extends PersistentState {
         return nbt;
     }
 
-    public static DreamtwirlStageManager fromNbt(ServerWorld world, NbtCompound nbt) {
+    public static DreamtwirlStageManager fromNbt(ServerLevel world, CompoundTag nbt) {
         DreamtwirlStageManager dreamtwirlStageManager = new DreamtwirlStageManager(world);
 
-        NbtList nbtList = nbt.getList("DreamtwirlStages", NbtElement.COMPOUND_TYPE);
+        ListTag nbtList = nbt.getList("DreamtwirlStages", Tag.TAG_COMPOUND);
 
         for(int i = 0; i < nbtList.size(); ++i) {
-            NbtCompound nbtCompound = nbtList.getCompound(i);
+            CompoundTag nbtCompound = nbtList.getCompound(i);
             DreamtwirlStage dreamtwirlStage = DreamtwirlStage.fromNbt(world, nbtCompound);
             dreamtwirlStageManager.dreamtwirls.put(dreamtwirlStage.getId(), dreamtwirlStage);
         }
@@ -158,7 +158,7 @@ public class DreamtwirlStageManager extends PersistentState {
     }
 
     @Nullable
-    public static DreamtwirlStageManager getDreamtwirlStageManager(World world) {
+    public static DreamtwirlStageManager getDreamtwirlStageManager(Level world) {
         DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
         if(DTWA == null) {
             return null;
@@ -168,7 +168,7 @@ public class DreamtwirlStageManager extends PersistentState {
 
     @Nullable
     public static DreamtwirlStageManager getMainDreamtwirlStageManager(MinecraftServer server) {
-        ServerWorld dreamtwirlWorld = server.getWorld(MirthdewEncoreDimensions.DREAMTWIRL_WORLD);
+        ServerLevel dreamtwirlWorld = server.getLevel(MirthdewEncoreDimensions.DREAMTWIRL_WORLD);
         if(dreamtwirlWorld == null) {
             return null;
         } else {

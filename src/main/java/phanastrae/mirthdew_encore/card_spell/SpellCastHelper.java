@@ -1,7 +1,5 @@
 package phanastrae.mirthdew_encore.card_spell;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.component.type.CardSpellComponent;
 import phanastrae.mirthdew_encore.component.type.SpellDeckContentsComponent;
@@ -9,13 +7,15 @@ import phanastrae.mirthdew_encore.component.type.SpellDeckContentsComponent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.ItemStack;
 
 import static phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes.CARD_SPELL;
 
 public class SpellCastHelper {
 
-    public static List<RegistryEntry<CardSpell>> spellListFromStack(ItemStack itemStack) {
-        List<RegistryEntry<CardSpell>> spellList = new ArrayList<>();
+    public static List<Holder<CardSpell>> spellListFromStack(ItemStack itemStack) {
+        List<Holder<CardSpell>> spellList = new ArrayList<>();
 
         CardSpellComponent cardSpellComponent = itemStack.get(CARD_SPELL);
         if(cardSpellComponent != null) {
@@ -35,10 +35,10 @@ public class SpellCastHelper {
         return spellList;
     }
 
-    public static List<SpellCast> castListFromSpellList(List<RegistryEntry<CardSpell>> spellList) {
+    public static List<SpellCast> castListFromSpellList(List<Holder<CardSpell>> spellList) {
         List<SpellCast.Builder> builderList = new ArrayList<>();
         Stack<SpellCast.Builder> buildStack = new Stack<>();
-        for(RegistryEntry<CardSpell> cardSpellEntry : spellList) {
+        for(Holder<CardSpell> cardSpellEntry : spellList) {
             SpellCast.Builder builder = new SpellCast.Builder(cardSpellEntry);
             if(buildStack.empty()) {
                 builderList.add(builder);

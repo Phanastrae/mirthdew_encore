@@ -3,53 +3,52 @@ package phanastrae.mirthdew_encore.card_spell.effect;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryCodecs;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
-
 import java.util.Optional;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
-public record FireEntityEffect(RegistryEntryList<EntityType<?>> entityTypes, float speed, float divergence, NbtCompound nbt) {
+public record FireEntityEffect(HolderSet<EntityType<?>> entityTypes, float speed, float divergence, CompoundTag nbt) {
     public static final MapCodec<FireEntityEffect> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
-                            RegistryCodecs.entryList(RegistryKeys.ENTITY_TYPE).fieldOf("entity").forGetter(FireEntityEffect::entityTypes),
+                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).fieldOf("entity").forGetter(FireEntityEffect::entityTypes),
                             Codec.FLOAT.optionalFieldOf("speed", 1.0F).forGetter(FireEntityEffect::speed),
                             Codec.FLOAT.optionalFieldOf("divergence", 1.0F).forGetter(FireEntityEffect::divergence),
-                            NbtCompound.CODEC.optionalFieldOf("nbt", new NbtCompound()).forGetter(FireEntityEffect::nbt)
+                            CompoundTag.CODEC.optionalFieldOf("nbt", new CompoundTag()).forGetter(FireEntityEffect::nbt)
                     )
                     .apply(instance, FireEntityEffect::new)
     );
 
-    public void castSpell(World world, Entity user) {
-        Random random = user.getRandom();
+    public void castSpell(Level world, Entity user) {
+        RandomSource random = user.getRandom();
 
-        Optional<RegistryEntry<EntityType<?>>> OREET = this.entityTypes().getRandom(random);
+        Optional<Holder<EntityType<?>>> OREET = this.entityTypes().getRandomElement(random);
         if(OREET.isPresent()) {
             Entity entity = OREET.get().value().create(world);
             if(entity != null) {
-                entity.readNbt(this.nbt);
-                if(entity instanceof ProjectileEntity projectileEntity) {
+                entity.load(this.nbt);
+                if(entity instanceof Projectile projectileEntity) {
                     projectileEntity.setOwner(user);
                 }
 
-                entity.setPosition(user.getEyePos());
-                Vec3d relativeVelocity = user.getRotationVec(1)
+                entity.setPos(user.getEyePosition());
+                Vec3 relativeVelocity = user.getViewVector(1)
                         .add(
-                                random.nextTriangular(0.0, 0.0172275 * divergence),
-                                random.nextTriangular(0.0, 0.0172275 * divergence),
-                                random.nextTriangular(0.0, 0.0172275 * divergence)
-                        ).multiply(speed);
-                entity.setVelocity(user.getVelocity().add(relativeVelocity));
+                                random.triangle(0.0, 0.0172275 * divergence),
+                                random.triangle(0.0, 0.0172275 * divergence),
+                                random.triangle(0.0, 0.0172275 * divergence)
+                        ).scale(speed);
+                entity.setDeltaMovement(user.getDeltaMovement().add(relativeVelocity));
 
-                world.spawnEntity(entity);
+                world.addFreshEntity(entity);
             }
         }
     }

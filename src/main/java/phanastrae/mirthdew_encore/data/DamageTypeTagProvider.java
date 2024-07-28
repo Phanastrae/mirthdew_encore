@@ -2,10 +2,10 @@ package phanastrae.mirthdew_encore.data;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageType;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -13,12 +13,12 @@ import static phanastrae.mirthdew_encore.entity.MirthdewEncoreDamageTypes.DREAMS
 
 public class DamageTypeTagProvider extends FabricTagProvider<DamageType> {
 
-    public DamageTypeTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
-        super(output, RegistryKeys.DAMAGE_TYPE, completableFuture);
+    public DamageTypeTagProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> completableFuture) {
+        super(output, Registries.DAMAGE_TYPE, completableFuture);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+    protected void addTags(HolderLookup.Provider wrapperLookup) {
         getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ARMOR)
                 .addOptional(DREAMSNARE_TONGUE);
         getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ENCHANTMENTS)

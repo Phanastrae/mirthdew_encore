@@ -1,14 +1,14 @@
 package phanastrae.mirthdew_encore.world.dimension;
 
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.DimensionType;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 
 public class MirthdewEncoreDimensions {
-    public static final Identifier DREAMTWIRL_ID = MirthdewEncore.id("dreamtwirl");
-    public static final RegistryKey<World> DREAMTWIRL_WORLD = RegistryKey.of(RegistryKeys.WORLD, DREAMTWIRL_ID);
-    public static final RegistryKey<DimensionType> DREAMTWIRL_DIM_TYPE = RegistryKey.of(RegistryKeys.DIMENSION_TYPE, DREAMTWIRL_ID);
+    public static final ResourceLocation DREAMTWIRL_ID = MirthdewEncore.id("dreamtwirl");
+    public static final ResourceKey<Level> DREAMTWIRL_WORLD = ResourceKey.create(Registries.DIMENSION, DREAMTWIRL_ID);
+    public static final ResourceKey<DimensionType> DREAMTWIRL_DIM_TYPE = ResourceKey.create(Registries.DIMENSION_TYPE, DREAMTWIRL_ID);
 }

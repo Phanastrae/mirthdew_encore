@@ -1,8 +1,8 @@
 package phanastrae.mirthdew_encore.card_spell;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.player.Player;
 import phanastrae.mirthdew_encore.entity.MirthdewEncorePlayerEntityAttachment;
 
 public class PlayerEntityMirthData {
@@ -12,12 +12,12 @@ public class PlayerEntityMirthData {
     public PlayerEntityMirthData() {
     }
 
-    public void writeNbt(NbtCompound nbt) {
+    public void writeNbt(CompoundTag nbt) {
         nbt.putLong("mirth", this.mirth);
     }
 
-    public void readNbt(NbtCompound nbt) {
-        if(nbt.contains("mirth", NbtElement.LONG_TYPE)) {
+    public void readNbt(CompoundTag nbt) {
+        if(nbt.contains("mirth", Tag.TAG_LONG)) {
             this.mirth = nbt.getLong("mirth");
         }
     }
@@ -41,7 +41,7 @@ public class PlayerEntityMirthData {
         }
     }
 
-    public static PlayerEntityMirthData fromPlayer(PlayerEntity player) {
+    public static PlayerEntityMirthData fromPlayer(Player player) {
         return MirthdewEncorePlayerEntityAttachment.fromPlayer(player).getMirthData();
     }
 }

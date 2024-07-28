@@ -1,9 +1,9 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.function.BooleanBiFunction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 public class DreamtwirlBorder {
@@ -24,7 +24,7 @@ public class DreamtwirlBorder {
         this.maxX = regionPos.worldX + 512 - BORDER_SIZE;
         this.maxZ = regionPos.worldZ + 512 - BORDER_SIZE;
 
-        VoxelShape inside = VoxelShapes.cuboid(
+        VoxelShape inside = Shapes.box(
                 minX,
                 Double.NEGATIVE_INFINITY,
                 minZ,
@@ -32,7 +32,7 @@ public class DreamtwirlBorder {
                 Double.POSITIVE_INFINITY,
                 maxZ
         );
-        VoxelShape outside = VoxelShapes.cuboid(
+        VoxelShape outside = Shapes.box(
                 regionPos.worldX - BORDER_SIZE,
                 Double.NEGATIVE_INFINITY,
                 regionPos.worldZ - BORDER_SIZE,
@@ -40,19 +40,19 @@ public class DreamtwirlBorder {
                 Double.POSITIVE_INFINITY,
                 regionPos.worldZ + 512 + BORDER_SIZE
         );
-        this.voxelShape = VoxelShapes.combineAndSimplify(
+        this.voxelShape = Shapes.join(
                 outside,
                 inside,
-                BooleanBiFunction.ONLY_FIRST
+                BooleanOp.ONLY_FIRST
         );
     }
 
     public boolean entityOutsideBorder(Entity entity) {
-        return VoxelShapes.matchesAnywhere(this.voxelShape, VoxelShapes.cuboid(entity.getBoundingBox()), BooleanBiFunction.AND);
+        return Shapes.joinIsNotEmpty(this.voxelShape, Shapes.create(entity.getBoundingBox()), BooleanOp.AND);
     }
 
     public boolean entityTouchingBorder(Entity entity) {
-        return VoxelShapes.matchesAnywhere(this.voxelShape, VoxelShapes.cuboid(entity.getBoundingBox().expand(1E-6)), BooleanBiFunction.AND);
+        return Shapes.joinIsNotEmpty(this.voxelShape, Shapes.create(entity.getBoundingBox().inflate(1E-6)), BooleanOp.AND);
     }
 
     public boolean contains(double x, double z, double margin) {

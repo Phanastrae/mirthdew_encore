@@ -2,8 +2,8 @@ package phanastrae.mirthdew_encore.data;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import net.minecraft.registry.RegistryBuilder;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.Registries;
 
 public class MirthdewEncoreDataGenerator implements DataGeneratorEntrypoint {
 
@@ -27,8 +27,8 @@ public class MirthdewEncoreDataGenerator implements DataGeneratorEntrypoint {
 	}
 
 	@Override
-	public void buildRegistry(RegistryBuilder registryBuilder) {
-		registryBuilder.addRegistry(RegistryKeys.BIOME, WorldGenerationProvider::bootstrapBiomes);
-		registryBuilder.addRegistry(RegistryKeys.DIMENSION_TYPE, WorldGenerationProvider::bootstrapDimensionTypes);
+	public void buildRegistry(RegistrySetBuilder registryBuilder) {
+		registryBuilder.add(Registries.BIOME, WorldGenerationProvider::bootstrapBiomes);
+		registryBuilder.add(Registries.DIMENSION_TYPE, WorldGenerationProvider::bootstrapDimensionTypes);
 	}
 }

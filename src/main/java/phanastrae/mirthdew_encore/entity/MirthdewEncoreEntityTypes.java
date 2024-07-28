@@ -1,43 +1,43 @@
 package phanastrae.mirthdew_encore.entity;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 
 public class MirthdewEncoreEntityTypes {
 
     public static final EntityType<DreamspeckEntity> DREAM_SPECK =
-            createBuilder(DreamspeckEntity::new, SpawnGroup.MISC)
-                    .dimensions(0.4F, 0.4F)
-                    .makeFireImmune()
+            createBuilder(DreamspeckEntity::new, MobCategory.MISC)
+                    .sized(0.4F, 0.4F)
+                    .fireImmune()
                     .build();
 
     public static void init() {
         registerWithAttributes(DREAM_SPECK, "dreamspeck", DreamspeckEntity.createDreamspeckAttributes());
     }
 
-    private static void registerWithAttributes(EntityType<? extends LivingEntity> type, String name, DefaultAttributeContainer.Builder builder) {
+    private static void registerWithAttributes(EntityType<? extends LivingEntity> type, String name, AttributeSupplier.Builder builder) {
         register(type, name);
         registerAttributes(type, builder);
     }
 
     private static void register(EntityType<? extends Entity> type, String name) {
-        Identifier identifier = MirthdewEncore.id(name);
-        Registry.register(Registries.ENTITY_TYPE, identifier, type);
+        ResourceLocation identifier = MirthdewEncore.id(name);
+        Registry.register(BuiltInRegistries.ENTITY_TYPE, identifier, type);
     }
 
-    private static void registerAttributes(EntityType<? extends LivingEntity> type, DefaultAttributeContainer.Builder builder) {
+    private static void registerAttributes(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder) {
         FabricDefaultAttributeRegistry.register(type, builder);
     }
 
-    private static <T extends Entity> EntityType.Builder<T> createBuilder(EntityType.EntityFactory<T> factory, SpawnGroup spawnGroup) {
-        return EntityType.Builder.create(factory, spawnGroup);
+    private static <T extends Entity> EntityType.Builder<T> createBuilder(EntityType.EntityFactory<T> factory, MobCategory spawnGroup) {
+        return EntityType.Builder.of(factory, spawnGroup);
     }
 }

@@ -1,8 +1,8 @@
 package phanastrae.mirthdew_encore.registry;
 
-import net.minecraft.block.Block;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 
 public final class MirthdewEncoreBlockTags {
@@ -15,6 +15,6 @@ public final class MirthdewEncoreBlockTags {
     public static final TagKey<Block> IS_NETHER_WART = of("is_nether_wart");
 
     private static TagKey<Block> of(String id) {
-        return TagKey.of(RegistryKeys.BLOCK, MirthdewEncore.id(id));
+        return TagKey.create(Registries.BLOCK, MirthdewEncore.id(id));
     }
 }

@@ -1,15 +1,15 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.Random;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 
 public class DreamtwirlRoomGroup {
 
@@ -30,8 +30,8 @@ public class DreamtwirlRoomGroup {
         return this.rooms;
     }
 
-    public void sprawl(DreamtwirlStageGenerator stageGenerator, Random random) {
-        Identifier fourwayMiniId = MirthdewEncore.id("test/fourway/mini");
+    public void sprawl(DreamtwirlStageGenerator stageGenerator, RandomSource random) {
+        ResourceLocation fourwayMiniId = MirthdewEncore.id("test/fourway/mini");
 
         int MAX_ROOMS = 3;
         int MAX_OPERATIONS = 20;
@@ -60,9 +60,9 @@ public class DreamtwirlRoomGroup {
                             DreamtwirlRoom.Gate fourwayGate = fourwayGateOptional.get();
 
                             fourway.matchGates(fourwayGate, gate, room);
-                            Direction direction = gate.orientation.getFacing();
-                            Vec3i vector = direction.getVector();
-                            fourway.translate(vector.multiply(1).add(random.nextInt(3) - 1, random.nextInt(3) - 1, random.nextInt(3) - 1));
+                            Direction direction = gate.orientation.front();
+                            Vec3i vector = direction.getNormal();
+                            fourway.translate(vector.multiply(1).offset(random.nextInt(3) - 1, random.nextInt(3) - 1, random.nextInt(3) - 1));
 
                             stageGenerator.adjustPosition(fourway, random, direction);
                             if(stageGenerator.isLocationValid(fourway)) {

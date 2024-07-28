@@ -1,18 +1,18 @@
 package phanastrae.mirthdew_encore.entity;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.player.Player;
 import phanastrae.mirthdew_encore.card_spell.PlayerEntityMirthData;
 import phanastrae.mirthdew_encore.duck.PlayerEntityDuckInterface;
 
 public class MirthdewEncorePlayerEntityAttachment {
 
-    private final PlayerEntity player;
+    private final Player player;
     private final PlayerEntityHungerData hungerData;
     private final PlayerEntityMirthData mirthData;
 
-    public MirthdewEncorePlayerEntityAttachment(PlayerEntity player) {
+    public MirthdewEncorePlayerEntityAttachment(Player player) {
         this.player = player;
         this.hungerData = new PlayerEntityHungerData(player);
         this.mirthData = new PlayerEntityMirthData();
@@ -22,23 +22,23 @@ public class MirthdewEncorePlayerEntityAttachment {
         this.hungerData.tick();
     }
 
-    public void writeNbt(NbtCompound nbt) {
-        NbtCompound hungerData = new NbtCompound();
+    public void writeNbt(CompoundTag nbt) {
+        CompoundTag hungerData = new CompoundTag();
         this.hungerData.writeNbt(hungerData);
         nbt.put("HungerData", hungerData);
 
-        NbtCompound mirthData = new NbtCompound();
+        CompoundTag mirthData = new CompoundTag();
         this.mirthData.writeNbt(mirthData);
         nbt.put("MirthData", mirthData);
     }
 
-    public void readNbt(NbtCompound nbt) {
-        if(nbt.contains("HungerData", NbtElement.COMPOUND_TYPE)) {
-            NbtCompound hungerData = nbt.getCompound("HungerData");
+    public void readNbt(CompoundTag nbt) {
+        if(nbt.contains("HungerData", Tag.TAG_COMPOUND)) {
+            CompoundTag hungerData = nbt.getCompound("HungerData");
             this.hungerData.readNbt(hungerData);
         }
-        if(nbt.contains("MirthData", NbtElement.COMPOUND_TYPE)) {
-            NbtCompound mirthData = nbt.getCompound("MirthData");
+        if(nbt.contains("MirthData", Tag.TAG_COMPOUND)) {
+            CompoundTag mirthData = nbt.getCompound("MirthData");
             this.mirthData.readNbt(mirthData);
         }
     }
@@ -51,7 +51,7 @@ public class MirthdewEncorePlayerEntityAttachment {
         return mirthData;
     }
 
-    public static MirthdewEncorePlayerEntityAttachment fromPlayer(PlayerEntity player) {
+    public static MirthdewEncorePlayerEntityAttachment fromPlayer(Player player) {
         return ((PlayerEntityDuckInterface)player).mirthdew_encore$getAttachment();
     }
 }

@@ -1,12 +1,12 @@
 package phanastrae.mirthdew_encore.client.render.world;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BackgroundRenderer;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.DimensionEffects;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.DimensionSpecialEffects;
+import net.minecraft.client.renderer.FogRenderer;
+import net.minecraft.world.phys.Vec3;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
 public class MirthdewEncoreDimensionEffects {
@@ -29,34 +29,34 @@ public class MirthdewEncoreDimensionEffects {
 
         DimensionRenderingRegistry.registerDimensionEffects(MirthdewEncoreDimensions.DREAMTWIRL_ID, getDreamtwirlDimensionEffects());
         DimensionRenderingRegistry.registerSkyRenderer(MirthdewEncoreDimensions.DREAMTWIRL_WORLD, context -> {
-            MatrixStack matrices = new MatrixStack();
-            matrices.multiplyPositionMatrix(context.positionMatrix());
+            PoseStack matrices = new PoseStack();
+            matrices.mulPose(context.positionMatrix());
 
-            float tickDelta = context.tickCounter().getTickDelta(false);
+            float tickDelta = context.tickCounter().getGameTimeDeltaPartialTick(false);
 
-            MinecraftClient client = context.gameRenderer().getClient();
+            Minecraft client = context.gameRenderer().getMinecraft();
 
             Camera camera = context.camera();
-            boolean useThickFog = client.inGameHud.getBossBarHud().shouldThickenFog(); // dimension does not use thick fog by default
-            Runnable fogCallback = () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, context.gameRenderer().getViewDistance(), useThickFog, tickDelta);
+            boolean useThickFog = client.gui.getBossOverlay().shouldCreateWorldFog(); // dimension does not use thick fog by default
+            Runnable fogCallback = () -> FogRenderer.setupFog(camera, FogRenderer.FogMode.FOG_SKY, context.gameRenderer().getRenderDistance(), useThickFog, tickDelta);
             this.dreamtwirlSkyRenderer.renderSky(context.world(), matrices, context.projectionMatrix(), tickDelta, camera, fogCallback);
         });
     }
 
-    public static DimensionEffects getDreamtwirlDimensionEffects() {
-        return new DimensionEffects(Float.NaN, false, DimensionEffects.SkyType.NONE, false, false) {
+    public static DimensionSpecialEffects getDreamtwirlDimensionEffects() {
+        return new DimensionSpecialEffects(Float.NaN, false, DimensionSpecialEffects.SkyType.NONE, false, false) {
             @Override
-            public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
+            public Vec3 getBrightnessDependentFogColor(Vec3 color, float sunHeight) {
                 return color;
             }
 
             @Override
-            public boolean useThickFog(int camX, int camY) {
+            public boolean isFoggyAt(int camX, int camY) {
                 return false;
             }
 
             @Override
-            public float[] getFogColorOverride(float skyAngle, float tickDelta) {
+            public float[] getSunriseColor(float skyAngle, float tickDelta) {
                 return null;
             }
         };
