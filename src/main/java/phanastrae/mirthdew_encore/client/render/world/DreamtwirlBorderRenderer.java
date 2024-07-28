@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.render.world;
+package phanastrae.mirthdew_encore.client.render.world;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
-import phanastrae.mirthdew_encore.render.shader.MirthdewEncoreShaders;
+import phanastrae.mirthdew_encore.client.render.shader.MirthdewEncoreShaders;
 import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;

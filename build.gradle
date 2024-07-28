@@ -19,12 +19,9 @@ repositories {
 }
 
 loom {
-    splitEnvironmentSourceSets()
-
 	mods {
 		"mirthdew_encore" {
 			sourceSet sourceSets.main
-			sourceSet sourceSets.client
 		}
 	}
 

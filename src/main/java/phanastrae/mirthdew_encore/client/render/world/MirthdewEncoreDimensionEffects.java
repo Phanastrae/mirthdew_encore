@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.render.world;
+package phanastrae.mirthdew_encore.client.render.world;
 
 import net.fabricmc.fabric.api.client.rendering.v1.DimensionRenderingRegistry;
 import net.minecraft.client.MinecraftClient;

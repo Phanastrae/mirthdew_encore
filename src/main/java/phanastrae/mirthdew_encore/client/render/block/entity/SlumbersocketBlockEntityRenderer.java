@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.render.block.entity;
+package phanastrae.mirthdew_encore.client.render.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.model.*;
@@ -12,9 +12,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import phanastrae.mirthdew_encore.MirthdewEncore;
-import phanastrae.mirthdew_encore.block.SlumbersocketBlock;
 import phanastrae.mirthdew_encore.block.entity.SlumbersocketBlockEntity;
-import phanastrae.mirthdew_encore.render.entity.model.MirthdewEncoreEntityModelLayers;
+import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntityModelLayers;
 
 public class SlumbersocketBlockEntityRenderer implements BlockEntityRenderer<SlumbersocketBlockEntity> {
     private static final Identifier TEXTURE = MirthdewEncore.id("textures/entity/slumbersocket/eye.png");

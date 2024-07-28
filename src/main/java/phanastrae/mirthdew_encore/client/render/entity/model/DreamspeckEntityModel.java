@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.render.entity.model;
+package phanastrae.mirthdew_encore.client.render.entity.model;
 
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;

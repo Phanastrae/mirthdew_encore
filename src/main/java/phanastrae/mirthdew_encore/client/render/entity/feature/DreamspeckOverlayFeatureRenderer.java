@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.render.entity.feature;
+package phanastrae.mirthdew_encore.client.render.entity.feature;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -11,8 +11,8 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
-import phanastrae.mirthdew_encore.render.entity.model.DreamspeckEntityModel;
-import phanastrae.mirthdew_encore.render.entity.model.MirthdewEncoreEntityModelLayers;
+import phanastrae.mirthdew_encore.client.render.entity.model.DreamspeckEntityModel;
+import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntityModelLayers;
 
 public class DreamspeckOverlayFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, DreamspeckEntityModel<T>> {
     private final EntityModel<T> model;

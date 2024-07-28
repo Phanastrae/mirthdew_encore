@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.network;
+package phanastrae.mirthdew_encore.client.network;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import phanastrae.mirthdew_encore.card_spell.PlayerEntityMirthData;

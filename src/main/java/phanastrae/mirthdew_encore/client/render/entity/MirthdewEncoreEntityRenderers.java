@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.render.entity;
+package phanastrae.mirthdew_encore.client.render.entity;
 
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.entity.EntityRendererFactory;

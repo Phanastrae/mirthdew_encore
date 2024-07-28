@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.render.block.entity;
+package phanastrae.mirthdew_encore.client.render.block.entity;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;

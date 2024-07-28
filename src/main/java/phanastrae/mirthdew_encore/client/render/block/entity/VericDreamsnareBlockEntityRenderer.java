@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.render.block.entity;
+package phanastrae.mirthdew_encore.client.render.block.entity;
 
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import org.joml.Math;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.entity.VericDreamsnareBlockEntity;
-import phanastrae.mirthdew_encore.render.entity.model.MirthdewEncoreEntityModelLayers;
+import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntityModelLayers;
 
 public class VericDreamsnareBlockEntityRenderer implements BlockEntityRenderer<VericDreamsnareBlockEntity> {
     private static final Identifier TEXTURE = MirthdewEncore.id("textures/entity/veric_dreamsnare/tongue.png");

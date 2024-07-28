@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore;
+package phanastrae.mirthdew_encore.client;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
@@ -6,14 +6,14 @@ import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallbac
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
-import phanastrae.mirthdew_encore.network.MirthdewEncoreClientPacketHandler;
-import phanastrae.mirthdew_encore.render.block.MirthdewEncoreBlockRenderLayers;
-import phanastrae.mirthdew_encore.render.block.entity.MirthdewEncoreBlockEntityRendererFactories;
-import phanastrae.mirthdew_encore.render.entity.MirthdewEncoreEntityRenderers;
-import phanastrae.mirthdew_encore.render.entity.model.MirthdewEncoreEntityModelLayers;
-import phanastrae.mirthdew_encore.render.shader.MirthdewEncoreShaders;
-import phanastrae.mirthdew_encore.render.world.DreamtwirlBorderRenderer;
-import phanastrae.mirthdew_encore.render.world.MirthdewEncoreDimensionEffects;
+import phanastrae.mirthdew_encore.client.network.MirthdewEncoreClientPacketHandler;
+import phanastrae.mirthdew_encore.client.render.block.MirthdewEncoreBlockRenderLayers;
+import phanastrae.mirthdew_encore.client.render.block.entity.MirthdewEncoreBlockEntityRendererFactories;
+import phanastrae.mirthdew_encore.client.render.entity.MirthdewEncoreEntityRenderers;
+import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntityModelLayers;
+import phanastrae.mirthdew_encore.client.render.shader.MirthdewEncoreShaders;
+import phanastrae.mirthdew_encore.client.render.world.DreamtwirlBorderRenderer;
+import phanastrae.mirthdew_encore.client.render.world.MirthdewEncoreDimensionEffects;
 
 public class MirthdewEncoreClient implements ClientModInitializer {
 

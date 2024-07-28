@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.render.entity;
+package phanastrae.mirthdew_encore.client.render.entity;
 
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
@@ -6,9 +6,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.entity.DreamspeckEntity;
-import phanastrae.mirthdew_encore.render.entity.feature.DreamspeckOverlayFeatureRenderer;
-import phanastrae.mirthdew_encore.render.entity.model.DreamspeckEntityModel;
-import phanastrae.mirthdew_encore.render.entity.model.MirthdewEncoreEntityModelLayers;
+import phanastrae.mirthdew_encore.client.render.entity.feature.DreamspeckOverlayFeatureRenderer;
+import phanastrae.mirthdew_encore.client.render.entity.model.DreamspeckEntityModel;
+import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntityModelLayers;
 
 public class DreamspeckEntityRenderer extends MobEntityRenderer<DreamspeckEntity, DreamspeckEntityModel<DreamspeckEntity>> {
     private static final Identifier TEXTURE = MirthdewEncore.id("textures/entity/dreamspeck/dreamspeck.png");

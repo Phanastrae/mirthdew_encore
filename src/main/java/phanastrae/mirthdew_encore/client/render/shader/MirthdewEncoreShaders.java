@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.render.shader;
+package phanastrae.mirthdew_encore.client.render.shader;
 
 import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
 import net.minecraft.client.gl.ShaderProgram;

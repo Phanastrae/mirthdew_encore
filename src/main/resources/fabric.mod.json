@@ -19,7 +19,7 @@
 			"phanastrae.mirthdew_encore.MirthdewEncore"
 		],
 		"client": [
-			"phanastrae.mirthdew_encore.MirthdewEncoreClient"
+			"phanastrae.mirthdew_encore.client.MirthdewEncoreClient"
 		],
 		"fabric-datagen": [
           "phanastrae.mirthdew_encore.data.MirthdewEncoreDataGenerator"
