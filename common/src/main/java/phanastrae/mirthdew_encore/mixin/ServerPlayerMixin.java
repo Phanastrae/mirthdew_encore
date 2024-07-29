@@ -17,7 +17,7 @@ import phanastrae.mirthdew_encore.card_spell.PlayerEntityMirthData;
 import phanastrae.mirthdew_encore.entity.PlayerEntityHungerData;
 import phanastrae.mirthdew_encore.network.packet.FoodDebtUpdatePayload;
 import phanastrae.mirthdew_encore.network.packet.MirthUpdatePayload;
-import phanastrae.mirthdew_encore.services.Services;
+import phanastrae.mirthdew_encore.services.XPlatInterface;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends Player {
@@ -47,14 +47,14 @@ public abstract class ServerPlayerMixin extends Player {
         PlayerEntityHungerData hungerData = PlayerEntityHungerData.fromPlayer(thisEntity);
         int foodLevelDebt = hungerData.getFoodLevelDebt();
         if(foodLevelDebt != this.mirthdew_encore$syncedFoodLevelDebt) {
-            Services.XPLAT.sendPayload(thisEntity, new FoodDebtUpdatePayload(foodLevelDebt));
+            XPlatInterface.INSTANCE.sendPayload(thisEntity, new FoodDebtUpdatePayload(foodLevelDebt));
             this.mirthdew_encore$syncedFoodLevelDebt = foodLevelDebt;
         }
 
         PlayerEntityMirthData mirthData = PlayerEntityMirthData.fromPlayer(thisEntity);
         long mirth = mirthData.getMirth();
         if(mirth != this.mirthdew_encore$syncedMirth) {
-            Services.XPLAT.sendPayload(thisEntity, new MirthUpdatePayload(mirth));
+            XPlatInterface.INSTANCE.sendPayload(thisEntity, new MirthUpdatePayload(mirth));
             this.mirthdew_encore$syncedMirth = mirth;
         }
     }

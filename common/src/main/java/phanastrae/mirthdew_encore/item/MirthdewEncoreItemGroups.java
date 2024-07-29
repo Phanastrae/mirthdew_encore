@@ -16,7 +16,7 @@ import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.card_spell.CardSpell;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
-import phanastrae.mirthdew_encore.services.Services;
+import phanastrae.mirthdew_encore.services.XPlatInterface;
 
 public class MirthdewEncoreItemGroups {
     private static final ResourceKey<CreativeModeTab> BUILDING_BLOCKS = createKey("building_blocks");
@@ -36,7 +36,7 @@ public class MirthdewEncoreItemGroups {
         return ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.withDefaultNamespace(name));
     }
 
-    public static final CreativeModeTab MIRTHDEW_ENCORE_GROUP = Services.XPLAT.createCreativeModeTabBuilder()
+    public static final CreativeModeTab MIRTHDEW_ENCORE_GROUP = XPlatInterface.INSTANCE.createCreativeModeTabBuilder()
             .icon(MirthdewEncoreItems.SPELL_CARD::getDefaultInstance)
             .title(Component.translatable("itemGroup.mirthdew_encore"))
             .build();
@@ -75,7 +75,7 @@ public class MirthdewEncoreItemGroups {
     }
 
     private static void addAllSpellCardsToGroup(ResourceKey<CreativeModeTab> itemGroupKey) {
-        Services.XPLAT.forTabRun(itemGroupKey, ((itemDisplayParameters, output) -> {
+        XPlatInterface.INSTANCE.forTabRun(itemGroupKey, ((itemDisplayParameters, output) -> {
             itemDisplayParameters.holders().lookup(MirthdewEncoreRegistries.CARD_SPELL_KEY).ifPresent(registryWrapper -> addAllSpellCards(output, registryWrapper));
         }));
     }
@@ -105,22 +105,22 @@ public class MirthdewEncoreItemGroups {
     }
 
     public static void add(ResourceKey<CreativeModeTab> groupKey, ItemLike item) {
-        Services.XPLAT.creativeTabAdd(groupKey, item);
+        XPlatInterface.INSTANCE.creativeTabAdd(groupKey, item);
     }
 
     public static void add(ResourceKey<CreativeModeTab> groupKey, ItemLike... items) {
-        Services.XPLAT.creativeTabAdd(groupKey, items);
+        XPlatInterface.INSTANCE.creativeTabAdd(groupKey, items);
     }
 
     public static void addAfter(ItemLike after, ResourceKey<CreativeModeTab> groupKey, ItemLike item) {
-        Services.XPLAT.creativeTabAddAfter(after, groupKey, item);
+        XPlatInterface.INSTANCE.creativeTabAddAfter(after, groupKey, item);
     }
 
     public static void addAfter(ItemStack after, ResourceKey<CreativeModeTab> groupKey, ItemStack item) {
-        Services.XPLAT.creativeTabAddAfter(after, groupKey, item);
+        XPlatInterface.INSTANCE.creativeTabAddAfter(after, groupKey, item);
     }
 
     public static void addAfter(ItemLike after, ResourceKey<CreativeModeTab> groupKey, ItemLike... items) {
-        Services.XPLAT.creativeTabAddAfter(after, groupKey, items);
+        XPlatInterface.INSTANCE.creativeTabAddAfter(after, groupKey, items);
     }
 }

@@ -6,19 +6,24 @@
     "CollisionGetterMixin",
     "EntityMixin",
     "FoodDataMixin",
+    "LevelMixin",
     "ListPoolElementAccessor",
     "LivingEntityMixin",
     "PlayerMixin",
     "ProjectileAccessor",
     "SculkBlockMixin",
-    "ServerPlayerMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerLevelAccessor",
     "ServerLevelMixin",
-    "SinglePoolElementAccesor",
-    "LevelMixin"
+    "ServerPlayerMixin",
+    "SinglePoolElementAccesor"
   ],
   "client": [
+    "client.BlockEntityRenderersAccessor",
+    "client.GuiGraphicsMixin",
+    "client.GuiMixin",
+    "client.LevelRendererMixin",
+    "client.MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

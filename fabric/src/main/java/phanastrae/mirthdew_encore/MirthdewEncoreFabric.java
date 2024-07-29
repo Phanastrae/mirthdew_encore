@@ -10,7 +10,7 @@ public class MirthdewEncoreFabric implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		MirthdewEncore.commonInit();
+		MirthdewEncore.init();
 
 		ServerTickEvents.START_WORLD_TICK.register(DreamtwirlWorldAttachment::tickWorld);
 		CommandRegistrationCallback.EVENT.register(MirthdewEncoreCommands::registerCommands);

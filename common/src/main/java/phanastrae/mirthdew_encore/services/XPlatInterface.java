@@ -18,6 +18,8 @@ import net.minecraft.world.level.ItemLike;
 import java.util.function.BiConsumer;
 
 public interface XPlatInterface {
+    XPlatInterface INSTANCE = Services.load(XPlatInterface.class);
+
     boolean isModLoaded(String modId);
 
     void registerEntityAttributes(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder);

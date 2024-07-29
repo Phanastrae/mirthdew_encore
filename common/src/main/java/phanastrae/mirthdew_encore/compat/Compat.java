@@ -1,6 +1,5 @@
 package phanastrae.mirthdew_encore.compat;
 
-import phanastrae.mirthdew_encore.services.Services;
 import phanastrae.mirthdew_encore.services.XPlatInterface;
 
 public class Compat {
@@ -17,7 +16,7 @@ public class Compat {
     }
 
     public static void setupModLoadedFlags() {
-        XPlatInterface XPLAT = Services.XPLAT;
+        XPlatInterface XPLAT = XPlatInterface.INSTANCE;
         LITHIUM_LOADED = XPLAT.isModLoaded("lithium");
     }
 

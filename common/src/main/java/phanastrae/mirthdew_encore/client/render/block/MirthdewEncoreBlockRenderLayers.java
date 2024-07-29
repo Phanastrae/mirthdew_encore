@@ -1,19 +1,23 @@
 package phanastrae.mirthdew_encore.client.render.block;
 
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.world.level.block.Block;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
+import phanastrae.mirthdew_encore.client.services.XPlatClientInterface;
 
 public class MirthdewEncoreBlockRenderLayers {
 
     public static void init() {
-        BlockRenderLayerMap map = BlockRenderLayerMap.INSTANCE;
-        map.putBlocks(RenderType.cutout(),
+        putBlocks(RenderType.cutout(),
                 MirthdewEncoreBlocks.DREAMSEED,
                 MirthdewEncoreBlocks.SLUMBERSOCKET,
                 MirthdewEncoreBlocks.VERIC_DREAMSNARE);
 
-        map.putBlocks(RenderType.translucent(),
+        putBlocks(RenderType.translucent(),
                 MirthdewEncoreBlocks.SLUMBERVEIL);
+    }
+
+    private static void putBlocks(RenderType renderLayer, Block... blocks) {
+        XPlatClientInterface.INSTANCE.registerBlockRenderLayers(renderLayer, blocks);
     }
 }

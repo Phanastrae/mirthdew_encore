@@ -1,11 +1,14 @@
 package phanastrae.mirthdew_encore.client.render.entity.model;
 
-import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.world.entity.Entity;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.client.render.block.entity.SlumbersocketBlockEntityRenderer;
 import phanastrae.mirthdew_encore.client.render.block.entity.VericDreamsnareBlockEntityRenderer;
+import phanastrae.mirthdew_encore.client.services.XPlatClientInterface;
+
+import java.util.function.Supplier;
 
 public class MirthdewEncoreEntityModelLayers {
 
@@ -29,7 +32,7 @@ public class MirthdewEncoreEntityModelLayers {
         return new ModelLayerLocation(MirthdewEncore.id(id), layer);
     }
 
-    private static <E extends Entity> void registerModelLayer(ModelLayerLocation modelLayer, EntityModelLayerRegistry.TexturedModelDataProvider provider) {
-        EntityModelLayerRegistry.registerModelLayer(modelLayer, provider);
+    private static <E extends Entity> void registerModelLayer(ModelLayerLocation modelLayer, Supplier<LayerDefinition> provider) {
+        XPlatClientInterface.INSTANCE.registerModelLayer(modelLayer, provider);
     }
 }

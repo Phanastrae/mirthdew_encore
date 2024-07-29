@@ -1,11 +1,14 @@
 package phanastrae.mirthdew_encore.client.render.shader;
 
-import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.MirthdewEncore;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class MirthdewEncoreShaders {
     public static final String dreamtwirlBarrierID = "rendertype_dreamtwirl_barrier";
@@ -18,7 +21,11 @@ public class MirthdewEncoreShaders {
         return dreamtwirlBarrierShader;
     }
 
-    public static void registerShaders(CoreShaderRegistrationCallback.RegistrationContext registrationCallback) throws IOException {
+    public static void registerShaders(RegistrationContext registrationCallback) throws IOException {
         registrationCallback.register(MirthdewEncore.id(dreamtwirlBarrierID), DefaultVertexFormat.POSITION, shaderProgram -> MirthdewEncoreShaders.dreamtwirlBarrierShader = shaderProgram);
+    }
+
+    public interface RegistrationContext {
+        void register(ResourceLocation id, VertexFormat vertexFormat, Consumer<ShaderInstance> loadCallback) throws IOException;
     }
 }

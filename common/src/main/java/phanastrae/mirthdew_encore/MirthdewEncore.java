@@ -24,7 +24,7 @@ public class MirthdewEncore {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
-    public static void commonInit() {
+    public static void init() {
         MirthdewEncoreRegistries.init();
 
         SpellEffectComponentTypes.init();

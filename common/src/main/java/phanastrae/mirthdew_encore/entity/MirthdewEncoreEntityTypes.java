@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import phanastrae.mirthdew_encore.MirthdewEncore;
-import phanastrae.mirthdew_encore.services.Services;
+import phanastrae.mirthdew_encore.services.XPlatInterface;
 
 public class MirthdewEncoreEntityTypes {
 
@@ -34,7 +34,7 @@ public class MirthdewEncoreEntityTypes {
     }
 
     private static void registerAttributes(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder) {
-        Services.XPLAT.registerEntityAttributes(type, builder);
+        XPlatInterface.INSTANCE.registerEntityAttributes(type, builder);
     }
 
     private static <T extends Entity> EntityType.Builder<T> createBuilder(EntityType.EntityFactory<T> factory, MobCategory spawnGroup) {

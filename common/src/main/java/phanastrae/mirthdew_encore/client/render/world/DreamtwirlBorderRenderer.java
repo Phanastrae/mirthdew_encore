@@ -32,10 +32,13 @@ public class DreamtwirlBorderRenderer {
     private static int fbWidth;
     private static int fbHeight;
 
-    public static void render(ClientLevel clientWorld, Camera camera, PoseStack matrices) {
+    public static void render(Matrix4f positionMatrix, ClientLevel clientWorld, Camera camera) {
         if(!clientWorld.dimensionTypeRegistration().is(MirthdewEncoreDimensions.DREAMTWIRL_DIM_TYPE)) {
             return;
         }
+
+        PoseStack matrices = new PoseStack();
+        matrices.mulPose(positionMatrix);
 
         RegionPos regionPos = getRegionPosFromEntityOrElseCamera(camera);
 
