@@ -18,6 +18,12 @@
     "SinglePoolElementAccesor",
     "LevelMixin"
   ],
+  "client": [
+    "client.GuiGraphicsMixin",
+    "client.GuiMixin",
+    "client.MinecraftMixin",
+    "client.LevelRendererMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
 	}
