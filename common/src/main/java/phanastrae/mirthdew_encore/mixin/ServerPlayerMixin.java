@@ -1,7 +1,6 @@
 package phanastrae.mirthdew_encore.mixin;
 
 import com.mojang.authlib.GameProfile;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -18,6 +17,7 @@ import phanastrae.mirthdew_encore.card_spell.PlayerEntityMirthData;
 import phanastrae.mirthdew_encore.entity.PlayerEntityHungerData;
 import phanastrae.mirthdew_encore.network.packet.FoodDebtUpdatePayload;
 import phanastrae.mirthdew_encore.network.packet.MirthUpdatePayload;
+import phanastrae.mirthdew_encore.services.Services;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends Player {
@@ -47,14 +47,14 @@ public abstract class ServerPlayerMixin extends Player {
         PlayerEntityHungerData hungerData = PlayerEntityHungerData.fromPlayer(thisEntity);
         int foodLevelDebt = hungerData.getFoodLevelDebt();
         if(foodLevelDebt != this.mirthdew_encore$syncedFoodLevelDebt) {
-            ServerPlayNetworking.send(thisEntity, new FoodDebtUpdatePayload(foodLevelDebt));
+            Services.XPLAT.sendPayload(thisEntity, new FoodDebtUpdatePayload(foodLevelDebt));
             this.mirthdew_encore$syncedFoodLevelDebt = foodLevelDebt;
         }
 
         PlayerEntityMirthData mirthData = PlayerEntityMirthData.fromPlayer(thisEntity);
         long mirth = mirthData.getMirth();
         if(mirth != this.mirthdew_encore$syncedMirth) {
-            ServerPlayNetworking.send(thisEntity, new MirthUpdatePayload(mirth));
+            Services.XPLAT.sendPayload(thisEntity, new MirthUpdatePayload(mirth));
             this.mirthdew_encore$syncedMirth = mirth;
         }
     }

@@ -1,12 +1,15 @@
 package phanastrae.mirthdew_encore.block;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -18,7 +21,7 @@ public class MirthdewEncoreBlocks {
             .strength(-1.0F, 3600000.8F)
             .mapColor(MapColor.NONE)
             .noLootTable()
-            .isValidSpawn(Blocks::never)
+            .isValidSpawn(MirthdewEncoreBlocks::never)
             .noTerrainParticles()
             .pushReaction(PushReaction.BLOCK));
 
@@ -42,10 +45,10 @@ public class MirthdewEncoreBlocks {
             .sound(SoundType.DEEPSLATE)
             .lightLevel(state -> state.getValue(SlumbersocketBlock.DREAMING) ? 9 : 13)
             .noOcclusion()
-            .isValidSpawn(Blocks::never)
-            .isRedstoneConductor(Blocks::never)
-            .isSuffocating(Blocks::never)
-            .isViewBlocking(Blocks::never));
+            .isValidSpawn(MirthdewEncoreBlocks::never)
+            .isRedstoneConductor(MirthdewEncoreBlocks::never)
+            .isSuffocating(MirthdewEncoreBlocks::never)
+            .isViewBlocking(MirthdewEncoreBlocks::never));
 
     public static final Block SLUMBERVEIL = new SlumberveilBlock(createSettings()
             .noCollission()
@@ -70,5 +73,13 @@ public class MirthdewEncoreBlocks {
 
     private static BlockBehaviour.Properties createSettings() {
         return BlockBehaviour.Properties.of();
+    }
+
+    private static Boolean never(BlockState state, BlockGetter blockGetter, BlockPos pos, EntityType<?> entity) {
+        return false;
+    }
+
+    private static boolean never(BlockState state, BlockGetter blockGetter, BlockPos pos) {
+        return false;
     }
 }

@@ -31,6 +31,6 @@ public class MirthdewEncoreBlockEntityTypes {
         if (blocks.length == 0) {
             MirthdewEncore.LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", id);
         }
-        return BlockEntityType.Builder.<T>of(factory, blocks).build();
+        return BlockEntityType.Builder.<T>of(factory, blocks).build(null);
     }
 }

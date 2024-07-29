@@ -1,6 +1,5 @@
 package phanastrae.mirthdew_encore.entity;
 
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import phanastrae.mirthdew_encore.MirthdewEncore;
+import phanastrae.mirthdew_encore.services.Services;
 
 public class MirthdewEncoreEntityTypes {
 
@@ -17,7 +17,7 @@ public class MirthdewEncoreEntityTypes {
             createBuilder(DreamspeckEntity::new, MobCategory.MISC)
                     .sized(0.4F, 0.4F)
                     .fireImmune()
-                    .build();
+                    .build(null);
 
     public static void init() {
         registerWithAttributes(DREAM_SPECK, "dreamspeck", DreamspeckEntity.createDreamspeckAttributes());
@@ -34,7 +34,7 @@ public class MirthdewEncoreEntityTypes {
     }
 
     private static void registerAttributes(EntityType<? extends LivingEntity> type, AttributeSupplier.Builder builder) {
-        FabricDefaultAttributeRegistry.register(type, builder);
+        Services.XPLAT.registerEntityAttributes(type, builder);
     }
 
     private static <T extends Entity> EntityType.Builder<T> createBuilder(EntityType.EntityFactory<T> factory, MobCategory spawnGroup) {

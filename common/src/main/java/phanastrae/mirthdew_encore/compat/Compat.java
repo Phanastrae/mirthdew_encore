@@ -1,6 +1,7 @@
 package phanastrae.mirthdew_encore.compat;
 
-import net.fabricmc.loader.api.FabricLoader;
+import phanastrae.mirthdew_encore.services.Services;
+import phanastrae.mirthdew_encore.services.XPlatInterface;
 
 public class Compat {
 
@@ -11,12 +12,13 @@ public class Compat {
     public static boolean USE_DREAMSPECK_COLLISION_COMPAT;
 
     public static void init() {
-        setupModLoadedFlags(FabricLoader.getInstance());
+        setupModLoadedFlags();
         setupToggleFlags();
     }
 
-    public static void setupModLoadedFlags(FabricLoader fabricLoader) {
-        LITHIUM_LOADED = fabricLoader.isModLoaded("lithium");
+    public static void setupModLoadedFlags() {
+        XPlatInterface XPLAT = Services.XPLAT;
+        LITHIUM_LOADED = XPLAT.isModLoaded("lithium");
     }
 
     public static void setupToggleFlags() {

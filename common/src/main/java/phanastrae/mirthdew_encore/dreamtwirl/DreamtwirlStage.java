@@ -1,6 +1,5 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
@@ -26,6 +25,7 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
+import phanastrae.mirthdew_encore.services.Services;
 import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.world.biome.MirthdewEncoreBiomes;
 
@@ -75,7 +75,7 @@ public class DreamtwirlStage {
                 biomeRegistry.asHolderIdMap(), biomeRegistry.getHolderOrThrow(MirthdewEncoreBiomes.DREAMTWIRL), PalettedContainer.Strategy.SECTION_BIOMES
         );
 
-        FriendlyByteBuf airBuf = PacketByteBufs.create();
+        FriendlyByteBuf airBuf = Services.XPLAT.createFriendlyByteBuf();
         airBuf.writeShort(0);
         airBlockStateContainer.write(airBuf);
         biomeContainer.write(airBuf);
