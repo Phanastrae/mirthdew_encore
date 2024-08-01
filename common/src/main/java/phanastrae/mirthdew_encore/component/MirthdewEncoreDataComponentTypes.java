@@ -1,8 +1,6 @@
 package phanastrae.mirthdew_encore.component;
 
-import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
@@ -11,6 +9,8 @@ import phanastrae.mirthdew_encore.component.type.CardSpellComponent;
 import phanastrae.mirthdew_encore.component.type.LocationComponent;
 import phanastrae.mirthdew_encore.component.type.SpellChargeComponent;
 import phanastrae.mirthdew_encore.component.type.SpellDeckContentsComponent;
+
+import java.util.function.BiConsumer;
 
 public class MirthdewEncoreDataComponentTypes {
 
@@ -29,16 +29,15 @@ public class MirthdewEncoreDataComponentTypes {
     public static final DataComponentType<Integer> MIRTHDEW_VIAL_AMPLIFIER =
             DataComponentType.<Integer>builder().persistent(ExtraCodecs.intRange(0, 15)).networkSynchronized(ByteBufCodecs.VAR_INT).build();
 
-    public static void init() {
-        register(CARD_SPELL, "card_spell");
-        register(SPELL_CHARGE, "spell_charge");
-        register(SPELL_DECK_CONTENTS, "spell_deck_contents");
-        register(MIRTHDEW_VIAL_AMPLIFIER, "mirthdew_vial_amplifier");
-        register(LOCATION_COMPONENT, "location_component");
+    public static void init(BiConsumer<ResourceLocation, DataComponentType<?>> r) {
+        r.accept(id("card_spell"), CARD_SPELL);
+        r.accept(id("spell_charge"), SPELL_CHARGE);
+        r.accept(id("spell_deck_contents"), SPELL_DECK_CONTENTS);
+        r.accept(id("mirthdew_vial_amplifier"), MIRTHDEW_VIAL_AMPLIFIER);
+        r.accept(id("location_component"), LOCATION_COMPONENT);
     }
 
-    private static void register(DataComponentType<?> componentType, String name) {
-        ResourceLocation identifier = MirthdewEncore.id(name);
-        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, identifier, componentType);
+    private static ResourceLocation id(String path) {
+        return MirthdewEncore.id(path);
     }
 }

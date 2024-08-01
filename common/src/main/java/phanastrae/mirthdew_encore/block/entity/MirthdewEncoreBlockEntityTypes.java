@@ -1,13 +1,13 @@
 package phanastrae.mirthdew_encore.block.entity;
 
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
+
+import java.util.function.BiConsumer;
 
 public class MirthdewEncoreBlockEntityTypes {
 
@@ -17,14 +17,13 @@ public class MirthdewEncoreBlockEntityTypes {
     public static final BlockEntityType<VericDreamsnareBlockEntity> VERIC_DREAMSNARE = create(
             "veric_dreamsnare", VericDreamsnareBlockEntity::new, MirthdewEncoreBlocks.VERIC_DREAMSNARE);
 
-    public static void init() {
-        register(SLUMBERSOCKET, "slumbersocket");
-        register(VERIC_DREAMSNARE, "veric_dreamsnare");
+    public static void init(BiConsumer<ResourceLocation, BlockEntityType<?>> r) {
+        r.accept(id("slumbersocket"), SLUMBERSOCKET);
+        r.accept(id("veric_dreamsnare"), VERIC_DREAMSNARE);
     }
 
-    private static void register(BlockEntityType<?> blockEntityType, String name) {
-        ResourceLocation identifier = MirthdewEncore.id(name);
-        Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, identifier, blockEntityType);
+    private static ResourceLocation id(String path) {
+        return MirthdewEncore.id(path);
     }
 
     private static <T extends BlockEntity> BlockEntityType<T> create(String id, BlockEntityType.BlockEntitySupplier<? extends T> factory, Block... blocks) {

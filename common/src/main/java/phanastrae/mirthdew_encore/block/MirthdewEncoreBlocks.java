@@ -1,8 +1,6 @@
 package phanastrae.mirthdew_encore.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BlockGetter;
@@ -14,6 +12,8 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import phanastrae.mirthdew_encore.MirthdewEncore;
+
+import java.util.function.BiConsumer;
 
 public class MirthdewEncoreBlocks {
 
@@ -58,17 +58,16 @@ public class MirthdewEncoreBlocks {
             .replaceable()
     );
 
-    public static void init() {
-        register(DREAMTWIRL_BARRIER, "dreamtwirl_barrier");
-        register(VERIC_DREAMSNARE, "veric_dreamsnare");
-        register(DREAMSEED, "dreamseed");
-        register(SLUMBERSOCKET, "slumbersocket");
-        register(SLUMBERVEIL, "slumberveil");
+    public static void init(BiConsumer<ResourceLocation, Block> r) {
+        r.accept(id("dreamtwirl_barrier"), DREAMTWIRL_BARRIER);
+        r.accept(id("veric_dreamsnare"), VERIC_DREAMSNARE);
+        r.accept(id("dreamseed"), DREAMSEED);
+        r.accept(id("slumbersocket"), SLUMBERSOCKET);
+        r.accept(id("slumberveil"), SLUMBERVEIL);
     }
 
-    private static void register(Block block, String name) {
-        ResourceLocation identifier = MirthdewEncore.id(name);
-        Registry.register(BuiltInRegistries.BLOCK, identifier, block);
+    private static ResourceLocation id(String path) {
+        return MirthdewEncore.id(path);
     }
 
     private static BlockBehaviour.Properties createSettings() {

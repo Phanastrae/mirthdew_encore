@@ -98,7 +98,7 @@ public class EntitySleepData {
         Level world = this.entity.level();
         this.lastDreamTime = world.getGameTime();
 
-        DreamspeckEntity dreamspeckEntity = MirthdewEncoreEntityTypes.DREAM_SPECK.create(world);
+        DreamspeckEntity dreamspeckEntity = MirthdewEncoreEntityTypes.DREAMSPECK.create(world);
         if(dreamspeckEntity != null) {
             dreamspeckEntity.setPos(this.entity.getEyePosition());
             dreamspeckEntity.absRotateTo(this.entity.getYRot(), this.entity.getXRot());

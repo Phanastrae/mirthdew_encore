@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.data;
+package phanastrae.mirthdew_encore.fabric.data;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;

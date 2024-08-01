@@ -49,4 +49,4 @@ plugins {
 rootProject.name = 'mirthdew_encore'
 include('common')
 include('fabric')
-//include('neoforge')
+include('neoforge')

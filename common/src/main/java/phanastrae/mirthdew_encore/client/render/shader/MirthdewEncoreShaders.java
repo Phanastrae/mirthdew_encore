@@ -25,6 +25,7 @@ public class MirthdewEncoreShaders {
         registrationCallback.register(MirthdewEncore.id(dreamtwirlBarrierID), DefaultVertexFormat.POSITION, shaderProgram -> MirthdewEncoreShaders.dreamtwirlBarrierShader = shaderProgram);
     }
 
+    @FunctionalInterface
     public interface RegistrationContext {
         void register(ResourceLocation id, VertexFormat vertexFormat, Consumer<ShaderInstance> loadCallback) throws IOException;
     }

@@ -3,16 +3,15 @@ package phanastrae.mirthdew_encore.client.render.entity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import phanastrae.mirthdew_encore.client.services.XPlatClientInterface;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 
 public class MirthdewEncoreEntityRenderers {
 
-    public static void init() {
-        register(MirthdewEncoreEntityTypes.DREAM_SPECK, DreamspeckEntityRenderer::new);
+    public interface EntityRendererAcceptor {
+        <T extends Entity> void accept(EntityType<? extends T> type, EntityRendererProvider<T> entityRendererProvider);
     }
 
-    private static <E extends Entity> void register(EntityType<E> entityType, EntityRendererProvider<E> entityRendererFactory) {
-        XPlatClientInterface.INSTANCE.registerEntityRenderer(entityType, entityRendererFactory);
+    public static void init(EntityRendererAcceptor r) {
+        r.accept(MirthdewEncoreEntityTypes.DREAMSPECK, DreamspeckEntityRenderer::new);
     }
 }

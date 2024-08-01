@@ -118,7 +118,7 @@ public class DreamseedBlock extends Block {
         super.playerDestroy(world, player, pos, state, blockEntity, tool);
         if (!world.isClientSide) {
             if (!EnchantmentHelper.hasTag(tool, EnchantmentTags.PREVENTS_DECORATED_POT_SHATTERING)) {
-                DreamspeckEntity dreamspeckEntity = MirthdewEncoreEntityTypes.DREAM_SPECK.create(world);
+                DreamspeckEntity dreamspeckEntity = MirthdewEncoreEntityTypes.DREAMSPECK.create(world);
                 if(dreamspeckEntity != null) {
                     dreamspeckEntity.setPos(pos.getBottomCenter());
                     world.addFreshEntity(dreamspeckEntity);

@@ -1,23 +1,20 @@
 package phanastrae.mirthdew_encore.item;
 
-import phanastrae.mirthdew_encore.MirthdewEncore;
-import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
-import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
-import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
-
-import static phanastrae.mirthdew_encore.item.MirthdewEncoreItemGroups.MIRTHDEW_ENCORE_KEY;
-
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.SpawnEggItem;
+import phanastrae.mirthdew_encore.MirthdewEncore;
+import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
+import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
+import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
+
+import java.util.function.BiConsumer;
 
 public class MirthdewEncoreItems {
 
-    public static final Item DREAMSPECK_SPAWN_EGG = new SpawnEggItem(MirthdewEncoreEntityTypes.DREAM_SPECK, 0xEDABF5, 0xA1507E, settings());
+    public static final Item DREAMSPECK_SPAWN_EGG = new SpawnEggItem(MirthdewEncoreEntityTypes.DREAMSPECK, 0xEDABF5, 0xA1507E, settings());
     public static final Item VERIC_DREAMSNARE = new BlockItem(MirthdewEncoreBlocks.VERIC_DREAMSNARE, settings());
     public static final Item DREAMSEED = new BlockItem(MirthdewEncoreBlocks.DREAMSEED, settings().rarity(Rarity.UNCOMMON).fireResistant());
     public static final Item SLUMBERSOCKET = new BlockItem(MirthdewEncoreBlocks.SLUMBERSOCKET, settings());
@@ -31,26 +28,25 @@ public class MirthdewEncoreItems {
     public static final Item SPELL_CARD = new SpellCardSingularItem(settings().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final Item SPELL_DECK = new SpellCardDeckItem(settings().stacksTo(1).rarity(Rarity.RARE));
 
-    public static void init() {
-        regWithIG(DREAMSPECK_SPAWN_EGG, "dreamspeck_spawn_egg");
-        regWithIG(VERIC_DREAMSNARE, "veric_dreamsnare");
-        regWithIG(DREAMSEED, "dreamseed");
-        regWithIG(SLUMBERSOCKET, "slumbersocket");
-        register(MIRTHDEW_VIAL, "mirthdew_vial");
-        regWithIG(SLUMBERING_EYE, "slumbering_eye");
-        regWithIG(SPECTRAL_CANDY, "spectral_candy");
-        register(SPELL_CARD, "spell_card");
-        register(SPELL_DECK, "spell_deck");
+    public static void init(BiConsumer<ResourceLocation, Item> r) {
+        BiConsumer<ResourceLocation, Item> rwig = (rl, i) -> { // register with item group
+            r.accept(rl, i);
+            MirthdewEncoreItemGroups.addItemToMirthdewEncoreGroup(i);
+        };
+
+        rwig.accept(id("dreamspeck_spawn_egg"), DREAMSPECK_SPAWN_EGG);
+        rwig.accept(id("veric_dreamsnare"), VERIC_DREAMSNARE);
+        rwig.accept(id("dreamseed"), DREAMSEED);
+        rwig.accept(id("slumbersocket"), SLUMBERSOCKET);
+        r.accept(id("mirthdew_vial"), MIRTHDEW_VIAL);
+        rwig.accept(id("slumbering_eye"), SLUMBERING_EYE);
+        rwig.accept(id("spectral_candy"), SPECTRAL_CANDY);
+        r.accept(id("spell_card"), SPELL_CARD);
+        r.accept(id("spell_deck"), SPELL_DECK);
     }
 
-    private static void regWithIG(Item item, String name) {
-        register(item, name);
-        MirthdewEncoreItemGroups.add(MIRTHDEW_ENCORE_KEY, item);
-    }
-
-    private static void register(Item item, String name) {
-        ResourceLocation identifier = MirthdewEncore.id(name);
-        Registry.register(BuiltInRegistries.ITEM, identifier, item);
+    private static ResourceLocation id(String path) {
+        return MirthdewEncore.id(path);
     }
 
     public static Item.Properties settings() {

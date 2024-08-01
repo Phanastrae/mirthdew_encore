@@ -17,13 +17,13 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"phanastrae.mirthdew_encore.MirthdewEncoreFabric"
+			"phanastrae.mirthdew_encore.fabric.MirthdewEncoreFabric"
 		],
 		"client": [
-			"phanastrae.mirthdew_encore.client.MirthdewEncoreClientFabric"
+          "phanastrae.mirthdew_encore.fabric.client.MirthdewEncoreClientFabric"
 		],
 		"fabric-datagen": [
-			"phanastrae.mirthdew_encore.data.MirthdewEncoreDataGenerator"
+			"phanastrae.mirthdew_encore.fabric.data.MirthdewEncoreDataGenerator"
 		]
 	},
 	"mixins": [

@@ -1,5 +1,7 @@
 package phanastrae.mirthdew_encore;
 
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,12 +11,13 @@ import phanastrae.mirthdew_encore.compat.Compat;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.component.SpellEffectComponentTypes;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
-import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItemGroups;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
-import phanastrae.mirthdew_encore.network.packet.MirthdewEncorePackets;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
 import phanastrae.mirthdew_encore.world.gen.chunk.MirthdewEncoreChunkGenerators;
+
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class MirthdewEncore {
     public static final String MOD_ID = "mirthdew_encore";
@@ -24,27 +27,27 @@ public class MirthdewEncore {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
-    public static void init() {
-        MirthdewEncoreRegistries.init();
+    public static void registriesInit(RegistryListenerAdder rla) {
+        rla.addRegistryListener(MirthdewEncoreRegistries.SPELL_EFFECT_COMPONENT_TYPE, SpellEffectComponentTypes::init);
 
-        SpellEffectComponentTypes.init();
-        MirthdewEncoreDataComponentTypes.init();
+        rla.addRegistryListener(BuiltInRegistries.DATA_COMPONENT_TYPE, MirthdewEncoreDataComponentTypes::init);
 
-        MirthdewEncoreItemGroups.init();
-        MirthdewEncoreItems.init();
-        MirthdewEncoreItemGroups.setupEntires();
+        rla.addRegistryListener(BuiltInRegistries.CREATIVE_MODE_TAB, MirthdewEncoreItemGroups::init);
+        rla.addRegistryListener(BuiltInRegistries.ITEM, MirthdewEncoreItems::init);
 
-        MirthdewEncoreBlocks.init();
-        MirthdewEncoreBlockEntityTypes.init();
+        rla.addRegistryListener(BuiltInRegistries.BLOCK, MirthdewEncoreBlocks::init);
+        rla.addRegistryListener(BuiltInRegistries.BLOCK_ENTITY_TYPE, MirthdewEncoreBlockEntityTypes::init);
 
-        MirthdewEncoreEntityTypes.init();
+        rla.addRegistryListener(BuiltInRegistries.ENTITY_TYPE, MirthdewEncoreEntityTypes::init);
 
-        MirthdewEncoreStatusEffects.init();
+        rla.addRegistryListener(BuiltInRegistries.CHUNK_GENERATOR, MirthdewEncoreChunkGenerators::init);
+    }
 
-        MirthdewEncoreChunkGenerators.init();
-
-        MirthdewEncorePackets.init();
-
+    public static void commonInit() {
         Compat.init();
+    }
+
+    public interface RegistryListenerAdder {
+        <T> void addRegistryListener(Registry<T> registry, Consumer<BiConsumer<ResourceLocation, T>> source);
     }
 }

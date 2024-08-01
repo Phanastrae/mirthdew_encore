@@ -1,10 +1,13 @@
 {
   "required": true,
-  "package": "phanastrae.mirthdew_encore.mixin",
+  "minVersion": "0.8",
+  "package": "phanastrae.mirthdew_encore.fabric.mixin",
+  "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
   ],
   "client": [
+    "client.GuiMixin"
   ],
   "injectors": {
     "defaultRequire": 1

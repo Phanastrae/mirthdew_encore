@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.data;
+package phanastrae.mirthdew_encore.fabric.data;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
@@ -18,10 +18,10 @@ public class EntityTypeTagProvider extends FabricTagProvider.EntityTypeTagProvid
     @Override
     protected void addTags(HolderLookup.Provider wrapperLookup) {
         getOrCreateTagBuilder(EntityTypeTags.FALL_DAMAGE_IMMUNE)
-                .add(MirthdewEncoreEntityTypes.DREAM_SPECK);
+                .add(MirthdewEncoreEntityTypes.DREAMSPECK);
 
         getOrCreateTagBuilder(MirthdewEncoreEntityTypeTags.DREAMSPECK_OPAQUE)
-                .add(MirthdewEncoreEntityTypes.DREAM_SPECK)
+                .add(MirthdewEncoreEntityTypes.DREAMSPECK)
                 .add(EntityType.ALLAY)
                 .add(EntityType.VEX)
                 .add(EntityType.GHAST)
@@ -30,6 +30,6 @@ public class EntityTypeTagProvider extends FabricTagProvider.EntityTypeTagProvid
                 .add(EntityType.SHULKER);
 
         getOrCreateTagBuilder(MirthdewEncoreEntityTypeTags.USES_DREAMSPECK_COLLISION)
-                .add(MirthdewEncoreEntityTypes.DREAM_SPECK);
+                .add(MirthdewEncoreEntityTypes.DREAMSPECK);
     }
 }
