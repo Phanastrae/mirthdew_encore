@@ -26,19 +26,24 @@ loom {
     runs {
         client {
             client()
+            runDir("runs/${it.name}")
         }
         server {
             server()
+            runDir("runs/${it.name}")
         }
-        // TODO datagen
+        xplatData {
+            client()
+            vmArg "-Dfabric-api.datagen"
+            vmArg "-Dfabric-api.datagen.modid=${mod_id}"
+            vmArg "-Dfabric-api.datagen.output-dir=${file("../common/src/main/generated")}"
+            runDir("build/${it.name}")
+        }
 
         configureEach {
             ideConfigGenerated(true)
 
             setConfigName("Fabric ${it.name.capitalize()} (${project.path})")
-            runDir("runs/${it.name}")
         }
     }
 }
-
-sourceSets.main.resources { srcDir 'src/main/generated' }
