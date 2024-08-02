@@ -144,7 +144,10 @@ public class DreamseedBlock extends Block {
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (state.getValue(LIT) || (!stack.is(Items.FLINT_AND_STEEL) && !stack.is(Items.FIRE_CHARGE))) {
+        if (state.getValue(LIT)
+                || !world.getBlockState(pos.below()).is(BlockTags.SOUL_FIRE_BASE_BLOCKS)
+                || !player.getAbilities().mayBuild
+                || (!stack.is(Items.FLINT_AND_STEEL) && !stack.is(Items.FIRE_CHARGE))) {
             return super.useItemOn(stack, state, world, pos, player, hand, hit);
         } else {
             world.playSound(player, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);

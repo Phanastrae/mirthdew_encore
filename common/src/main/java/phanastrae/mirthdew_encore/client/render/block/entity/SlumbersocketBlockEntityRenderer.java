@@ -15,10 +15,13 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.entity.SlumbersocketBlockEntity;
 import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntityModelLayers;
+import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 
 public class SlumbersocketBlockEntityRenderer implements BlockEntityRenderer<SlumbersocketBlockEntity> {
     private static final ResourceLocation TEXTURE = MirthdewEncore.id("textures/entity/slumbersocket/eye.png");
@@ -32,26 +35,37 @@ public class SlumbersocketBlockEntityRenderer implements BlockEntityRenderer<Slu
 
     @Override
     public void render(SlumbersocketBlockEntity entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
-        if(entity.isHoldingItem()) {
-            VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entityCutout(this.getTexture(entity.getBlockState())));
+        ResourceLocation textureId = this.getTexture(entity);
+        if(textureId == null) return;
+        
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entityCutout(textureId));
 
-            matrices.pushPose();
-            matrices.translate(0.5, 0.5, 0.5);
+        matrices.pushPose();
+        matrices.translate(0.5, 0.5, 0.5);
 
-            float yaw = -Mth.rotLerp(tickDelta, entity.prevYaw, entity.yaw);
-            float pitch = Mth.lerp(tickDelta, entity.prevPitch, entity.pitch);
-            matrices.mulPose(Axis.YP.rotationDegrees(yaw));
-            matrices.mulPose(Axis.XN.rotationDegrees(pitch));
+        float yaw = -Mth.rotLerp(tickDelta, entity.prevYaw, entity.yaw);
+        float pitch = Mth.lerp(tickDelta, entity.prevPitch, entity.pitch);
+        matrices.mulPose(Axis.YP.rotationDegrees(yaw));
+        matrices.mulPose(Axis.XN.rotationDegrees(pitch));
 
-            matrices.mulPose(Axis.XP.rotationDegrees(180));
-            this.eye.render(matrices, vertexConsumer, light, overlay);
+        matrices.mulPose(Axis.XP.rotationDegrees(180));
+        this.eye.render(matrices, vertexConsumer, light, overlay);
 
-            matrices.popPose();
-        }
+        matrices.popPose();
     }
 
-    public ResourceLocation getTexture(BlockState state) {
-        return (SlumbersocketBlockEntity.isDreaming(state)) ? TEXTURE_DREAMING : TEXTURE;
+    @Nullable
+    public ResourceLocation getTexture(SlumbersocketBlockEntity entity) {
+        ItemStack heldItem = entity.getHeldItem();
+        if(heldItem.isEmpty()) {
+            return null;
+        } else if(heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE)) {
+            return TEXTURE_DREAMING;
+        } else if(heldItem.is(Items.ENDER_EYE)) {
+            return TEXTURE;
+        } else {
+            return null;
+        }
     }
     public static LayerDefinition getTexturedModelData() {
         MeshDefinition modelData = new MeshDefinition();

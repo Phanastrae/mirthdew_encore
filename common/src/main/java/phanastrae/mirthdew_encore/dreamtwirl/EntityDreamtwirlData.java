@@ -50,12 +50,7 @@ public class EntityDreamtwirlData {
 
             if (!nowInDreamtwirl) return;
             if (world.getGameTime() % 80L == 0L) {
-                if (this.entity instanceof LivingEntity livingEntity) {
-                    livingEntity.addEffect(new MobEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
-                }
-                if (this.entity instanceof LivingEntity livingEntity) {
-                    livingEntity.addEffect(new MobEffectInstance(MirthdewEncoreStatusEffects.MIRTHFUL_ENTRY, 200, 0, true, true));
-                }
+                this.applyDreamtwirlEffects();
             }
 
             if (!shouldIgnoreBorder()) {
@@ -97,6 +92,13 @@ public class EntityDreamtwirlData {
         }
     }
 
+    public void applyDreamtwirlEffects() {
+        if (this.entity instanceof LivingEntity livingEntity) {
+            livingEntity.addEffect(new MobEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
+            livingEntity.addEffect(new MobEffectInstance(MirthdewEncoreStatusEffects.MIRTHFUL_ENTRY, 200, 0, true, true));
+        }
+    }
+
     public boolean isInDreamtwirl() {
         return this.inDreamtwirl;
     }
@@ -129,9 +131,7 @@ public class EntityDreamtwirlData {
                     MirthdewEncore.LOGGER.info("Player {} was sent to the Dreamtwirl ({}, {})", this.entity.getName().getString(), dreamtwirlRegion.regionX, dreamtwirlRegion.regionZ);
                 }
                 this.setDreamtwirlRegion(dreamtwirlRegion);
-                if(this.entity instanceof LivingEntity livingEntity) {
-                    livingEntity.addEffect(new MobEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 200, 0, true, true));
-                }
+                this.applyDreamtwirlEffects();
                 return true;
             } else {
                 return false;

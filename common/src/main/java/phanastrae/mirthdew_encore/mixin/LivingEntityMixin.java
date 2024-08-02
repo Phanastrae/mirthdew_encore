@@ -41,6 +41,12 @@ public abstract class LivingEntityMixin extends Entity implements Attackable {
     @Inject(method = "onBelowWorld", at = @At(value = "HEAD"), cancellable = true)
     private void mirthdew_encore$cancelVoidTick(CallbackInfo ci) {
         LivingEntity thisEntity = (LivingEntity)(Object)this;
+
+        // do not teleport spectators (or other no-clipping players)
+        if(thisEntity instanceof Player player && player.noPhysics) {
+            return;
+        }
+
         EntityDreamtwirlData dreamtwirlData = MirthdewEncoreEntityAttachment.fromEntity(thisEntity).getDreamtwirlEntityData();
         if(dreamtwirlData.isInDreamtwirl() && dreamtwirlData.canLeave()) {
             if(dreamtwirlData.leaveDreamtwirl()) {
