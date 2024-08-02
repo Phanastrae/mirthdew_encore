@@ -1,6 +1,6 @@
-// 1.21	2024-08-01T17:45:19.7473287	Mirthdew Encore/Tags for minecraft:damage_type
+// 1.21	2024-08-02T19:36:33.6455589	Mirthdew Encore/Tags for minecraft:damage_type
 dd7a2ae8eec489eb40d58a3b73b6dbb540a9eba7 data\minecraft\tags\damage_type\bypasses_wolf_armor.json
-dd7a2ae8eec489eb40d58a3b73b6dbb540a9eba7 data\minecraft\tags\damage_type\panic_causes.json
 dd7a2ae8eec489eb40d58a3b73b6dbb540a9eba7 data\minecraft\tags\damage_type\bypasses_enchantments.json
+dd7a2ae8eec489eb40d58a3b73b6dbb540a9eba7 data\minecraft\tags\damage_type\panic_causes.json
 dd7a2ae8eec489eb40d58a3b73b6dbb540a9eba7 data\minecraft\tags\damage_type\bypasses_armor.json
 dd7a2ae8eec489eb40d58a3b73b6dbb540a9eba7 data\minecraft\tags\damage_type\is_projectile.json

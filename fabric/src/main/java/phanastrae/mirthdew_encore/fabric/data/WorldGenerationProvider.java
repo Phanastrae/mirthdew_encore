@@ -65,7 +65,7 @@ public class WorldGenerationProvider extends FabricDynamicRegistryProvider {
                 MirthdewEncoreDimensions.DREAMTWIRL_DIM_TYPE,
                 new DimensionType(
                         OptionalLong.of(18000L),
-                        false,
+                        true,
                         false,
                         false,
                         false,
@@ -77,7 +77,7 @@ public class WorldGenerationProvider extends FabricDynamicRegistryProvider {
                         256,
                         BlockTags.INFINIBURN_OVERWORLD,
                         MirthdewEncoreDimensions.DREAMTWIRL_ID,
-                        0.2F,
+                        0.05F,
                         new DimensionType.MonsterSettings(true, false, UniformInt.of(0, 7), 0)
                 ));
     }

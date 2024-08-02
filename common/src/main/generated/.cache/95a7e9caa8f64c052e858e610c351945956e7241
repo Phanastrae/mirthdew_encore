@@ -1,4 +1,4 @@
-// 1.21	2024-08-01T17:45:19.745335	Mirthdew Encore/Tags for minecraft:block
+// 1.21	2024-08-02T19:36:33.6445587	Mirthdew Encore/Tags for minecraft:block
 01bf7947bc0c886599014953778a3c0a80de048d data\minecraft\tags\block\blocks_wind_charge_explosions.json
 56d55020a028561b7a60b24f53e39d76f7bb58ec data\mirthdew_encore\tags\block\is_purpur.json
 01bf7947bc0c886599014953778a3c0a80de048d data\minecraft\tags\block\wither_immune.json
@@ -9,8 +9,8 @@ cc422a6f97374d62c6c6df6e0e203524e5b2c196 data\mirthdew_encore\tags\block\is_xp_m
 1d19dbfdc1bd7bcd01fced29d33013c41c3e540e data\minecraft\tags\block\mineable\pickaxe.json
 508281b45202510b1cba59a1121459d398f4c780 data\mirthdew_encore\tags\block\is_nether_wart.json
 50929c6a3ffa83ffe4b51ce5a13b520f98876716 data\mirthdew_encore\tags\block\is_netherite.json
-d2a47aee1922ff3de4a2ad0b8dd9be87cde6009a data\minecraft\tags\block\mineable\axe.json
 354c3b850871debf5306bbbc84f1ba408fc9bd7e data\minecraft\tags\block\mineable\hoe.json
+d2a47aee1922ff3de4a2ad0b8dd9be87cde6009a data\minecraft\tags\block\mineable\axe.json
 1d19dbfdc1bd7bcd01fced29d33013c41c3e540e data\minecraft\tags\block\needs_iron_tool.json
 01bf7947bc0c886599014953778a3c0a80de048d data\minecraft\tags\block\dragon_immune.json
 01bf7947bc0c886599014953778a3c0a80de048d data\minecraft\tags\block\snow_layer_cannot_survive_on.json
