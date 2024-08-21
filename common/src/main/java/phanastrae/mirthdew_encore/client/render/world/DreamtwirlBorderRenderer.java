@@ -18,7 +18,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import phanastrae.mirthdew_encore.client.render.shader.MirthdewEncoreShaders;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlBorder;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
 import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;

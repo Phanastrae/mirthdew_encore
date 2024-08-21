@@ -6,8 +6,12 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import phanastrae.mirthdew_encore.MirthdewEncore;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStage;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.EntityDreamtwirlData;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
@@ -15,10 +19,6 @@ import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.Collection;
 import java.util.Optional;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
@@ -108,7 +108,6 @@ public class MirthdewCommand {
                                 .then(literal("list")
                                         .executes(context -> list(context.getSource()))
                                 )
-                                /*
                                 .then(literal("edit")
                                         .then(argument("regionX", IntegerArgumentType.integer())
                                                 .then(argument("regionZ", IntegerArgumentType.integer())
@@ -118,7 +117,7 @@ public class MirthdewCommand {
                                                             )
                                                         )
                                                         .then(literal("clearAllChunks")
-                                                                .requires(source -> source.hasPermissionLevel(4))
+                                                                .requires(source -> source.hasPermission(4))
                                                                 .then(literal("CONFIRM")
                                                                         .executes(context -> clear(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ")))
                                                                 )
@@ -126,7 +125,6 @@ public class MirthdewCommand {
                                                 )
                                         )
                                 )
-                                */
                         )
         );
     }

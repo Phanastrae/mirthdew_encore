@@ -1,6 +1,7 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import net.minecraft.world.level.border.WorldBorder;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 public class DreamtwirlWorldBorder extends WorldBorder {

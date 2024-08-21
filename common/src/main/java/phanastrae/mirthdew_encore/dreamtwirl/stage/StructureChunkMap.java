@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.dreamtwirl;
+package phanastrae.mirthdew_encore.dreamtwirl.stage;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +11,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
-public class ChunkMap {
+public class StructureChunkMap {
 
     public final Vec3i basePos;
     public final int sizeX;
@@ -20,7 +20,7 @@ public class ChunkMap {
 
     public List<DreamtwirlRoom>[][][] map;
 
-    public ChunkMap(Vec3i basePos, int sizeX, int sizeY, int sizeZ) {
+    public StructureChunkMap(Vec3i basePos, int sizeX, int sizeY, int sizeZ) {
         this.basePos = basePos;
         this.sizeX = sizeX;
         this.sizeY = sizeY;

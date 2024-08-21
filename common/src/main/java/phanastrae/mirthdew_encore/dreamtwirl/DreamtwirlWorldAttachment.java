@@ -7,6 +7,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.duck.WorldDuckInterface;
 import phanastrae.mirthdew_encore.util.RegionPos;
 

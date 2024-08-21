@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.dreamtwirl;
+package phanastrae.mirthdew_encore.dreamtwirl.stage;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.shapes.BooleanOp;
