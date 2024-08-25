@@ -3,7 +3,6 @@ package phanastrae.mirthdew_encore.block;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -63,16 +62,6 @@ public class DreamtwirlBarrierBlock extends Block {
 
             BlockState adjacentState = world.getBlockState(pos.relative(direction));
             if(adjacentState.is(this)) continue;
-
-            if(random.nextInt(2) == 0) {
-                world.addParticle(ParticleTypes.SOUL,
-                        x + direction.getStepX() * 0.5 - 0.5 + random.nextFloat(),
-                        y - 0.5 + random.nextFloat(),
-                        z + direction.getStepZ() * 0.5 - 0.5 + random.nextFloat(),
-                        direction.getStepX() * 0.1,
-                        0.04,
-                        direction.getStepZ() * 0.1);
-            }
 
             if (random.nextInt(1000) == 0) {
                 world.playLocalSound(
