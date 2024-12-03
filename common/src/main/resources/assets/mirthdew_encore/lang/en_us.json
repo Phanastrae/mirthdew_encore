@@ -1,31 +1,17 @@
 {
   "block.mirthdew_encore.dreamseed": "Dreamseed",
   "block.mirthdew_encore.dreamtwirl_barrier": "Dreamtwirl Barrier",
+  "block.mirthdew_encore.frosted_reverime": "Frosted Reverime",
+  "block.mirthdew_encore.rosenglace": "Rosenglace",
+  "block.mirthdew_encore.reverime": "Reverime",
+  "block.mirthdew_encore.reverime_bricks": "Reverime Bricks",
+  "block.mirthdew_encore.reverime_tiles": "Reverime Tiles",
+  "block.mirthdew_encore.scarabrim": "Scarabrim",
   "block.mirthdew_encore.slumbersocket": "Slumbersocket",
   "block.mirthdew_encore.slumberveil": "Slumberveil",
+  "block.mirthdew_encore.sunflecked_scarabrim": "Sunflecked Scarabrim",
+  "block.mirthdew_encore.polished_reverime": "Polished Reverime",
   "block.mirthdew_encore.veric_dreamsnare": "Veric Dreamsnare",
-
-  "mirthdew_encore.card_spell.mirthdew_encore.add_mirth": "Add Mirth",
-  "mirthdew_encore.card_spell.mirthdew_encore.cast_three": "Triple Cast",
-  "mirthdew_encore.card_spell.mirthdew_encore.cast_two": "Double Cast",
-  "mirthdew_encore.card_spell.mirthdew_encore.conjure_lightning": "Conjure Lightning",
-  "mirthdew_encore.card_spell.mirthdew_encore.explode": "Explosion",
-  "mirthdew_encore.card_spell.mirthdew_encore.explode_no_destruction": "Dubiously Effective Explosion",
-  "mirthdew_encore.card_spell.mirthdew_encore.fire_arrow": "Launch Arrow",
-  "mirthdew_encore.card_spell.mirthdew_encore.fire_egg": "Throw Egg",
-  "mirthdew_encore.card_spell.mirthdew_encore.fire_ender_pearl": "Toss Ender Pearl",
-  "mirthdew_encore.card_spell.mirthdew_encore.fire_fireball": "Greater Fireball",
-  "mirthdew_encore.card_spell.mirthdew_encore.fire_small_fireball": "Lesser Fireball",
-  "mirthdew_encore.card_spell.mirthdew_encore.fire_snowball": "Throw Snowball",
-  "mirthdew_encore.card_spell.mirthdew_encore.fire_spit": "Spit",
-  "mirthdew_encore.card_spell.mirthdew_encore.fire_wind_charge": "Fire Wind Charge",
-  "mirthdew_encore.card_spell.mirthdew_encore.reduce_cast_delay": "Reduce Cast Delay",
-  "mirthdew_encore.card_spell.mirthdew_encore.reduce_recharge_delay": "Reduce Recharge Delay",
-  "mirthdew_encore.card_spell.tooltip.cast_delay_ms": "Cast Delay: %sms",
-  "mirthdew_encore.card_spell.tooltip.input_count": "Inputs: %s",
-  "mirthdew_encore.card_spell.tooltip.mirth_cost": "Mirth Cost: %s",
-  "mirthdew_encore.card_spell.tooltip.name": "Name: \"%s\"",
-  "mirthdew_encore.card_spell.tooltip.recharge_delay_ms": "Recharge Delay: %sms",
 
   "commands.mirthdew_encore.dreamtwirl.create.failed.already_exists": "That Dreamtwirl already exists.",
   "commands.mirthdew_encore.dreamtwirl.create.failed.invalid_position": "Invalid Position: Dreamtwirls may only be created at even-numbered region coordinates",
@@ -47,10 +33,10 @@
   "death.attack.mirthdew_encore.dreamsnare_tongue": "%1$s got snared within an Endless dream",
   "death.attack.mirthdew_encore.dreamsnare_tongue.player": "%1$s got snared within an Endless dream while trying to forget %2$s",
 
-  "entity.mirthdew_encore.dreamspeck": "Dreamspeck",
-
   "effect.mirthdew_encore.dreamy_diet": "Dreamy Diet",
   "effect.mirthdew_encore.mirthful": "Mirthful",
+
+  "entity.mirthdew_encore.dreamspeck": "Dreamspeck",
 
   "gui.mirthdew_encore.mirth": "Mirth: %s",
 
@@ -70,5 +56,27 @@
   "item.mirthdew_encore.spectral_candy": "Spectral Candy",
   "item.mirthdew_encore.spectral_candy.when_full": "When Full:",
 
-  "itemGroup.mirthdew_encore": "Mirthdew Encore"
+  "itemGroup.mirthdew_encore": "Mirthdew Encore",
+
+  "mirthdew_encore.card_spell.mirthdew_encore.add_mirth": "Add Mirth",
+  "mirthdew_encore.card_spell.mirthdew_encore.cast_three": "Triple Cast",
+  "mirthdew_encore.card_spell.mirthdew_encore.cast_two": "Double Cast",
+  "mirthdew_encore.card_spell.mirthdew_encore.conjure_lightning": "Conjure Lightning",
+  "mirthdew_encore.card_spell.mirthdew_encore.explode": "Explosion",
+  "mirthdew_encore.card_spell.mirthdew_encore.explode_no_destruction": "Dubiously Effective Explosion",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_arrow": "Launch Arrow",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_egg": "Throw Egg",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_ender_pearl": "Toss Ender Pearl",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_fireball": "Greater Fireball",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_small_fireball": "Lesser Fireball",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_snowball": "Throw Snowball",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_spit": "Spit",
+  "mirthdew_encore.card_spell.mirthdew_encore.fire_wind_charge": "Fire Wind Charge",
+  "mirthdew_encore.card_spell.mirthdew_encore.reduce_cast_delay": "Reduce Cast Delay",
+  "mirthdew_encore.card_spell.mirthdew_encore.reduce_recharge_delay": "Reduce Recharge Delay",
+  "mirthdew_encore.card_spell.tooltip.cast_delay_ms": "Cast Delay: %sms",
+  "mirthdew_encore.card_spell.tooltip.input_count": "Inputs: %s",
+  "mirthdew_encore.card_spell.tooltip.mirth_cost": "Mirth Cost: %s",
+  "mirthdew_encore.card_spell.tooltip.name": "Name: \"%s\"",
+  "mirthdew_encore.card_spell.tooltip.recharge_delay_ms": "Recharge Delay: %sms"
 }

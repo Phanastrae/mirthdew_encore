@@ -24,6 +24,10 @@ public class MirthdewEncoreEntityTypes {
         r.accept(DREAMSPECK_KEY, DREAMSPECK);
     }
 
+    public static void registerEntityAttributes(BiConsumer<EntityType<? extends LivingEntity>, AttributeSupplier.Builder> r) {
+        r.accept(DREAMSPECK, DreamspeckEntity.createDreamspeckAttributes());
+    }
+
     private static ResourceLocation id(String path) {
         return MirthdewEncore.id(path);
     }
@@ -37,10 +41,6 @@ public class MirthdewEncoreEntityTypes {
         } else {
             return resourceLocation.toString();
         }
-    }
-
-    public static void registerEntityAttributes(BiConsumer<EntityType<? extends LivingEntity>, AttributeSupplier.Builder> r) {
-        r.accept(DREAMSPECK, DreamspeckEntity.createDreamspeckAttributes());
     }
 
     private static <T extends Entity> EntityType.Builder<T> createBuilder(EntityType.EntityFactory<T> factory, MobCategory spawnGroup) {
