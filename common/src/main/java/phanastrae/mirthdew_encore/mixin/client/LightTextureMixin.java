@@ -2,10 +2,13 @@ package phanastrae.mirthdew_encore.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
 import org.joml.Vector3f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -13,6 +16,8 @@ import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
 @Mixin(LightTexture.class)
 public class LightTextureMixin {
+
+    @Shadow @Final private Minecraft minecraft;
 
     @Inject(method = "updateLightTexture", at = @At(value = "INVOKE", target = "Lorg/joml/Vector3f;<init>()V", ordinal = 0, shift = At.Shift.AFTER))
     private void mirthdew_encore$modifySkyLight(float partialTicks, CallbackInfo ci, @Local(ordinal=0) ClientLevel clientLevel, @Local(ordinal = 0) Vector3f skyLightRGB, @Local(ordinal=2) LocalFloatRef skyDarkenWithFlash) {
@@ -49,11 +54,21 @@ public class LightTextureMixin {
         }
     }
 
-    @Inject(method = "updateLightTexture", at = @At(value = "INVOKE", target = "Lorg/joml/Vector3f;<init>(FFF)V", ordinal = 4, shift = At.Shift.BEFORE))
-    private void mirthdew_encore$tweakGamma(float partialTicks, CallbackInfo ci, @Local(ordinal=0) ClientLevel clientLevel, @Local(ordinal = 14) LocalFloatRef gamma) {
+    @Inject(method = "updateLightTexture", at = @At(value = "INVOKE", target = "Lorg/joml/Vector3f;<init>(FFF)V", ordinal = 2, shift = At.Shift.AFTER))
+    private void mirthdew_encore$tweakGamma(float partialTicks, CallbackInfo ci, @Local(ordinal=0) ClientLevel clientLevel, @Local(ordinal = 4) LocalFloatRef f3) {
+        // want to tweak gamma (f14) but this doesn't work on neoforge for some reason (mixin fails to get float f14 for some reason),
+        // however gamma (f14) is only used once (f14 - f3), and is the only time f3 is used in or after the double-loop,
+        // so can just tweak f3 instead based on gamma to simulate tweaking gamma
+        // let f14' be the tweaked gamma
+        // then if we take f3 -> f3 + f14 - f14'
+        // then f14 - f3 -> f14 - (f3 + f14 - f14') = f14 - f3 - f14 + f14' = f14' - f3
         if(clientLevel.dimensionTypeRegistration().is(MirthdewEncoreDimensions.DREAMTWIRL_DIM_TYPE)) {
             // tweak gamma values to bring min and max gamma closer together
-            gamma.set(gamma.get() * 0.66F);
+            float gamma = this.minecraft.options.gamma().get().floatValue();
+            float effectiveNewGamma = gamma * 0.66F;
+
+            // take f3 -> f3 + f14 - f14'
+            f3.set(f3.get() + gamma - effectiveNewGamma);
         }
     }
 }
