@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "mirthdew_encore:unguishale_tile_slab"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_unguishale_tiles": {
+      "conditions": {
+        "items": [
+          {
+            "items": "mirthdew_encore:unguishale_tiles"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_unguishale_tiles"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "mirthdew_encore:unguishale_tile_slab"
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/flower_pot_cross",
+  "textures": {
+    "plant": "mirthdew_encore:block/lime_foghair_pot"
+  }
+}

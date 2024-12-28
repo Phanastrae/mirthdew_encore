@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "mirthdew_encore:block/psyrite_grate",
+    "side": "mirthdew_encore:block/psyrite_grate",
+    "top": "mirthdew_encore:block/psyrite_grate"
+  }
+}

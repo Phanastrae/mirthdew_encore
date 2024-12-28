@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "mirthdew_encore:block/unguishale",
+    "side": "mirthdew_encore:block/unguishale",
+    "top": "mirthdew_encore:block/unguishale"
+  }
+}

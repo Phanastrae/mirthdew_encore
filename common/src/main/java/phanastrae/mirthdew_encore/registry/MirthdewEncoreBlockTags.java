@@ -14,6 +14,8 @@ public final class MirthdewEncoreBlockTags {
     public static final TagKey<Block> IS_SOUL_FILLED = of("is_soul_filled");
     public static final TagKey<Block> IS_NETHER_WART = of("is_nether_wart");
 
+    public static final TagKey<Block> NOVA_CLAG = of("nova_clag");
+
     private static TagKey<Block> of(String id) {
         return TagKey.create(Registries.BLOCK, MirthdewEncore.id(id));
     }

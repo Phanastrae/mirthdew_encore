@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "mirthdew_encore:block/reverime_brick_slab"
+    },
+    "type=double": {
+      "model": "mirthdew_encore:block/reverime_bricks"
+    },
+    "type=top": {
+      "model": "mirthdew_encore:block/reverime_brick_slab_top"
+    }
+  }
+}

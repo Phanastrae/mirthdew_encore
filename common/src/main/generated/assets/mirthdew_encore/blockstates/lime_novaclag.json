@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "mirthdew_encore:block/lime_novaclag"
+      },
+      {
+        "model": "mirthdew_encore:block/lime_novaclag",
+        "y": 90
+      },
+      {
+        "model": "mirthdew_encore:block/lime_novaclag",
+        "y": 180
+      },
+      {
+        "model": "mirthdew_encore:block/lime_novaclag",
+        "y": 270
+      }
+    ]
+  }
+}

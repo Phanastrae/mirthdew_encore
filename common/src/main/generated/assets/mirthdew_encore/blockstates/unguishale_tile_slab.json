@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "mirthdew_encore:block/unguishale_tile_slab"
+    },
+    "type=double": {
+      "model": "mirthdew_encore:block/unguishale_tiles"
+    },
+    "type=top": {
+      "model": "mirthdew_encore:block/unguishale_tile_slab_top"
+    }
+  }
+}

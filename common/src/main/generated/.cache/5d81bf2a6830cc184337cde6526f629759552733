@@ -1,6 +1,0 @@
-// 1.21	2024-09-11T17:32:43.8368996	Mirthdew Encore/Tags for minecraft:worldgen/biome
-b77f5be77adfd080d203be7655fd9f00360540ac data\minecraft\tags\worldgen\biome\without_zombie_sieges.json
-b77f5be77adfd080d203be7655fd9f00360540ac data\minecraft\tags\worldgen\biome\without_patrol_spawns.json
-b77f5be77adfd080d203be7655fd9f00360540ac data\minecraft\tags\worldgen\biome\without_wandering_trader_spawns.json
-b77f5be77adfd080d203be7655fd9f00360540ac data\c\tags\worldgen\biome\is_void.json
-b77f5be77adfd080d203be7655fd9f00360540ac data\c\tags\worldgen\biome\no_default_monsters.json

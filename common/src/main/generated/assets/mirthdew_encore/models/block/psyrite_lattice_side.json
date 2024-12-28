@@ -1,0 +1,8 @@
+{
+  "parent": "mirthdew_encore:block/template_lattice_side",
+  "textures": {
+    "edge": "mirthdew_encore:block/psyrite_lattice_edge",
+    "pane": "mirthdew_encore:block/psyrite_lattice",
+    "particle": "mirthdew_encore:block/psyrite_lattice"
+  }
+}

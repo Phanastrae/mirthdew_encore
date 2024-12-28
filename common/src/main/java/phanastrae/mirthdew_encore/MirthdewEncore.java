@@ -13,6 +13,7 @@ import phanastrae.mirthdew_encore.component.SpellEffectComponentTypes;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItemGroups;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
+import phanastrae.mirthdew_encore.particle.MirthdewEncoreParticleTypes;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
 import phanastrae.mirthdew_encore.world.gen.chunk.MirthdewEncoreChunkGenerators;
 
@@ -28,18 +29,28 @@ public class MirthdewEncore {
     }
 
     public static void registriesInit(RegistryListenerAdder rla) {
+        // spell effect component types
         rla.addRegistryListener(MirthdewEncoreRegistries.SPELL_EFFECT_COMPONENT_TYPE, SpellEffectComponentTypes::init);
 
+        // data components
         rla.addRegistryListener(BuiltInRegistries.DATA_COMPONENT_TYPE, MirthdewEncoreDataComponentTypes::init);
 
+        // creative mode tabs
         rla.addRegistryListener(BuiltInRegistries.CREATIVE_MODE_TAB, MirthdewEncoreItemGroups::init);
+        // blocks
+        rla.addRegistryListener(BuiltInRegistries.BLOCK, MirthdewEncoreBlocks::init);
+        // items
         rla.addRegistryListener(BuiltInRegistries.ITEM, MirthdewEncoreItems::init);
 
-        rla.addRegistryListener(BuiltInRegistries.BLOCK, MirthdewEncoreBlocks::init);
+        // block entity types
         rla.addRegistryListener(BuiltInRegistries.BLOCK_ENTITY_TYPE, MirthdewEncoreBlockEntityTypes::init);
-
+        // entity types
         rla.addRegistryListener(BuiltInRegistries.ENTITY_TYPE, MirthdewEncoreEntityTypes::init);
 
+        // particle types
+        rla.addRegistryListener(BuiltInRegistries.PARTICLE_TYPE, MirthdewEncoreParticleTypes::init);
+
+        // chunk generators
         rla.addRegistryListener(BuiltInRegistries.CHUNK_GENERATOR, MirthdewEncoreChunkGenerators::init);
     }
 

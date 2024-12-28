@@ -21,6 +21,7 @@ public class SpectralCandyItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag type) {
+        // TODO make this a component
         super.appendHoverText(stack, context, tooltip, type);
         tooltip.add(Component.translatable("item.mirthdew_encore.spectral_candy.when_full").withStyle(ChatFormatting.GRAY));
         List<MobEffectInstance> list = List.of(new MobEffectInstance(MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 3000, 2));

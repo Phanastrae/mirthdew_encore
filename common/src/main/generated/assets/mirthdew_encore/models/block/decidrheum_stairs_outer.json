@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "mirthdew_encore:block/decidrheum_planks",
+    "side": "mirthdew_encore:block/decidrheum_planks",
+    "top": "mirthdew_encore:block/decidrheum_planks"
+  }
+}

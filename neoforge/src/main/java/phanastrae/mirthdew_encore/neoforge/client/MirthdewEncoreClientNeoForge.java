@@ -3,6 +3,8 @@ package phanastrae.mirthdew_encore.neoforge.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -15,6 +17,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.client.MirthdewEncoreClient;
+import phanastrae.mirthdew_encore.client.particle.MirthdewEncoreParticles;
 import phanastrae.mirthdew_encore.client.render.entity.MirthdewEncoreEntityRenderers;
 import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntityModelLayers;
 import phanastrae.mirthdew_encore.client.render.shader.MirthdewEncoreShaders;
@@ -37,7 +40,10 @@ public class MirthdewEncoreClientNeoForge {
         modEventBus.addListener(this::registerEntityRenderers);
 
         // entity model layers
-        modEventBus.addListener(this::registerEntityLayers);
+        modEventBus.addListener(this::registerEntityModelLayers);
+
+        // particles
+        modEventBus.addListener(this::registerParticleProviders);
 
         // register shaders
         modEventBus.addListener(this::registerShaders);
@@ -67,8 +73,17 @@ public class MirthdewEncoreClientNeoForge {
         MirthdewEncoreEntityRenderers.init(event::registerEntityRenderer);
     }
 
-    public void registerEntityLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+    public void registerEntityModelLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         MirthdewEncoreEntityModelLayers.init(event::registerLayerDefinition);
+    }
+
+    public void registerParticleProviders(RegisterParticleProvidersEvent event) {
+        MirthdewEncoreParticles.init(new MirthdewEncoreParticles.ClientParticleRegistrar() {
+            @Override
+            public <T extends ParticleOptions> void register(ParticleType<T> type, MirthdewEncoreParticles.ParticleRegistration<T> registration) {
+                event.registerSpriteSet(type, registration::create);
+            }
+        });
     }
 
     public void registerShaders(RegisterShadersEvent event) {

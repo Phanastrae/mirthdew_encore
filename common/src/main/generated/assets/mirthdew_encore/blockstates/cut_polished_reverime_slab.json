@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "mirthdew_encore:block/cut_polished_reverime_slab"
+    },
+    "type=double": {
+      "model": "mirthdew_encore:block/cut_polished_reverime"
+    },
+    "type=top": {
+      "model": "mirthdew_encore:block/cut_polished_reverime_slab_top"
+    }
+  }
+}

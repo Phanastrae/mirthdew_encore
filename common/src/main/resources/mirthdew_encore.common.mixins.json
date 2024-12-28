@@ -18,6 +18,7 @@
     "ServerLevelAccessor",
     "ServerLevelMixin",
     "ServerPlayerMixin",
+    "SimpleParticleTypeAccessor",
     "SinglePoolElementAccesor"
   ],
   "client": [

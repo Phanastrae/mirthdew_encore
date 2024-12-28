@@ -19,6 +19,7 @@ public class BiomeTagProvider extends FabricTagProvider<Biome> {
 
     @Override
     protected void addTags(HolderLookup.Provider wrapperLookup) {
+        // vanilla biome tags
         tag(BiomeTags.WITHOUT_PATROL_SPAWNS)
                 .add(MirthdewEncoreBiomes.DREAMTWIRL);
         tag(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)
@@ -26,6 +27,7 @@ public class BiomeTagProvider extends FabricTagProvider<Biome> {
         tag(BiomeTags.WITHOUT_ZOMBIE_SIEGES)
                 .add(MirthdewEncoreBiomes.DREAMTWIRL);
 
+        // conventional biome tags
         tag(ConventionalBiomeTags.NO_DEFAULT_MONSTERS)
                 .add(MirthdewEncoreBiomes.DREAMTWIRL);
         tag(ConventionalBiomeTags.IS_VOID)

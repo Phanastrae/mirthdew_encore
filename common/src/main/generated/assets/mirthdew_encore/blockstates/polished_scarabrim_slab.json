@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "mirthdew_encore:block/polished_scarabrim_slab"
+    },
+    "type=double": {
+      "model": "mirthdew_encore:block/polished_scarabrim"
+    },
+    "type=top": {
+      "model": "mirthdew_encore:block/polished_scarabrim_slab_top"
+    }
+  }
+}

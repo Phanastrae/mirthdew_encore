@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smoking",
+  "category": "food",
+  "cookingtime": 100,
+  "experience": 0.1,
+  "ingredient": {
+    "item": "mirthdew_encore:unguishale"
+  },
+  "result": {
+    "id": "mirthdew_encore:clinkera_scraps"
+  }
+}

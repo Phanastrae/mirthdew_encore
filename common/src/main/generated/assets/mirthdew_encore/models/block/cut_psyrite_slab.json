@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "mirthdew_encore:block/cut_psyrite",
+    "side": "mirthdew_encore:block/cut_psyrite",
+    "top": "mirthdew_encore:block/cut_psyrite"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "mirthdew_encore:block/reverime",
+    "side": "mirthdew_encore:block/reverime",
+    "top": "mirthdew_encore:block/reverime"
+  }
+}

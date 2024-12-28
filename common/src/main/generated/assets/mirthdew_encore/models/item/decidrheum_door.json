@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "mirthdew_encore:item/decidrheum_door"
+  }
+}

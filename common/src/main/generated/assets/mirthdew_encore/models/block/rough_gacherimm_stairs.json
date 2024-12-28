@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "mirthdew_encore:block/rough_gacherimm",
+    "side": "mirthdew_encore:block/rough_gacherimm",
+    "top": "mirthdew_encore:block/rough_gacherimm"
+  }
+}

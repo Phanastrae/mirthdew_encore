@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_left",
+  "textures": {
+    "bottom": "mirthdew_encore:block/clinkera_door_bottom",
+    "top": "mirthdew_encore:block/clinkera_door_top"
+  }
+}

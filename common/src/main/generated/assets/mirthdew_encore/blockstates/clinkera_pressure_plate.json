@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "mirthdew_encore:block/clinkera_pressure_plate"
+    },
+    "powered=true": {
+      "model": "mirthdew_encore:block/clinkera_pressure_plate_down"
+    }
+  }
+}

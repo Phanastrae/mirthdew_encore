@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "mirthdew_encore:block/gacherimm_brick_slab"
+    },
+    "type=double": {
+      "model": "mirthdew_encore:block/gacherimm_bricks"
+    },
+    "type=top": {
+      "model": "mirthdew_encore:block/gacherimm_brick_slab_top"
+    }
+  }
+}

@@ -1,9 +1,5 @@
 {
   "values": [
-    "minecraft:purpur_block",
-    "minecraft:purpur_pillar",
-    "minecraft:purpur_slab",
-    "minecraft:purpur_stairs",
     {
       "id": "#minecraft:shulker_boxes",
       "required": false
@@ -11,6 +7,10 @@
     {
       "id": "#c:shulker_boxes",
       "required": false
-    }
+    },
+    "minecraft:purpur_block",
+    "minecraft:purpur_pillar",
+    "minecraft:purpur_slab",
+    "minecraft:purpur_stairs"
   ]
 }

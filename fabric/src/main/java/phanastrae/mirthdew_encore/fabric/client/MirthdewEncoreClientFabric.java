@@ -3,8 +3,11 @@ package phanastrae.mirthdew_encore.fabric.client;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -12,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import phanastrae.mirthdew_encore.client.MirthdewEncoreClient;
+import phanastrae.mirthdew_encore.client.particle.MirthdewEncoreParticles;
 import phanastrae.mirthdew_encore.client.render.entity.MirthdewEncoreEntityRenderers;
 import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntityModelLayers;
 import phanastrae.mirthdew_encore.client.render.shader.MirthdewEncoreShaders;
@@ -36,6 +40,14 @@ public class MirthdewEncoreClientFabric implements ClientModInitializer {
 
 		// entity model layers
 		MirthdewEncoreEntityModelLayers.init((modelLayerLocation, layerDefinition) -> EntityModelLayerRegistry.registerModelLayer(modelLayerLocation, layerDefinition::get));
+
+		// particles
+		MirthdewEncoreParticles.init(new MirthdewEncoreParticles.ClientParticleRegistrar() {
+			@Override
+			public <T extends ParticleOptions> void register(ParticleType<T> type, MirthdewEncoreParticles.ParticleRegistration<T> registration) {
+				ParticleFactoryRegistry.getInstance().register(type, registration::create);
+			}
+		});
 
 		// register shaders
 		CoreShaderRegistrationCallback.EVENT.register((context -> MirthdewEncoreShaders.registerShaders(context::register)));

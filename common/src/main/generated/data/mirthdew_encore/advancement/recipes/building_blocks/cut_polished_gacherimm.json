@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_polished_gacherimm": {
+      "conditions": {
+        "items": [
+          {
+            "items": "mirthdew_encore:polished_gacherimm"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "mirthdew_encore:cut_polished_gacherimm"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_polished_gacherimm"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "mirthdew_encore:cut_polished_gacherimm"
+    ]
+  }
+}

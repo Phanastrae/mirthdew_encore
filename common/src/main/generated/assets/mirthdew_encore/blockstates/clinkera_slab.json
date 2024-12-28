@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "mirthdew_encore:block/clinkera_slab"
+    },
+    "type=double": {
+      "model": "mirthdew_encore:block/clinkera_planks"
+    },
+    "type=top": {
+      "model": "mirthdew_encore:block/clinkera_slab_top"
+    }
+  }
+}

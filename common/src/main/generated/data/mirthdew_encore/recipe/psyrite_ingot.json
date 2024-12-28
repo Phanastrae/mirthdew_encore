@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "psyrite_ingot",
+  "ingredients": [
+    {
+      "item": "mirthdew_encore:psyrite_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "mirthdew_encore:psyrite_ingot"
+  }
+}

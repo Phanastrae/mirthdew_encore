@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "wall": "mirthdew_encore:block/polished_reverime_bricks"
+  }
+}

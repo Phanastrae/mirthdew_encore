@@ -1,14 +1,14 @@
 {
   "values": [
-    "minecraft:ancient_debris",
     {
       "id": "#c:ores/netherite_scrap",
       "required": false
     },
-    "minecraft:netherite_block",
     {
       "id": "#c:storage_blocks/netherite",
       "required": false
-    }
+    },
+    "minecraft:ancient_debris",
+    "minecraft:netherite_block"
   ]
 }

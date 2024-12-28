@@ -40,3 +40,4 @@ replay_*.log
 *.jfr
 /fabric/runs/
 /neoforge/runs/
+/common/src/main/generated/.cache/
