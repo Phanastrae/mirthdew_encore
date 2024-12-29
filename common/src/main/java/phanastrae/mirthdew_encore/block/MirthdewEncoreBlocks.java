@@ -218,6 +218,17 @@ public class MirthdewEncoreBlocks {
             .isRedstoneConductor(MirthdewEncoreBlocks::never)
     );
 
+    public static Block DECIDRHEUM_SAPLING = new DecidrheumSaplingBlock(DecidrheumSaplingBlock.DECIDRHEUM, createSettings()
+            .mapColor(MapColor.COLOR_YELLOW)
+            .noCollission()
+            .randomTicks()
+            .instabreak()
+            .sound(SoundType.GRASS)
+            .pushReaction(PushReaction.DESTROY)
+    );
+
+    public static Block POTTED_DECIDRHEUM_SAPLING = flowerPot(DECIDRHEUM_SAPLING);
+
     public static Block GACHERIMM = new RotatedPillarBlock(createSettings()
             .mapColor(MapColor.TERRACOTTA_PURPLE)
             .instrument(NoteBlockInstrument.BASEDRUM)
@@ -598,6 +609,8 @@ public class MirthdewEncoreBlocks {
         r.accept(id("decidrheum_pressure_plate"), DECIDRHEUM_PRESSURE_PLATE);
         r.accept(id("decidrheum_button"), DECIDRHEUM_BUTTON);
         r.accept(id("decidrheum_leaves"), DECIDRHEUM_LEAVES);
+        r.accept(id("decidrheum_sapling"), DECIDRHEUM_SAPLING);
+        r.accept(id("potted_decidrheum_sapling"), POTTED_DECIDRHEUM_SAPLING);
 
         r.accept(id("gacherimm"), GACHERIMM);
 

@@ -31,5 +31,6 @@ public class MirthdewEncoreDataGenerator implements DataGeneratorEntrypoint {
 	public void buildRegistry(RegistrySetBuilder registryBuilder) {
 		registryBuilder.add(Registries.BIOME, WorldGenerationProvider::bootstrapBiomes);
 		registryBuilder.add(Registries.DIMENSION_TYPE, WorldGenerationProvider::bootstrapDimensionTypes);
+		registryBuilder.add(Registries.CONFIGURED_FEATURE, WorldGenerationProvider::bootstrapConfiguredFeatures);
 	}
 }

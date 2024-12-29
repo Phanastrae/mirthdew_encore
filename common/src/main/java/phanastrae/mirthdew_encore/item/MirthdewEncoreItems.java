@@ -67,6 +67,7 @@ public class MirthdewEncoreItems {
     public static final Item DECIDRHEUM_PRESSURE_PLATE = blockOf(MirthdewEncoreBlocks.DECIDRHEUM_PRESSURE_PLATE);
     public static final Item DECIDRHEUM_BUTTON = blockOf(MirthdewEncoreBlocks.DECIDRHEUM_BUTTON);
     public static final Item DECIDRHEUM_LEAVES = blockOf(MirthdewEncoreBlocks.DECIDRHEUM_LEAVES);
+    public static final Item DECIDRHEUM_SAPLING = blockOf(MirthdewEncoreBlocks.DECIDRHEUM_SAPLING);
 
     public static final Item GACHERIMM = blockOf(MirthdewEncoreBlocks.GACHERIMM);
 
@@ -255,6 +256,7 @@ public class MirthdewEncoreItems {
         rwig.accept(id("decidrheum_pressure_plate"), DECIDRHEUM_PRESSURE_PLATE);
         rwig.accept(id("decidrheum_button"), DECIDRHEUM_BUTTON);
         rwig.accept(id("decidrheum_leaves"), DECIDRHEUM_LEAVES);
+        rwig.accept(id("decidrheum_sapling"), DECIDRHEUM_SAPLING);
 
         rwig.accept(id("gacherimm"), GACHERIMM);
 

@@ -77,6 +77,8 @@ public class ModelProvider extends FabricModelProvider {
         BMG.woodProvider(DECIDRHEUM_LOG).logWithHorizontal(DECIDRHEUM_LOG).wood(DECIDRHEUM_WOOD);
         BMG.woodProvider(STRIPPED_DECIDRHEUM_LOG).logWithHorizontal(STRIPPED_DECIDRHEUM_LOG).wood(STRIPPED_DECIDRHEUM_WOOD);
 
+        BMG.createPlant(DECIDRHEUM_SAPLING, POTTED_DECIDRHEUM_SAPLING, BlockModelGenerators.TintState.NOT_TINTED);
+
         BMG.createNetherRoots(RHEUMBRISTLES, POTTED_RHEUMBRISTLES);
         BMG.createPlant(SOULSPOT_MUSHRHEUM, POTTED_SOULSPOT_MUSHRHEUM, BlockModelGenerators.TintState.NOT_TINTED);
 

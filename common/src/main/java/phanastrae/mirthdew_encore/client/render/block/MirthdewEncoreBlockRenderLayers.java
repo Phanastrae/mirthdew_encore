@@ -33,19 +33,23 @@ public class MirthdewEncoreBlockRenderLayers {
 
                 DECIDRHEUM_DOOR,
                 DECIDRHEUM_TRAPDOOR,
+                DECIDRHEUM_SAPLING,
+                POTTED_DECIDRHEUM_SAPLING,
 
                 PSYRITE_DOOR,
                 PSYRITE_TRAPDOOR,
                 PSYRITE_GRATE,
-                PSYRITE_GRATE_SLAB,
-                PSYRITE_BARS,
-                PSYRITE_LATTICE
+                PSYRITE_GRATE_SLAB
         );
 
         putBlocks(RenderType.cutoutMipped(),
                 CLINKERA_LATTICE,
+
                 DECIDRHEUM_LATTICE,
-                DECIDRHEUM_LEAVES
+                DECIDRHEUM_LEAVES,
+
+                PSYRITE_BARS,
+                PSYRITE_LATTICE
         );
 
         putBlocks(RenderType.translucent(),

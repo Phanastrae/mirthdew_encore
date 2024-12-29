@@ -67,6 +67,8 @@ public class BlockLootTableProvider extends FabricBlockLootTableProvider {
                 DECIDRHEUM_WOOD,
                 STRIPPED_DECIDRHEUM_LOG,
                 STRIPPED_DECIDRHEUM_WOOD,
+                DECIDRHEUM_SAPLING,
+
                 DECIDRHEUM_LATTICE,
 
                 ORANGE_FOGHAIR,
@@ -112,7 +114,7 @@ public class BlockLootTableProvider extends FabricBlockLootTableProvider {
 
         add(SUNFLECKED_SCARABRIM, createSingleItemTableWithSilkTouch(SUNFLECKED_SCARABRIM, SCARABRIM));
 
-        add(DECIDRHEUM_LEAVES, createLeavesDrops(DECIDRHEUM_LEAVES, DECIDRHEUM_LEAVES, BlockLootTableProvider.NORMAL_LEAVES_SAPLING_CHANCES)); // TODO add proper sapling drop
+        add(DECIDRHEUM_LEAVES, createLeavesDrops(DECIDRHEUM_LEAVES, DECIDRHEUM_SAPLING, BlockLootTableProvider.NORMAL_LEAVES_SAPLING_CHANCES));
 
         add(GACHERIMM_PSYRITE_ORE, this::createPsyriteOreDrops);
         add(SCARABRIM_PSYRITE_ORE, this::createPsyriteOreDrops);

@@ -180,10 +180,17 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                         POTTED_RHEUMBRISTLES,
                         POTTED_SOULSPOT_MUSHRHEUM,
 
+                        POTTED_DECIDRHEUM_SAPLING,
+
                         POTTED_ORANGE_FOGHAIR,
                         POTTED_LIME_FOGHAIR,
                         POTTED_CYAN_FOGHAIR,
                         POTTED_MAGNETA_FOGHAIR
+                );
+
+        getOrCreateTagBuilder(BlockTags.SAPLINGS)
+                .add(
+                        DECIDRHEUM_SAPLING
                 );
 
         // behaviours

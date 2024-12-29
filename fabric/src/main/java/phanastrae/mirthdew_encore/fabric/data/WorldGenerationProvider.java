@@ -14,6 +14,8 @@ import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import phanastrae.mirthdew_encore.data.worldgen.features.MirthdewEncoreTreeFeatures;
 import phanastrae.mirthdew_encore.world.biome.MirthdewEncoreBiomes;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
@@ -30,6 +32,7 @@ public class WorldGenerationProvider extends FabricDynamicRegistryProvider {
     protected void configure(HolderLookup.Provider registries, Entries entries) {
         entries.addAll(registries.lookupOrThrow(Registries.BIOME));
         entries.addAll(registries.lookupOrThrow(Registries.DIMENSION_TYPE));
+        entries.addAll(registries.lookupOrThrow(Registries.CONFIGURED_FEATURE));
     }
 
     @Override
@@ -80,5 +83,9 @@ public class WorldGenerationProvider extends FabricDynamicRegistryProvider {
                         0.05F,
                         new DimensionType.MonsterSettings(true, false, UniformInt.of(0, 7), 0)
                 ));
+    }
+
+    public static void bootstrapConfiguredFeatures(BootstrapContext<ConfiguredFeature<?, ?>> context) {
+        MirthdewEncoreTreeFeatures.bootstrapTreeFeatures(context);
     }
 }
