@@ -2,6 +2,7 @@ package phanastrae.mirthdew_encore.neoforge.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -12,6 +13,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
@@ -23,6 +25,7 @@ import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntit
 import phanastrae.mirthdew_encore.client.render.shader.MirthdewEncoreShaders;
 import phanastrae.mirthdew_encore.client.render.world.DreamtwirlBorderRenderer;
 import phanastrae.mirthdew_encore.client.render.world.MirthdewEncoreDimensionEffects;
+import phanastrae.mirthdew_encore.neoforge.client.fluid.MirthdewEncoreFluidTypeExtensions;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
 import java.io.IOException;
@@ -51,6 +54,8 @@ public class MirthdewEncoreClientNeoForge {
         // register dimension effects
         modEventBus.addListener(this::registerDimensionEffects);
 
+        // register client extensions
+        modEventBus.addListener(this::registerClientExtensions);
 
         // client shutdown
         NeoForge.EVENT_BUS.addListener(this::onGameShutdown);
@@ -80,6 +85,14 @@ public class MirthdewEncoreClientNeoForge {
     public void registerParticleProviders(RegisterParticleProvidersEvent event) {
         MirthdewEncoreParticles.init(new MirthdewEncoreParticles.ClientParticleRegistrar() {
             @Override
+            public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider<T> provider) {
+                event.registerSpecial(type, provider);
+            }
+            @Override
+            public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider.Sprite<T> provider) {
+                event.registerSprite(type, provider);
+            }
+            @Override
             public <T extends ParticleOptions> void register(ParticleType<T> type, MirthdewEncoreParticles.ParticleRegistration<T> registration) {
                 event.registerSpriteSet(type, registration::create);
             }
@@ -97,6 +110,10 @@ public class MirthdewEncoreClientNeoForge {
 
     public void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
         event.register(MirthdewEncoreDimensions.DREAMTWIRL_ID, MirthdewEncoreDimensionEffects.getDreamtwirlDimensionEffects());
+    }
+
+    public void registerClientExtensions(RegisterClientExtensionsEvent event) {
+        MirthdewEncoreFluidTypeExtensions.init(event::registerFluidType);
     }
 
     public void onGameShutdown(GameShuttingDownEvent event) {

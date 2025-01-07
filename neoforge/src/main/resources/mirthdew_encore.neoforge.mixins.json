@@ -1,9 +1,11 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "phanastrae.mirthdew_encore.mixin",
+  "package": "phanastrae.mirthdew_encore.neoforge.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "EntityMixin",
+    "VesperbileFluidMixin"
   ],
   "client": [
   ],

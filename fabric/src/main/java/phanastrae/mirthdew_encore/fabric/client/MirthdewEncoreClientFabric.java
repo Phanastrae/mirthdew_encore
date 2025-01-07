@@ -5,6 +5,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.*;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -21,6 +23,7 @@ import phanastrae.mirthdew_encore.client.render.entity.model.MirthdewEncoreEntit
 import phanastrae.mirthdew_encore.client.render.shader.MirthdewEncoreShaders;
 import phanastrae.mirthdew_encore.client.render.world.DreamtwirlBorderRenderer;
 import phanastrae.mirthdew_encore.client.render.world.MirthdewEncoreDimensionEffects;
+import phanastrae.mirthdew_encore.fabric.client.fluid.MirthdewEncoreFluidRenderHandlers;
 import phanastrae.mirthdew_encore.network.MirthdewEncorePayloads;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
@@ -44,6 +47,25 @@ public class MirthdewEncoreClientFabric implements ClientModInitializer {
 		// particles
 		MirthdewEncoreParticles.init(new MirthdewEncoreParticles.ClientParticleRegistrar() {
 			@Override
+			public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider<T> provider) {
+				ParticleFactoryRegistry.getInstance().register(type, provider);
+			}
+			@Override
+			public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider.Sprite<T> provider) {
+				ParticleFactoryRegistry.getInstance().register(
+						type,
+						prov -> (options, level, d, e, f, g, h, i) -> {
+							TextureSheetParticle texturesheetparticle = provider.createParticle(
+									options, level, d, e, f, g, h, i
+							);
+							if (texturesheetparticle != null) {
+								texturesheetparticle.pickSprite(prov);
+							}
+
+							return texturesheetparticle;
+						});
+			}
+			@Override
 			public <T extends ParticleOptions> void register(ParticleType<T> type, MirthdewEncoreParticles.ParticleRegistration<T> registration) {
 				ParticleFactoryRegistry.getInstance().register(type, registration::create);
 			}
@@ -55,6 +77,8 @@ public class MirthdewEncoreClientFabric implements ClientModInitializer {
 		// register dimension effects
 		DimensionRenderingRegistry.registerDimensionEffects(MirthdewEncoreDimensions.DREAMTWIRL_ID, MirthdewEncoreDimensionEffects.getDreamtwirlDimensionEffects());
 
+		// fluid rendering
+		MirthdewEncoreFluidRenderHandlers.init();
 
 		// client shutdown
 		ClientLifecycleEvents.CLIENT_STOPPING.register(MirthdewEncoreClient::onClientStop);

@@ -8,6 +8,7 @@ import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
+import phanastrae.mirthdew_encore.fluid.MirthdewEncoreFluids;
 
 import java.util.function.BiConsumer;
 
@@ -176,6 +177,8 @@ public class MirthdewEncoreItems {
     public static final Item PSYRITE_BARS = blockOf(MirthdewEncoreBlocks.PSYRITE_BARS);
     public static final Item PSYRITE_LATTICE = blockOf(MirthdewEncoreBlocks.PSYRITE_LATTICE);
 
+
+    public static final Item VESPERBILE_BUCKET = new BucketItem(MirthdewEncoreFluids.VESPERBILE, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1));
 
 
     public static final FoodProperties CLINKERA_SCRAPS_FOOD = new FoodProperties.Builder().nutrition(1).saturationModifier(0.1F).alwaysEdible().fast().build();
@@ -368,6 +371,8 @@ public class MirthdewEncoreItems {
         rwig.accept(id("psyrite_bars"), PSYRITE_BARS);
         rwig.accept(id("psyrite_lattice"), PSYRITE_LATTICE);
 
+
+        rwig.accept(id("vesperbile_bucket"), VESPERBILE_BUCKET);
 
 
         r.accept(id("mirthdew_vial"), MIRTHDEW_VIAL);

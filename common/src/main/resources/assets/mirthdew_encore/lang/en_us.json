@@ -138,6 +138,7 @@
   "block.mirthdew_encore.unguishale_tiles": "Unguishale Tiles",
   "block.mirthdew_encore.unguishale_wall": "Unguishale Wall",
   "block.mirthdew_encore.veric_dreamsnare": "Veric Dreamsnare",
+  "block.mirthdew_encore.vesperbile": "Vesperbile",
 
   "commands.mirthdew_encore.dreamtwirl.create.failed.already_exists": "That Dreamtwirl already exists.",
   "commands.mirthdew_encore.dreamtwirl.create.failed.invalid_position": "Invalid Position: Dreamtwirls may only be created at even-numbered region coordinates",
@@ -185,6 +186,7 @@
   "item.mirthdew_encore.slumbering_eye.bound.in": "in %s",
   "item.mirthdew_encore.spectral_candy": "Spectral Candy",
   "item.mirthdew_encore.spectral_candy.when_full": "When Full:",
+  "item.mirthdew_encore.vesperbile_bucket": "Vesperbile Bucket",
 
   "itemGroup.mirthdew_encore": "Mirthdew Encore",
 
@@ -210,5 +212,6 @@
   "mirthdew_encore.card_spell.tooltip.name": "Name: \"%s\"",
   "mirthdew_encore.card_spell.tooltip.recharge_delay_ms": "Recharge Delay: %sms",
 
+  "tag.fluid.mirthdew_encore.vesperbile": "Vesperbile",
   "tag.item.mirthdew_encore.decidrheum_logs": "Decidrheum Logs"
 }

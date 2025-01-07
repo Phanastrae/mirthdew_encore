@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "CollisionGetterMixin",
+    "EntityAccessor",
     "EntityMixin",
     "FoodDataMixin",
     "LevelMixin",
@@ -19,14 +20,21 @@
     "ServerLevelMixin",
     "ServerPlayerMixin",
     "SimpleParticleTypeAccessor",
-    "SinglePoolElementAccesor"
+    "SinglePoolElementAccesor",
+    "client.PointedDripstoneBlockMixin"
   ],
   "client": [
     "client.BlockEntityRenderersAccessor",
+    "client.CameraAccessor",
+    "client.DripHangParticleAccessor",
+    "client.DripstoneFallAndLandParticleAccessor",
+    "client.FallAndLandParticleAccessor",
+    "client.GameRendererMixin",
     "client.GuiGraphicsMixin",
     "client.GuiMixin",
     "client.LevelRendererMixin",
     "client.LightTextureMixin",
+    "client.LocalPlayerMixin",
     "client.MinecraftMixin"
   ],
   "injectors": {

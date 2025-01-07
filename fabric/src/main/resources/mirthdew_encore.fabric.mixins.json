@@ -5,9 +5,16 @@
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ClipContextMixin",
+    "EntityMixin",
+    "ItemEntityMixin",
+    "LiquidBlockMixin",
+    "LivingEntityMixin"
   ],
   "client": [
-    "client.GuiMixin"
+    "client.FogRendererMixin",
+    "client.GuiMixin",
+    "client.ScreenEffectRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

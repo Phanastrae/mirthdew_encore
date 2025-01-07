@@ -1,3 +1,10 @@
 accessWidener   v2  named
 
 accessible class net/minecraft/world/level/block/entity/BlockEntityType$BlockEntitySupplier
+accessible class net/minecraft/client/particle/DripParticle$CoolingDripHangParticle
+accessible class net/minecraft/client/particle/DripParticle$DripHangParticle
+accessible class net/minecraft/client/particle/DripParticle$DripLandParticle
+accessible class net/minecraft/client/particle/DripParticle$DripstoneFallAndLandParticle
+accessible class net/minecraft/client/particle/DripParticle$FallAndLandParticle
+accessible class net/minecraft/client/particle/DripParticle$FallingParticle
+accessible class net/minecraft/client/particle/DripParticle$HoneyFallAndLandParticle

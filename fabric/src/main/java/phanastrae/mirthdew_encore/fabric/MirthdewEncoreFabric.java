@@ -1,7 +1,6 @@
 package phanastrae.mirthdew_encore.fabric;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
@@ -25,6 +24,7 @@ import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
+import phanastrae.mirthdew_encore.fabric.fluid.MirthdewEncoreFluidVariantAttributes;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItemGroups;
 import phanastrae.mirthdew_encore.network.MirthdewEncorePayloads;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
@@ -57,6 +57,9 @@ public class MirthdewEncoreFabric implements ModInitializer {
 				source.accept((rl, t) -> Registry.register(registry, rl, t));
 			}
 		});
+
+		// register fluid attributes
+		MirthdewEncoreFluidVariantAttributes.init();
 
 		// common init
 		MirthdewEncore.commonInit();

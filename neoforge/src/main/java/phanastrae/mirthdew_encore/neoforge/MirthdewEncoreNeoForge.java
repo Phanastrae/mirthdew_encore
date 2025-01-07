@@ -13,26 +13,28 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
+import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-import net.neoforged.neoforge.registries.DataPackRegistryEvent;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NewRegistryEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.registries.*;
 import phanastrae.mirthdew_encore.MirthdewEncore;
+import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItemGroups;
+import phanastrae.mirthdew_encore.neoforge.fluid.MirthdewEncoreFluidTypes;
 import phanastrae.mirthdew_encore.network.MirthdewEncorePayloads;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
 import phanastrae.mirthdew_encore.server.command.MirthdewEncoreCommands;
@@ -60,7 +62,7 @@ public class MirthdewEncoreNeoForge {
         MirthdewEncoreStatusEffects.init((name, mobEffect) -> mobEffectDeferredRegister.register(name, () -> mobEffect));
 
         // registry init
-        MirthdewEncore.registriesInit(new MirthdewEncore.RegistryListenerAdder() {
+        MirthdewEncore.RegistryListenerAdder RLA = new MirthdewEncore.RegistryListenerAdder() {
             @Override
             public <T> void addRegistryListener(Registry<T> registry, Consumer<BiConsumer<ResourceLocation, T>> source) {
                 modEventBus.addListener((RegisterEvent event) -> {
@@ -70,7 +72,9 @@ public class MirthdewEncoreNeoForge {
                     }
                 });
             }
-        });
+        };
+        MirthdewEncore.registriesInit(RLA);
+        this.neoforgeRegistriesInit(RLA);
 
         // common init
         modEventBus.addListener(this::commonInit);
@@ -106,9 +110,16 @@ public class MirthdewEncoreNeoForge {
         });
     }
 
+    public void neoforgeRegistriesInit(MirthdewEncore.RegistryListenerAdder registryListenerAdder) {
+        registryListenerAdder.addRegistryListener(NeoForgeRegistries.FLUID_TYPES, MirthdewEncoreFluidTypes::init);
+    }
+
     public void commonInit(FMLCommonSetupEvent event) {
         // everything here needs to be multithread safe
-        MirthdewEncore.commonInit();
+        event.enqueueWork(() -> {
+            MirthdewEncore.commonInit();
+            MirthdewEncoreFluidTypes.registerFluidInteractions();
+        });
     }
 
     public void entityAttributeCreation(EntityAttributeCreationEvent event) {

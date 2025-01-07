@@ -19,7 +19,6 @@ import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 import java.util.function.BiConsumer;
 
 import static net.minecraft.data.models.BlockModelGenerators.createRotatedVariant;
-import static net.minecraft.data.models.BlockModelGenerators.createSimpleBlock;
 import static phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks.*;
 
 public class ModelProvider extends FabricModelProvider {
@@ -95,6 +94,9 @@ public class ModelProvider extends FabricModelProvider {
         generateStairs(BMG, UNGUISHALE_STAIRS, unguishaleMapping);
         generateSlab(BMG, UNGUISHALE_SLAB, unguishaleMapping, unguishaleModel);
         generateWall(BMG, UNGUISHALE_WALL, unguishaleMapping);
+
+
+        BMG.createNonTemplateModelBlock(VESPERBILE);
     }
 
     @Override
@@ -108,7 +110,8 @@ public class ModelProvider extends FabricModelProvider {
                 MirthdewEncoreItems.CLINKERA_SCRAPS,
                 MirthdewEncoreItems.RAW_PSYRITE,
                 MirthdewEncoreItems.PSYRITE_INGOT,
-                MirthdewEncoreItems.PSYRITE_NUGGET
+                MirthdewEncoreItems.PSYRITE_NUGGET,
+                MirthdewEncoreItems.VESPERBILE_BUCKET
         );
     }
 

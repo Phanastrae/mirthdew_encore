@@ -11,9 +11,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import phanastrae.mirthdew_encore.MirthdewEncore;
+import phanastrae.mirthdew_encore.fluid.MirthdewEncoreFluids;
 
 import java.util.function.BiConsumer;
 import java.util.function.ToIntFunction;
@@ -551,6 +553,21 @@ public class MirthdewEncoreBlocks {
                     .noOcclusion()
     );
 
+    public static Block VESPERBILE = new CustomLiquidBlock(
+            MirthdewEncoreFluids.VESPERBILE,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.TERRACOTTA_MAGENTA)
+                    .replaceable()
+                    .noCollission()
+                    .randomTicks()
+                    .strength(100.0F)
+                    .lightLevel(blockState -> 9)
+                    .pushReaction(PushReaction.DESTROY)
+                    .noLootTable()
+                    .liquid()
+                    .sound(SoundType.EMPTY)
+    );
+
     public static void init(BiConsumer<ResourceLocation, Block> r) {
         r.accept(id("dreamtwirl_barrier"), DREAMTWIRL_BARRIER);
 
@@ -722,6 +739,8 @@ public class MirthdewEncoreBlocks {
         r.accept(id("psyrite_trapdoor"), PSYRITE_TRAPDOOR);
         r.accept(id("psyrite_bars"), PSYRITE_BARS);
         r.accept(id("psyrite_lattice"), PSYRITE_LATTICE);
+
+        r.accept(id("vesperbile"), VESPERBILE);
     }
 
     private static ResourceLocation id(String path) {

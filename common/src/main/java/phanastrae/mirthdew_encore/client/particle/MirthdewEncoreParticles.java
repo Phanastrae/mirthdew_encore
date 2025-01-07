@@ -11,10 +11,15 @@ public class MirthdewEncoreParticles {
     public static void init(ClientParticleRegistrar r) {
         r.register(MirthdewEncoreParticleTypes.DECIDRHEUM_LEAVES, LeavesParticle.Provider::new);
         r.register(MirthdewEncoreParticleTypes.SUNFLECK, SunfleckParticle.Provider::new);
+        r.register(MirthdewEncoreParticleTypes.DRIPPING_VESPERBILE, MirthdewEncoreDripParticle::createVesperbileHangParticle);
+        r.register(MirthdewEncoreParticleTypes.FALLING_VESPERBILE, MirthdewEncoreDripParticle::createVesperbileFallParticle);
+        r.register(MirthdewEncoreParticleTypes.DRIPPING_DRIPSTONE_VESPERBILE, MirthdewEncoreDripParticle::createDripstoneVesperbileHangParticle);
+        r.register(MirthdewEncoreParticleTypes.FALLING_DRIPSTONE_VESPERBILE, MirthdewEncoreDripParticle::createDripstoneVesperbileFallParticle);
     }
 
-    @FunctionalInterface
     public interface ClientParticleRegistrar {
+        <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider<T> provider);
+        <T extends ParticleOptions> void register(ParticleType<T> type, ParticleProvider.Sprite<T> provider);
         <T extends ParticleOptions> void register(ParticleType<T> type, ParticleRegistration<T> registration);
     }
 

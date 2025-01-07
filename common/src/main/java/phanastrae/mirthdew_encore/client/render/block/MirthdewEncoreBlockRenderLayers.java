@@ -2,7 +2,9 @@ package phanastrae.mirthdew_encore.client.render.block;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import phanastrae.mirthdew_encore.client.services.XPlatClientInterface;
+import phanastrae.mirthdew_encore.fluid.MirthdewEncoreFluids;
 
 import static phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks.*;
 
@@ -55,9 +57,18 @@ public class MirthdewEncoreBlockRenderLayers {
         putBlocks(RenderType.translucent(),
                 SLUMBERVEIL
         );
+
+        putFluids(RenderType.translucent(),
+                MirthdewEncoreFluids.VESPERBILE,
+                MirthdewEncoreFluids.FLOWING_VESPERBILE
+        );
     }
 
     private static void putBlocks(RenderType renderLayer, Block... blocks) {
         XPlatClientInterface.INSTANCE.registerBlockRenderLayers(renderLayer, blocks);
+    }
+
+    private static void putFluids(RenderType renderLayer, Fluid... fluids) {
+        XPlatClientInterface.INSTANCE.registerFluidRenderLayers(renderLayer, fluids);
     }
 }
