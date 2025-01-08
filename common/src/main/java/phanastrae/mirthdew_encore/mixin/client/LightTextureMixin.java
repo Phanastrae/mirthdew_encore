@@ -2,9 +2,13 @@ package phanastrae.mirthdew_encore.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,6 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import phanastrae.mirthdew_encore.registry.MirthdewEncoreFluidTags;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
 @Mixin(LightTexture.class)
@@ -20,11 +25,30 @@ public class LightTextureMixin {
     @Shadow @Final private Minecraft minecraft;
 
     @Inject(method = "updateLightTexture", at = @At(value = "INVOKE", target = "Lorg/joml/Vector3f;<init>()V", ordinal = 0, shift = At.Shift.AFTER))
-    private void mirthdew_encore$modifySkyLight(float partialTicks, CallbackInfo ci, @Local(ordinal=0) ClientLevel clientLevel, @Local(ordinal = 0) Vector3f skyLightRGB, @Local(ordinal=2) LocalFloatRef skyDarkenWithFlash) {
+    private void mirthdew_encore$modifySkyLight(float partialTicks, CallbackInfo ci, @Local(ordinal=0) ClientLevel clientLevel, @Local(ordinal = 0) Vector3f skyLightRGB, @Local(ordinal=2) LocalFloatRef skyDarkenWithFlash, @Local(ordinal = 7) LocalFloatRef LR_darkVision) {
+        // modify sky light
         if(clientLevel.dimensionTypeRegistration().is(MirthdewEncoreDimensions.DREAMTWIRL_DIM_TYPE)) {
             // change sky light color to a cyan
             skyLightRGB.set(0.45f, 0.8f, 1.0f);
             skyDarkenWithFlash.set(Math.max(skyDarkenWithFlash.get(), 0.35F));
+        }
+
+        // vesperbile lighting
+        Camera camera = this.minecraft.gameRenderer.getMainCamera();
+        BlockPos cameraBlockPos = camera.getBlockPosition();
+        BlockState cameraBlockState = clientLevel.getBlockState(cameraBlockPos);
+        FluidState cameraFluidState = cameraBlockState.getFluidState();
+        if(cameraFluidState.is(MirthdewEncoreFluidTags.VESPERBILE)) {
+            float fluidHeight = cameraFluidState.getHeight(clientLevel, cameraBlockPos);
+            double fluidY = cameraBlockPos.getY() + fluidHeight;
+            double camY = camera.getPosition().y;
+            if(fluidY > camY) {
+                // night vision
+                LR_darkVision.set(Math.max(LR_darkVision.get(), 0.85F));
+                // sky light
+                skyLightRGB.set(1.0F, 1.0F, 0.0F);
+                skyDarkenWithFlash.set(Math.max(skyDarkenWithFlash.get(), 0.85F));
+            }
         }
     }
 

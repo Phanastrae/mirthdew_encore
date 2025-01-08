@@ -553,7 +553,7 @@ public class MirthdewEncoreBlocks {
                     .noOcclusion()
     );
 
-    public static Block VESPERBILE = new CustomLiquidBlock(
+    public static Block VESPERBILE = new VesperbileLiquidBlock(
             MirthdewEncoreFluids.VESPERBILE,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.TERRACOTTA_MAGENTA)
@@ -561,7 +561,7 @@ public class MirthdewEncoreBlocks {
                     .noCollission()
                     .randomTicks()
                     .strength(100.0F)
-                    .lightLevel(blockState -> 9)
+                    .lightLevel(blockState -> blockState.getValue(VesperbileLiquidBlock.EMITS_LIGHT) ? 9 : 0)
                     .pushReaction(PushReaction.DESTROY)
                     .noLootTable()
                     .liquid()
