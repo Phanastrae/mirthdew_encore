@@ -202,7 +202,7 @@ public class MirthdewEncoreItems {
     public static void init(BiConsumer<ResourceLocation, Item> r) {
         BiConsumer<ResourceLocation, Item> rwig = (rl, i) -> { // register with item group
             r.accept(rl, i);
-            MirthdewEncoreItemGroups.addItemToMirthdewEncoreGroup(i);
+            MirthdewEncoreCreativeModeTabs.addItemToMirthdewEncoreTab(i);
         };
 
         rwig.accept(id("dreamspeck_spawn_egg"), DREAMSPECK_SPAWN_EGG);

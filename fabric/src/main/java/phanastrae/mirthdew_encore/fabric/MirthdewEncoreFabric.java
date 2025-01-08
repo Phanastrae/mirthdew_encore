@@ -25,7 +25,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.fabric.fluid.MirthdewEncoreFluidVariantAttributes;
-import phanastrae.mirthdew_encore.item.MirthdewEncoreItemGroups;
+import phanastrae.mirthdew_encore.item.MirthdewEncoreCreativeModeTabs;
 import phanastrae.mirthdew_encore.network.MirthdewEncorePayloads;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
 import phanastrae.mirthdew_encore.server.command.MirthdewEncoreCommands;
@@ -82,15 +82,15 @@ public class MirthdewEncoreFabric implements ModInitializer {
 	}
 
 	public void setupCreativeTabs() {
-		MirthdewEncoreItemGroups.setupEntires(new MirthdewEncoreItemGroups.Helper() {
+		MirthdewEncoreCreativeModeTabs.setupEntires(new MirthdewEncoreCreativeModeTabs.Helper() {
 			@Override
-			public void add(ResourceKey<CreativeModeTab> groupKey, ItemLike item) {
-				ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> entries.accept(item));
+			public void add(ResourceKey<CreativeModeTab> tabKey, ItemLike item) {
+				ItemGroupEvents.modifyEntriesEvent(tabKey).register(entries -> entries.accept(item));
 			}
 
 			@Override
-			public void add(ResourceKey<CreativeModeTab> groupKey, ItemLike... items) {
-				ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> {
+			public void add(ResourceKey<CreativeModeTab> tabKey, ItemLike... items) {
+				ItemGroupEvents.modifyEntriesEvent(tabKey).register(entries -> {
 					for(ItemLike item : items) {
 						entries.accept(item);
 					}
@@ -98,13 +98,13 @@ public class MirthdewEncoreFabric implements ModInitializer {
 			}
 
 			@Override
-			public void add(ResourceKey<CreativeModeTab> groupKey, ItemStack item) {
-				ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> entries.accept(item));
+			public void add(ResourceKey<CreativeModeTab> tabKey, ItemStack item) {
+				ItemGroupEvents.modifyEntriesEvent(tabKey).register(entries -> entries.accept(item));
 			}
 
 			@Override
-			public void add(ResourceKey<CreativeModeTab> groupKey, Collection<ItemStack> items) {
-				ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> {
+			public void add(ResourceKey<CreativeModeTab> tabKey, Collection<ItemStack> items) {
+				ItemGroupEvents.modifyEntriesEvent(tabKey).register(entries -> {
 					for(ItemStack item : items) {
 						entries.accept(item);
 					}
@@ -112,23 +112,23 @@ public class MirthdewEncoreFabric implements ModInitializer {
 			}
 
 			@Override
-			public void addAfter(ItemLike after, ResourceKey<CreativeModeTab> groupKey, ItemLike item) {
-				ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> entries.addAfter(after, item));
+			public void addAfter(ItemLike after, ResourceKey<CreativeModeTab> tabKey, ItemLike item) {
+				ItemGroupEvents.modifyEntriesEvent(tabKey).register(entries -> entries.addAfter(after, item));
 			}
 
 			@Override
-			public void addAfter(ItemStack after, ResourceKey<CreativeModeTab> groupKey, ItemStack item) {
-				ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> entries.addAfter(after, item));
+			public void addAfter(ItemStack after, ResourceKey<CreativeModeTab> tabKey, ItemStack item) {
+				ItemGroupEvents.modifyEntriesEvent(tabKey).register(entries -> entries.addAfter(after, item));
 			}
 
 			@Override
-			public void addAfter(ItemLike after, ResourceKey<CreativeModeTab> groupKey, ItemLike... items) {
-				ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> entries.addAfter(after, items));
+			public void addAfter(ItemLike after, ResourceKey<CreativeModeTab> tabKey, ItemLike... items) {
+				ItemGroupEvents.modifyEntriesEvent(tabKey).register(entries -> entries.addAfter(after, items));
 			}
 
 			@Override
-			public void forTabRun(ResourceKey<CreativeModeTab> groupKey, BiConsumer<CreativeModeTab.ItemDisplayParameters, CreativeModeTab.Output> biConsumer) {
-				ItemGroupEvents.modifyEntriesEvent(groupKey).register(entries -> {
+			public void forTabRun(ResourceKey<CreativeModeTab> tabKey, BiConsumer<CreativeModeTab.ItemDisplayParameters, CreativeModeTab.Output> biConsumer) {
+				ItemGroupEvents.modifyEntriesEvent(tabKey).register(entries -> {
 					CreativeModeTab.ItemDisplayParameters displayContext = entries.getContext();
 					biConsumer.accept(displayContext, entries);
 				});

@@ -13,27 +13,23 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.*;
 import phanastrae.mirthdew_encore.MirthdewEncore;
-import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
-import phanastrae.mirthdew_encore.item.MirthdewEncoreItemGroups;
+import phanastrae.mirthdew_encore.item.MirthdewEncoreCreativeModeTabs;
 import phanastrae.mirthdew_encore.neoforge.fluid.MirthdewEncoreFluidTypes;
 import phanastrae.mirthdew_encore.network.MirthdewEncorePayloads;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
@@ -128,32 +124,32 @@ public class MirthdewEncoreNeoForge {
 
     public void buildCreativeModeTabContents(BuildCreativeModeTabContentsEvent event) {
         ResourceKey<CreativeModeTab> eventKey = event.getTabKey();
-        MirthdewEncoreItemGroups.setupEntires(new MirthdewEncoreItemGroups.Helper() {
+        MirthdewEncoreCreativeModeTabs.setupEntires(new MirthdewEncoreCreativeModeTabs.Helper() {
             @Override
-            public void add(ResourceKey<CreativeModeTab> groupKey, ItemLike item) {
-                if(eventKey.equals(groupKey)) {
+            public void add(ResourceKey<CreativeModeTab> tabKey, ItemLike item) {
+                if(eventKey.equals(tabKey)) {
                     event.accept(item);
                 }
             }
 
             @Override
-            public void add(ResourceKey<CreativeModeTab> groupKey, ItemLike... items) {
-                if(eventKey.equals(groupKey)) {
+            public void add(ResourceKey<CreativeModeTab> tabKey, ItemLike... items) {
+                if(eventKey.equals(tabKey)) {
                     for(ItemLike item : items) {
                         event.accept(item);
                     }
                 }
             }
             @Override
-            public void add(ResourceKey<CreativeModeTab> groupKey, ItemStack item) {
-                if(eventKey.equals(groupKey)) {
+            public void add(ResourceKey<CreativeModeTab> tabKey, ItemStack item) {
+                if(eventKey.equals(tabKey)) {
                     event.accept(item);
                 }
             }
 
             @Override
-            public void add(ResourceKey<CreativeModeTab> groupKey, Collection<ItemStack> items) {
-                if(eventKey.equals(groupKey)) {
+            public void add(ResourceKey<CreativeModeTab> tabKey, Collection<ItemStack> items) {
+                if(eventKey.equals(tabKey)) {
                     for(ItemStack item : items) {
                         event.accept(item);
                     }
@@ -161,22 +157,22 @@ public class MirthdewEncoreNeoForge {
             }
 
             @Override
-            public void addAfter(ItemLike after, ResourceKey<CreativeModeTab> groupKey, ItemLike item) {
-                if(eventKey.equals(groupKey)) {
+            public void addAfter(ItemLike after, ResourceKey<CreativeModeTab> tabKey, ItemLike item) {
+                if(eventKey.equals(tabKey)) {
                     event.insertAfter(new ItemStack(after), new ItemStack(item), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
                 }
             }
 
             @Override
-            public void addAfter(ItemStack after, ResourceKey<CreativeModeTab> groupKey, ItemStack item) {
-                if(eventKey.equals(groupKey)) {
+            public void addAfter(ItemStack after, ResourceKey<CreativeModeTab> tabKey, ItemStack item) {
+                if(eventKey.equals(tabKey)) {
                     event.insertAfter(after, item, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
                 }
             }
 
             @Override
-            public void addAfter(ItemLike after, ResourceKey<CreativeModeTab> groupKey, ItemLike... items) {
-                if(eventKey.equals(groupKey)) {
+            public void addAfter(ItemLike after, ResourceKey<CreativeModeTab> tabKey, ItemLike... items) {
+                if(eventKey.equals(tabKey)) {
                     for(ItemLike item : items) {
                         event.insertAfter(new ItemStack(after), new ItemStack(item), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
                     }
@@ -184,8 +180,8 @@ public class MirthdewEncoreNeoForge {
             }
 
             @Override
-            public void forTabRun(ResourceKey<CreativeModeTab> groupKey, BiConsumer<CreativeModeTab.ItemDisplayParameters, CreativeModeTab.Output> biConsumer) {
-                if(eventKey.equals(groupKey)) {
+            public void forTabRun(ResourceKey<CreativeModeTab> tabKey, BiConsumer<CreativeModeTab.ItemDisplayParameters, CreativeModeTab.Output> biConsumer) {
+                if(eventKey.equals(tabKey)) {
                     biConsumer.accept(event.getParameters(), event);
                 }
             }

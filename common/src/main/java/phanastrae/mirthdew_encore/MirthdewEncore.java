@@ -12,7 +12,7 @@ import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.component.SpellEffectComponentTypes;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 import phanastrae.mirthdew_encore.fluid.MirthdewEncoreFluids;
-import phanastrae.mirthdew_encore.item.MirthdewEncoreItemGroups;
+import phanastrae.mirthdew_encore.item.MirthdewEncoreCreativeModeTabs;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 import phanastrae.mirthdew_encore.particle.MirthdewEncoreParticleTypes;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
@@ -37,7 +37,7 @@ public class MirthdewEncore {
         rla.addRegistryListener(BuiltInRegistries.DATA_COMPONENT_TYPE, MirthdewEncoreDataComponentTypes::init);
 
         // creative mode tabs
-        rla.addRegistryListener(BuiltInRegistries.CREATIVE_MODE_TAB, MirthdewEncoreItemGroups::init);
+        rla.addRegistryListener(BuiltInRegistries.CREATIVE_MODE_TAB, MirthdewEncoreCreativeModeTabs::init);
         // fluids
         rla.addRegistryListener(BuiltInRegistries.FLUID, MirthdewEncoreFluids::init);
         // blocks
