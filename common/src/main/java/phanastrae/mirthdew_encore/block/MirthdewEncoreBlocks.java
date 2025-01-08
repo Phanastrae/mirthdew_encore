@@ -625,6 +625,7 @@ public class MirthdewEncoreBlocks {
         r.accept(id("decidrheum_trapdoor"), DECIDRHEUM_TRAPDOOR);
         r.accept(id("decidrheum_pressure_plate"), DECIDRHEUM_PRESSURE_PLATE);
         r.accept(id("decidrheum_button"), DECIDRHEUM_BUTTON);
+
         r.accept(id("decidrheum_leaves"), DECIDRHEUM_LEAVES);
         r.accept(id("decidrheum_sapling"), DECIDRHEUM_SAPLING);
         r.accept(id("potted_decidrheum_sapling"), POTTED_DECIDRHEUM_SAPLING);
@@ -726,6 +727,7 @@ public class MirthdewEncoreBlocks {
         r.accept(id("gacherimm_psyrite_ore"), GACHERIMM_PSYRITE_ORE);
         r.accept(id("scarabrim_psyrite_ore"), SCARABRIM_PSYRITE_ORE);
         r.accept(id("sunslaked_psyrite_ore"), SUNSLAKED_PSYRITE_ORE);
+
         r.accept(id("raw_psyrite_block"), RAW_PSYRITE_BLOCK);
         r.accept(id("psyrite_block"), PSYRITE_BLOCK);
         r.accept(id("cut_psyrite"), CUT_PSYRITE);

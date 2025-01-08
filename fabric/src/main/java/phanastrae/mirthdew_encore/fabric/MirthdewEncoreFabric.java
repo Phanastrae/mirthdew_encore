@@ -24,6 +24,7 @@ import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
+import phanastrae.mirthdew_encore.fabric.block.MirthdewEncoreCompostChances;
 import phanastrae.mirthdew_encore.fabric.fluid.MirthdewEncoreFluidVariantAttributes;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreCreativeModeTabs;
 import phanastrae.mirthdew_encore.network.MirthdewEncorePayloads;
@@ -72,6 +73,9 @@ public class MirthdewEncoreFabric implements ModInitializer {
 
 		// register payloads
 		registerPayloads();
+
+		// setup composting chances
+		MirthdewEncoreCompostChances.init();
 
 
 		// register commands

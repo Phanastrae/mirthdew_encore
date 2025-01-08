@@ -258,6 +258,7 @@ public class MirthdewEncoreItems {
         rwig.accept(id("decidrheum_trapdoor"), DECIDRHEUM_TRAPDOOR);
         rwig.accept(id("decidrheum_pressure_plate"), DECIDRHEUM_PRESSURE_PLATE);
         rwig.accept(id("decidrheum_button"), DECIDRHEUM_BUTTON);
+
         rwig.accept(id("decidrheum_leaves"), DECIDRHEUM_LEAVES);
         rwig.accept(id("decidrheum_sapling"), DECIDRHEUM_SAPLING);
 
@@ -354,6 +355,7 @@ public class MirthdewEncoreItems {
         rwig.accept(id("gacherimm_psyrite_ore"), GACHERIMM_PSYRITE_ORE);
         rwig.accept(id("scarabrim_psyrite_ore"), SCARABRIM_PSYRITE_ORE);
         rwig.accept(id("sunslaked_psyrite_ore"), SUNSLAKED_PSYRITE_ORE);
+
         rwig.accept(id("raw_psyrite"), RAW_PSYRITE);
         rwig.accept(id("raw_psyrite_block"), RAW_PSYRITE_BLOCK);
         rwig.accept(id("psyrite_nugget"), PSYRITE_NUGGET);
