@@ -175,6 +175,7 @@ public class MirthdewEncoreNeoForge {
                 if(eventKey.equals(tabKey)) {
                     for(ItemLike item : items) {
                         event.insertAfter(new ItemStack(after), new ItemStack(item), CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+                        after = item;
                     }
                 }
             }
