@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import phanastrae.mirthdew_encore.MirthdewEncore;
@@ -159,28 +158,28 @@ public class MirthdewEncoreBlocks {
     );
     public static final Block POTTED_SOULSPOT_MUSHRHEUM = flowerPot(SOULSPOT_MUSHRHEUM);
 
-    public static final Block DECIDRHEUM_LOG = new RotatedPillarBlock(createSettings()
+    public static final Block DECIDRHEUM_LOG = new CustomLogBlock(createSettings()
             .mapColor(MapColor.COLOR_BLUE)
             .strength(1.5F, 2.0F)
             .instrument(NoteBlockInstrument.BASS)
             .sound(SoundType.WOOD)
     );
 
-    public static final Block DECIDRHEUM_WOOD = new RotatedPillarBlock(createSettings()
+    public static final Block DECIDRHEUM_WOOD = new CustomLogBlock(createSettings()
             .mapColor(MapColor.COLOR_BLUE)
             .strength(1.5F, 2.0F)
             .instrument(NoteBlockInstrument.BASS)
             .sound(SoundType.WOOD)
     );
 
-    public static final Block STRIPPED_DECIDRHEUM_LOG = new RotatedPillarBlock(createSettings()
+    public static final Block STRIPPED_DECIDRHEUM_LOG = new CustomLogBlock(createSettings()
             .mapColor(MapColor.COLOR_BLUE)
             .strength(1.5F, 2.0F)
             .instrument(NoteBlockInstrument.BASS)
             .sound(SoundType.WOOD)
     );
 
-    public static final Block STRIPPED_DECIDRHEUM_WOOD = new RotatedPillarBlock(createSettings()
+    public static final Block STRIPPED_DECIDRHEUM_WOOD = new CustomLogBlock(createSettings()
             .mapColor(MapColor.COLOR_BLUE)
             .strength(1.5F, 2.0F)
             .instrument(NoteBlockInstrument.BASS)

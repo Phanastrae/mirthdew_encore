@@ -4,6 +4,7 @@
   "package": "phanastrae.mirthdew_encore.neoforge.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "CustomLogBlockMixin",
     "EntityMixin",
     "VesperbileFluidMixin"
   ],

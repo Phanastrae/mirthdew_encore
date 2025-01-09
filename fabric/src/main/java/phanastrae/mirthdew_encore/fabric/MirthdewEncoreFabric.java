@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import phanastrae.mirthdew_encore.MirthdewEncore;
+import phanastrae.mirthdew_encore.block.MirthdewEncoreLogStripping;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
@@ -77,6 +79,8 @@ public class MirthdewEncoreFabric implements ModInitializer {
 		// setup composting chances
 		MirthdewEncoreCompostChances.init();
 
+		// setup log stripping
+		MirthdewEncoreLogStripping.MIRTHDEW_STRIPPABLES.forEach(StrippableBlockRegistry::register);
 
 		// register commands
 		CommandRegistrationCallback.EVENT.register(MirthdewEncoreCommands::registerCommands);
