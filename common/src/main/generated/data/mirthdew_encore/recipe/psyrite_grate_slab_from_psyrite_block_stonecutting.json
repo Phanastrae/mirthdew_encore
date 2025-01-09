@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "mirthdew_encore:psyrite_block"
+  },
+  "result": {
+    "count": 8,
+    "id": "mirthdew_encore:psyrite_grate_slab"
+  }
+}

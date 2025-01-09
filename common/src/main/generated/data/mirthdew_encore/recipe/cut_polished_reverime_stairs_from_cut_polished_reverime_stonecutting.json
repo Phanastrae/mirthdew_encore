@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "mirthdew_encore:cut_polished_reverime"
+  },
+  "result": {
+    "count": 1,
+    "id": "mirthdew_encore:cut_polished_reverime_stairs"
+  }
+}

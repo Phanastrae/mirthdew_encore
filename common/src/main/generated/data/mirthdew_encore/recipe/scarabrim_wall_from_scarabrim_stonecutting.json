@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "mirthdew_encore:scarabrim"
+  },
+  "result": {
+    "count": 1,
+    "id": "mirthdew_encore:scarabrim_wall"
+  }
+}

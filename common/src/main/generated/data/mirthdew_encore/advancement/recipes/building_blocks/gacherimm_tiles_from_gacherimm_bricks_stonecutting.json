@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_gacherimm_bricks": {
+      "conditions": {
+        "items": [
+          {
+            "items": "mirthdew_encore:gacherimm_bricks"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:gacherimm_tiles_from_gacherimm_bricks_stonecutting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_gacherimm_bricks"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:gacherimm_tiles_from_gacherimm_bricks_stonecutting"
+    ]
+  }
+}

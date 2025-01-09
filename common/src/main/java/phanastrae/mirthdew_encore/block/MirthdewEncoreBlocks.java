@@ -728,6 +728,7 @@ public class MirthdewEncoreBlocks {
         r.accept(id("sunslaked_psyrite_ore"), SUNSLAKED_PSYRITE_ORE);
 
         r.accept(id("raw_psyrite_block"), RAW_PSYRITE_BLOCK);
+
         r.accept(id("psyrite_block"), PSYRITE_BLOCK);
         r.accept(id("cut_psyrite"), CUT_PSYRITE);
         r.accept(id("cut_psyrite_stairs"), CUT_PSYRITE_STAIRS);

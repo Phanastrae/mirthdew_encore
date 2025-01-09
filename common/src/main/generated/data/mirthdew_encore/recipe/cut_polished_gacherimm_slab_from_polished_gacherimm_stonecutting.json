@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "mirthdew_encore:polished_gacherimm"
+  },
+  "result": {
+    "count": 2,
+    "id": "mirthdew_encore:cut_polished_gacherimm_slab"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_polished_scarabrim": {
+      "conditions": {
+        "items": [
+          {
+            "items": "mirthdew_encore:polished_scarabrim"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:polished_scarabrim_slab_from_polished_scarabrim_stonecutting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_polished_scarabrim"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:polished_scarabrim_slab_from_polished_scarabrim_stonecutting"
+    ]
+  }
+}

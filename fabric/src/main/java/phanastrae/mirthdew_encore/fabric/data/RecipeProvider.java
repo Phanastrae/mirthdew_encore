@@ -106,7 +106,7 @@ public class RecipeProvider extends FabricRecipeProvider {
         saveLattice(PSYRITE_LATTICE, PSYRITE_INGOT, exporter, 12);
         grate(exporter, MirthdewEncoreBlocks.PSYRITE_GRATE, MirthdewEncoreBlocks.PSYRITE_BLOCK);
 
-        // smelting
+        // smelting, smoking, blasting
         smeltingResultFromBase(exporter, GACHERIMM, ROUGH_GACHERIMM);
 
         SimpleCookingRecipeBuilder.smelting(Ingredient.of(UNGUISHALE), RecipeCategory.FOOD, CLINKERA_SCRAPS, 0.1F, 200)
@@ -118,7 +118,121 @@ public class RecipeProvider extends FabricRecipeProvider {
         oreSmelting(exporter, PSYRITE_SMELTABLES, RecipeCategory.MISC, PSYRITE_INGOT, 0.7F, 200, "psyrite_ingot");
         oreBlasting(exporter, PSYRITE_SMELTABLES, RecipeCategory.MISC, PSYRITE_INGOT, 0.7F, 100, "psyrite_ingot");
 
-        // TODO stonecutter recipes
+        // stonecutting
+        scBlocks(exporter, UNGUISHALE_STAIRS, 1, UNGUISHALE);
+        scBlocks(exporter, UNGUISHALE_SLAB, 2, UNGUISHALE);
+        scWalls(exporter, UNGUISHALE_WALL, 1, UNGUISHALE);
+
+        scBlocks(exporter, UNGUISHALE_BRICKS, 1, UNGUISHALE);
+        scBlocks(exporter, UNGUISHALE_BRICK_STAIRS, 1, UNGUISHALE_BRICKS, UNGUISHALE);
+        scBlocks(exporter, UNGUISHALE_BRICK_SLAB, 2, UNGUISHALE_BRICKS, UNGUISHALE);
+        scWalls(exporter, UNGUISHALE_BRICK_WALL, 1, UNGUISHALE_BRICKS, UNGUISHALE);
+
+        scBlocks(exporter, UNGUISHALE_TILES, 1, UNGUISHALE_BRICKS, UNGUISHALE);
+        scBlocks(exporter, UNGUISHALE_TILE_STAIRS, 1, UNGUISHALE_TILES, UNGUISHALE_BRICKS, UNGUISHALE);
+        scBlocks(exporter, UNGUISHALE_TILE_SLAB, 2, UNGUISHALE_TILES, UNGUISHALE_BRICKS, UNGUISHALE);
+        scWalls(exporter, UNGUISHALE_TILE_WALL, 1, UNGUISHALE_TILES, UNGUISHALE_BRICKS, UNGUISHALE);
+
+        scBlocks(exporter, ROUGH_GACHERIMM_STAIRS, 1, ROUGH_GACHERIMM);
+        scBlocks(exporter, ROUGH_GACHERIMM_SLAB, 2, ROUGH_GACHERIMM);
+        scWalls(exporter, ROUGH_GACHERIMM_WALL, 1, ROUGH_GACHERIMM);
+
+        scBlocks(exporter, GACHERIMM_BRICKS, 1, ROUGH_GACHERIMM);
+        scBlocks(exporter, GACHERIMM_BRICK_STAIRS, 1, GACHERIMM_BRICKS, ROUGH_GACHERIMM);
+        scBlocks(exporter, GACHERIMM_BRICK_SLAB, 2, GACHERIMM_BRICKS, ROUGH_GACHERIMM);
+        scWalls(exporter, GACHERIMM_BRICK_WALL, 1, GACHERIMM_BRICKS, ROUGH_GACHERIMM);
+
+        scBlocks(exporter, GACHERIMM_TILES, 1, GACHERIMM_BRICKS, ROUGH_GACHERIMM);
+        scBlocks(exporter, GACHERIMM_TILE_STAIRS, 1, GACHERIMM_TILES, GACHERIMM_BRICKS, ROUGH_GACHERIMM);
+        scBlocks(exporter, GACHERIMM_TILE_SLAB, 2, GACHERIMM_TILES, GACHERIMM_BRICKS, ROUGH_GACHERIMM);
+        scWalls(exporter, GACHERIMM_TILE_WALL, 1, GACHERIMM_TILES, GACHERIMM_BRICKS, ROUGH_GACHERIMM);
+
+        scBlocks(exporter, POLISHED_GACHERIMM, 1, GACHERIMM);
+        scBlocks(exporter, POLISHED_GACHERIMM_STAIRS, 1, POLISHED_GACHERIMM, GACHERIMM);
+        scBlocks(exporter, POLISHED_GACHERIMM_SLAB, 2, POLISHED_GACHERIMM, GACHERIMM);
+        scWalls(exporter, POLISHED_GACHERIMM_WALL, 1, POLISHED_GACHERIMM, GACHERIMM);
+
+        // gacherimm is cheap, so cut gacherimm is 1:1 like sandstone, not 1:4 like copper
+        scBlocks(exporter, CUT_POLISHED_GACHERIMM, 1, POLISHED_GACHERIMM, GACHERIMM);
+        scBlocks(exporter, CUT_POLISHED_GACHERIMM_STAIRS, 1, CUT_POLISHED_GACHERIMM, POLISHED_GACHERIMM, GACHERIMM);
+        scBlocks(exporter, CUT_POLISHED_GACHERIMM_SLAB, 2, CUT_POLISHED_GACHERIMM, POLISHED_GACHERIMM, GACHERIMM);
+
+        scBlocks(exporter, REVERIME_STAIRS, 1, REVERIME);
+        scBlocks(exporter, REVERIME_SLAB, 2, REVERIME);
+        scWalls(exporter, REVERIME_WALL, 1, REVERIME);
+
+        scBlocks(exporter, REVERIME_BRICKS, 1, REVERIME);
+        scBlocks(exporter, REVERIME_BRICK_STAIRS, 1, REVERIME_BRICKS, REVERIME);
+        scBlocks(exporter, REVERIME_BRICK_SLAB, 2, REVERIME_BRICKS, REVERIME);
+        scWalls(exporter, REVERIME_BRICK_WALL, 1, REVERIME_BRICKS, REVERIME);
+
+        scBlocks(exporter, REVERIME_TILES, 1, REVERIME_BRICKS, REVERIME);
+        scBlocks(exporter, REVERIME_TILE_STAIRS, 1, REVERIME_TILES, REVERIME_BRICKS, REVERIME);
+        scBlocks(exporter, REVERIME_TILE_SLAB, 2, REVERIME_TILES, REVERIME_BRICKS, REVERIME);
+        scWalls(exporter, REVERIME_TILE_WALL, 1, REVERIME_TILES, REVERIME_BRICKS, REVERIME);
+
+        // let players use the stonecutter to skip crafting frosted reverime and just turn reverime directly into polished reverime
+        scBlocks(exporter, POLISHED_REVERIME, 1, FROSTED_REVERIME, REVERIME);
+        scBlocks(exporter, POLISHED_REVERIME_STAIRS, 1, POLISHED_REVERIME, FROSTED_REVERIME, REVERIME);
+        scBlocks(exporter, POLISHED_REVERIME_SLAB, 2, POLISHED_REVERIME, FROSTED_REVERIME, REVERIME);
+        scWalls(exporter, POLISHED_REVERIME_WALL, 1, POLISHED_REVERIME, FROSTED_REVERIME, REVERIME);
+
+        // reverime is cheap, so cut reverime is 1:1 like sandstone, not 1:4 like copper
+        scBlocks(exporter, CUT_POLISHED_REVERIME, 1, POLISHED_REVERIME, FROSTED_REVERIME, REVERIME);
+        scBlocks(exporter, CUT_POLISHED_REVERIME_STAIRS, 1, CUT_POLISHED_REVERIME, POLISHED_REVERIME, FROSTED_REVERIME, REVERIME);
+        scBlocks(exporter, CUT_POLISHED_REVERIME_SLAB, 2, CUT_POLISHED_REVERIME, POLISHED_REVERIME, FROSTED_REVERIME, REVERIME);
+
+        scBlocks(exporter, SCARABRIM_STAIRS, 1, SCARABRIM);
+        scBlocks(exporter, SCARABRIM_SLAB, 2, SCARABRIM);
+        scWalls(exporter, SCARABRIM_WALL, 1, SCARABRIM);
+
+        scBlocks(exporter, POLISHED_SCARABRIM, 1, SCARABRIM);
+        scBlocks(exporter, POLISHED_SCARABRIM_STAIRS, 1, POLISHED_SCARABRIM, SCARABRIM);
+        scBlocks(exporter, POLISHED_SCARABRIM_SLAB, 2, POLISHED_SCARABRIM, SCARABRIM);
+        scWalls(exporter, POLISHED_SCARABRIM_WALL, 1, POLISHED_SCARABRIM, SCARABRIM);
+
+        scBlocks(exporter, SCARABRIM_BRICKS, 1, POLISHED_SCARABRIM, SCARABRIM);
+        scBlocks(exporter, SCARABRIM_BRICK_STAIRS, 1, SCARABRIM_BRICKS, POLISHED_SCARABRIM, SCARABRIM);
+        scBlocks(exporter, SCARABRIM_BRICK_SLAB, 2, SCARABRIM_BRICKS, POLISHED_SCARABRIM, SCARABRIM);
+        scWalls(exporter, SCARABRIM_BRICK_WALL, 1, SCARABRIM_BRICKS, POLISHED_SCARABRIM, SCARABRIM);
+
+        // psyrite -> cut psyrite is 1:4 like copper
+        scBlocks(exporter, CUT_PSYRITE, 4, PSYRITE_BLOCK);
+
+        scBlocks(exporter, CUT_PSYRITE_STAIRS, 1, CUT_PSYRITE);
+        scBlocks(exporter, CUT_PSYRITE_SLAB, 2, CUT_PSYRITE);
+        scBlocks(exporter, CHISELED_PSYRITE, 1, CUT_PSYRITE);
+
+        scBlocks(exporter, CUT_PSYRITE_STAIRS, 4, PSYRITE_BLOCK);
+        scBlocks(exporter, CUT_PSYRITE_SLAB, 8, PSYRITE_BLOCK);
+        scBlocks(exporter, CHISELED_PSYRITE, 4, PSYRITE_BLOCK);
+
+        // psyrite -> psyrite grate is 1:4 like copper
+        scBlocks(exporter, PSYRITE_GRATE, 4, PSYRITE_BLOCK);
+        scBlocks(exporter, PSYRITE_GRATE_SLAB, 2, PSYRITE_GRATE);
+        scBlocks(exporter, PSYRITE_GRATE_SLAB, 8, PSYRITE_BLOCK);
+    }
+
+    public static void scBlocks(RecipeOutput recipeOutput, ItemLike result, int amount, ItemLike... materials) {
+        for(ItemLike material : materials) {
+            scBuildingBlock(recipeOutput, result, material, amount);
+        }
+    }
+
+    public static void scWalls(RecipeOutput recipeOutput, ItemLike result, int amount, ItemLike... materials) {
+        for(ItemLike material : materials) {
+            scDecoration(recipeOutput, result, material, amount);
+        }
+    }
+
+    public static void scBuildingBlock(RecipeOutput recipeOutput, ItemLike result, ItemLike material, int amount) {
+        // use this for non-walls
+        stonecutterResultFromBase(recipeOutput, RecipeCategory.BUILDING_BLOCKS, result, material, amount);
+    }
+
+    public static void scDecoration(RecipeOutput recipeOutput, ItemLike result, ItemLike material, int amount) {
+        // use this for walls
+        stonecutterResultFromBase(recipeOutput, RecipeCategory.DECORATIONS, result, material, amount);
     }
 
     public static <T extends AbstractCookingRecipe> void mirthdewCookRecipes(

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "mirthdew_encore:unguishale_bricks"
+  },
+  "result": {
+    "count": 1,
+    "id": "mirthdew_encore:unguishale_brick_stairs"
+  }
+}

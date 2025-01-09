@@ -360,6 +360,7 @@ public class MirthdewEncoreItems {
         rwig.accept(id("raw_psyrite_block"), RAW_PSYRITE_BLOCK);
         rwig.accept(id("psyrite_nugget"), PSYRITE_NUGGET);
         rwig.accept(id("psyrite_ingot"), PSYRITE_INGOT);
+
         rwig.accept(id("psyrite_block"), PSYRITE_BLOCK);
         rwig.accept(id("cut_psyrite"), CUT_PSYRITE);
         rwig.accept(id("cut_psyrite_stairs"), CUT_PSYRITE_STAIRS);
