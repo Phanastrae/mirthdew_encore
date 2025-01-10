@@ -42,7 +42,7 @@ public abstract class GuiGraphicsMixin {
         }
     }
 
-    @Inject(method = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V", shift = At.Shift.BEFORE))
+    @Inject(method = "renderItemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"))
     private void mirthdew_encore$renderSpellCooldown(Font textRenderer, ItemStack stack, int x, int y, String countOverride, CallbackInfo ci) {
         ClientLevel world = this.minecraft.level;
         if(world != null) {

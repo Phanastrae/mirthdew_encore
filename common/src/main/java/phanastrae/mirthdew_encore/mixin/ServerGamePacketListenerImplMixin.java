@@ -17,7 +17,7 @@ public class ServerGamePacketListenerImplMixin {
 
     @Shadow public ServerPlayer player;
 
-    @Inject(method = "handleInteract", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/border/WorldBorder;isWithinBounds(Lnet/minecraft/core/BlockPos;)Z", shift = At.Shift.BEFORE), cancellable = true)
+    @Inject(method = "handleInteract", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/border/WorldBorder;isWithinBounds(Lnet/minecraft/core/BlockPos;)Z"), cancellable = true)
     private void mirthdew_encore$cancelEntityInteraction(ServerboundInteractPacket packet, CallbackInfo ci, @Local(ordinal = 0) Entity entity) {
         if(DreamtwirlWorldAttachment.positionsAreInSeperateDreamtwirls(this.player.level(), this.player.position(), entity.position())) {
             ci.cancel();

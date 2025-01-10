@@ -42,7 +42,7 @@ public abstract class SculkBlockMixin extends DropExperienceBlock implements Scu
         }
     }
 
-    @Inject(method = "getRandomGrowthState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;hasProperty(Lnet/minecraft/world/level/block/state/properties/Property;)Z", shift = At.Shift.BEFORE))
+    @Inject(method = "getRandomGrowthState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;hasProperty(Lnet/minecraft/world/level/block/state/properties/Property;)Z"))
     private void mirthdew_encore$addDreamsnareToSpawning(LevelAccessor world, BlockPos pos, RandomSource random, boolean allowShrieker, CallbackInfoReturnable<BlockState> cir,
                                                          @Local(ordinal = 0) LocalRef<BlockState> localBlockStateRef) {
         if(random.nextInt(20) == 0) {
@@ -50,7 +50,7 @@ public abstract class SculkBlockMixin extends DropExperienceBlock implements Scu
         }
     }
 
-    @Inject(method = "canPlaceGrowth", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z", ordinal = 1, shift = At.Shift.BEFORE))
+    @Inject(method = "canPlaceGrowth", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z", ordinal = 1))
     private static void mirthdew_encore$limitDreamsnareSpawning(LevelAccessor world, BlockPos pos, CallbackInfoReturnable<Boolean> cir,
                                                                 @Local(ordinal = 0) LocalIntRef localIntRef, @Local(ordinal = 1) BlockState localBlockStateRef) {
         if(localBlockStateRef.is(MirthdewEncoreBlocks.VERIC_DREAMSNARE)) {

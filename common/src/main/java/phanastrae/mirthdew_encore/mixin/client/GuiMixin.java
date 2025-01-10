@@ -19,7 +19,7 @@ import static phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffec
 @Mixin(Gui.class)
 public abstract class GuiMixin {
 
-    @Inject(method = "renderFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodData;getSaturationLevel()F", shift = At.Shift.BEFORE))
+    @Inject(method = "renderFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodData;getSaturationLevel()F"))
     private void mirthdew_encore$dreamyDietSwapOutTextures(GuiGraphics context, Player player, int top, int right, CallbackInfo ci,
                                                              @Local(ordinal = 0) LocalRef<ResourceLocation> idLocRef1, @Local(ordinal = 1) LocalRef<ResourceLocation> idLocRef2, @Local(ordinal = 2) LocalRef<ResourceLocation> idLocRef3) {
         if(player.hasEffect(DREAMY_DIET_ENTRY)) {
