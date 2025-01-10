@@ -185,8 +185,10 @@
   "item.mirthdew_encore.slumbering_eye.bound.to.xyz": "x: %s, y: %s, z: %s",
   "item.mirthdew_encore.slumbering_eye.bound.in": "in %s",
   "item.mirthdew_encore.spectral_candy": "Spectral Candy",
-  "item.mirthdew_encore.spectral_candy.when_full": "When Full:",
   "item.mirthdew_encore.vesperbile_bucket": "Vesperbile Bucket",
+
+  "item.modifiers.mirthdew_encore.food_when_full": "If Eaten when Full:",
+  "item.modifiers.mirthdew_encore.percentage_chance": "%s%% Chance of:",
 
   "itemGroup.mirthdew_encore": "Mirthdew Encore",
 

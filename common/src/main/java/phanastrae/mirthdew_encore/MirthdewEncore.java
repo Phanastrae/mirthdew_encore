@@ -1,8 +1,14 @@
 package phanastrae.mirthdew_encore;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
@@ -63,5 +69,18 @@ public class MirthdewEncore {
 
     public interface RegistryListenerAdder {
         <T> void addRegistryListener(Registry<T> registry, Consumer<BiConsumer<ResourceLocation, T>> source);
+    }
+
+    public static void addTooltips(ItemStack stack, Item.TooltipContext tooltipContext, Consumer<Component> componentConsumer, TooltipFlag tooltipFlag) {
+        addToTooltip(stack, MirthdewEncoreDataComponentTypes.FOOD_WHEN_FULL, tooltipContext, componentConsumer, tooltipFlag);
+    }
+
+    private static <T extends TooltipProvider> void addToTooltip(
+            ItemStack stack, DataComponentType<T> component, Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag
+    ) {
+        T tooltipProvider = (T)stack.get(component);
+        if (tooltipProvider != null) {
+            tooltipProvider.addToTooltip(context, tooltipAdder, tooltipFlag);
+        }
     }
 }

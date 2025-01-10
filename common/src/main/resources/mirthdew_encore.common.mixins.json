@@ -9,6 +9,7 @@
     "EntityAccessor",
     "EntityMixin",
     "FoodDataMixin",
+    "FoodPropertiesPossibleEffectAccessor",
     "LevelMixin",
     "ListPoolElementAccessor",
     "LivingEntityMixin",

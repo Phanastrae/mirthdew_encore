@@ -8,6 +8,7 @@
     "ClipContextMixin",
     "EntityMixin",
     "ItemEntityMixin",
+    "ItemStackMixin",
     "LiquidBlockMixin",
     "LivingEntityMixin"
   ],

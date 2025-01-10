@@ -1,13 +1,16 @@
 package phanastrae.mirthdew_encore.item;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
+import phanastrae.mirthdew_encore.component.type.FoodWhenFullProperties;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
+import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.fluid.MirthdewEncoreFluids;
 
 import java.util.function.BiConsumer;
@@ -194,7 +197,19 @@ public class MirthdewEncoreItems {
             settings().food(MirthdewVialItem.FOOD_COMPONENT).component(MirthdewEncoreDataComponentTypes.MIRTHDEW_VIAL_AMPLIFIER, 0).rarity(Rarity.UNCOMMON));
 
     public static final Item SLUMBERING_EYE = new SlumberingEyeItem(settings().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final Item SPECTRAL_CANDY = new SpectralCandyItem(settings().food(SpectralCandyItem.FOOD_COMPONENT));
+
+    public static final FoodProperties SPECTRAL_CANDY_FOOD_COMPONENT = new FoodProperties.Builder().nutrition(1).saturationModifier(4F).alwaysEdible().build();
+    public static final Item SPECTRAL_CANDY = new Item(settings()
+            .food(SPECTRAL_CANDY_FOOD_COMPONENT)
+            .component(
+                    MirthdewEncoreDataComponentTypes.FOOD_WHEN_FULL,
+                    new FoodWhenFullProperties.Builder().effect(
+                            new MobEffectInstance(
+                                    MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 3000, 2
+                            ), 1)
+                            .build()
+            )
+    );
 
     public static final Item SPELL_CARD = new SpellCardSingularItem(settings().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final Item SPELL_DECK = new SpellCardDeckItem(settings().stacksTo(1).rarity(Rarity.RARE));

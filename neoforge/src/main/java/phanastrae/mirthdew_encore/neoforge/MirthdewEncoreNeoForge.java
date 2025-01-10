@@ -21,6 +21,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -91,6 +92,9 @@ public class MirthdewEncoreNeoForge {
 
         // world tick start
         gameEventBus.addListener(this::tickLevel);
+
+        // add tooltips
+        gameEventBus.addListener(this::addTooltips);
     }
 
     public void registerRegistries(NewRegistryEvent event) {
@@ -210,5 +214,9 @@ public class MirthdewEncoreNeoForge {
 
     public void tickLevel(LevelTickEvent.Pre event) {
         DreamtwirlWorldAttachment.tickWorld(event.getLevel());
+    }
+
+    public void addTooltips(ItemTooltipEvent event) {
+        MirthdewEncore.addTooltips(event.getItemStack(), event.getContext(), event.getToolTip()::add, event.getFlags());
     }
 }
