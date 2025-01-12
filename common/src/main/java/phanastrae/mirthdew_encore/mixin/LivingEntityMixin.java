@@ -115,9 +115,11 @@ public abstract class LivingEntityMixin extends Entity implements Attackable {
             // multiply by dmHL and lvHL, so that max value requires a) moving fast b) inputting enough and c) looking perpendicular to movement
             double v = u * (dmHL / dmHLMax);
 
+            double relSpeed = dmHL / 0.5;
+
             // calc speed multiplier
             //float speedMultiplier = (float)(0.6 * (1 - normDot) + w * 8.5);
-            float speedMultiplier = 1 + (float)(v * 0.4);
+            float speedMultiplier = 0.5F + (float)(v * 0.4 + relSpeed * relSpeed * relSpeed * 1.1);
 
             float speed = this.getSpeed() * speedMultiplier;
             LR_moveAmount.set(speed);
