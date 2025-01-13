@@ -141,6 +141,12 @@ public class MirthdewEncoreFabric implements ModInitializer {
 					biConsumer.accept(displayContext, entries);
 				});
 			}
+
+			@Override
+			public boolean operatorTabEnabled() {
+				// fabric seems to hide the operator tab automatically, so we can just return true here
+				return true;
+			}
 		});
 	}
 

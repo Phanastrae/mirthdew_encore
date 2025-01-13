@@ -17,9 +17,13 @@ public class MirthdewEncoreBlockEntityTypes {
     public static final BlockEntityType<VericDreamsnareBlockEntity> VERIC_DREAMSNARE = create(
             "veric_dreamsnare", VericDreamsnareBlockEntity::new, MirthdewEncoreBlocks.VERIC_DREAMSNARE);
 
+    public static final BlockEntityType<DoorMarkerBlockEntity> DOOR_MARKER = create(
+            "door_marker", DoorMarkerBlockEntity::new, MirthdewEncoreBlocks.DOOR_MARKER);
+
     public static void init(BiConsumer<ResourceLocation, BlockEntityType<?>> r) {
         r.accept(id("slumbersocket"), SLUMBERSOCKET);
         r.accept(id("veric_dreamsnare"), VERIC_DREAMSNARE);
+        r.accept(id("door_marker"), DOOR_MARKER);
     }
 
     private static ResourceLocation id(String path) {

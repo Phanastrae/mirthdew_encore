@@ -21,15 +21,6 @@ import java.util.function.ToIntFunction;
 
 public class MirthdewEncoreBlocks {
 
-    public static final Block DREAMTWIRL_BARRIER = new DreamtwirlBarrierBlock(createSettings()
-            .strength(-1.0F, 3600000.8F)
-            .mapColor(MapColor.NONE)
-            .noLootTable()
-            .isValidSpawn(MirthdewEncoreBlocks::never)
-            .noTerrainParticles()
-            .pushReaction(PushReaction.BLOCK)
-    );
-
     public static final Block VERIC_DREAMSNARE = new VericDreamsnareBlock(createSettings()
             .strength(2.0F, 2.0F)
             .mapColor(MapColor.COLOR_CYAN)
@@ -552,6 +543,23 @@ public class MirthdewEncoreBlocks {
                     .noOcclusion()
     );
 
+    public static final Block DOOR_MARKER = new DoorMarkerBlock(
+            createSettings()
+                    .mapColor(MapColor.COLOR_LIGHT_GRAY)
+                    .requiresCorrectToolForDrops()
+                    .strength(-1.0F, 3600000.0F)
+                    .noLootTable()
+    );
+
+    public static final Block DREAMTWIRL_BARRIER = new DreamtwirlBarrierBlock(createSettings()
+            .strength(-1.0F, 3600000.8F)
+            .mapColor(MapColor.NONE)
+            .noLootTable()
+            .isValidSpawn(MirthdewEncoreBlocks::never)
+            .noTerrainParticles()
+            .pushReaction(PushReaction.BLOCK)
+    );
+
     public static Block VESPERBILE = new VesperbileLiquidBlock(
             MirthdewEncoreFluids.VESPERBILE,
             BlockBehaviour.Properties.of()
@@ -568,8 +576,6 @@ public class MirthdewEncoreBlocks {
     );
 
     public static void init(BiConsumer<ResourceLocation, Block> r) {
-        r.accept(id("dreamtwirl_barrier"), DREAMTWIRL_BARRIER);
-
         r.accept(id("veric_dreamsnare"), VERIC_DREAMSNARE);
         r.accept(id("dreamseed"), DREAMSEED);
         r.accept(id("slumbersocket"), SLUMBERSOCKET);
@@ -741,6 +747,10 @@ public class MirthdewEncoreBlocks {
         r.accept(id("psyrite_trapdoor"), PSYRITE_TRAPDOOR);
         r.accept(id("psyrite_bars"), PSYRITE_BARS);
         r.accept(id("psyrite_lattice"), PSYRITE_LATTICE);
+
+        r.accept(id("door_marker"), DOOR_MARKER);
+
+        r.accept(id("dreamtwirl_barrier"), DREAMTWIRL_BARRIER);
 
         r.accept(id("vesperbile"), VESPERBILE);
     }

@@ -180,6 +180,8 @@ public class MirthdewEncoreItems {
     public static final Item PSYRITE_BARS = blockOf(MirthdewEncoreBlocks.PSYRITE_BARS);
     public static final Item PSYRITE_LATTICE = blockOf(MirthdewEncoreBlocks.PSYRITE_LATTICE);
 
+    public static final Item DOOR_MARKER = blockOf(MirthdewEncoreBlocks.DOOR_MARKER, settings().rarity(Rarity.EPIC));
+
 
     public static final Item VESPERBILE_BUCKET = new BucketItem(MirthdewEncoreFluids.VESPERBILE, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1));
 
@@ -398,6 +400,8 @@ public class MirthdewEncoreItems {
         rwig.accept(id("spectral_candy"), SPECTRAL_CANDY);
         r.accept(id("spell_card"), SPELL_CARD);
         r.accept(id("spell_deck"), SPELL_DECK);
+
+        rwig.accept(id("door_marker"), DOOR_MARKER);
     }
 
     private static ResourceLocation id(String path) {

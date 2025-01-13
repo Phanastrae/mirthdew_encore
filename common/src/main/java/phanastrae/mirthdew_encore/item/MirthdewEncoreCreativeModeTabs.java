@@ -328,6 +328,13 @@ public class MirthdewEncoreCreativeModeTabs {
         helper.add(SPAWN_EGGS,
                 DREAMSPECK_SPAWN_EGG
         );
+
+        // op blocks
+        if(helper.operatorTabEnabled()) {
+            helper.add(OP_BLOCKS,
+                    DOOR_MARKER
+            );
+        }
     }
 
     private static void addQueuedItems(Helper helper) {
@@ -382,5 +389,7 @@ public class MirthdewEncoreCreativeModeTabs {
         public abstract void addAfter(ItemLike after, ResourceKey<CreativeModeTab> tabKey, ItemLike... items);
 
         public abstract void forTabRun(ResourceKey<CreativeModeTab> tabKey, BiConsumer<CreativeModeTab.ItemDisplayParameters, CreativeModeTab.Output> biConsumer);
+
+        public abstract boolean operatorTabEnabled();
     }
 }

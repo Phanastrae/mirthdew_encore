@@ -95,8 +95,11 @@ public class ModelProvider extends FabricModelProvider {
         generateSlab(BMG, UNGUISHALE_SLAB, unguishaleMapping, unguishaleModel);
         generateWall(BMG, UNGUISHALE_WALL, unguishaleMapping);
 
-
+        // vesperbile
         BMG.createNonTemplateModelBlock(VESPERBILE);
+
+        // door marker
+        createJigsawEsque(BMG, DOOR_MARKER);
     }
 
     @Override
@@ -251,5 +254,29 @@ public class ModelProvider extends FabricModelProvider {
                                 )
                 );
         BMG.createSimpleFlatItemModel(block);
+    }
+
+    private void createJigsawEsque(BlockModelGenerators BMG, Block block) {
+        ResourceLocation textureTop = TextureMapping.getBlockTexture(block, "_top");
+        ResourceLocation textureBottom = TextureMapping.getBlockTexture(block, "_bottom");
+        ResourceLocation textureSide = TextureMapping.getBlockTexture(block, "_side");
+        ResourceLocation textureLock = TextureMapping.getBlockTexture(block, "_lock");
+
+        TextureMapping textureMapping = new TextureMapping()
+                .put(TextureSlot.DOWN, textureSide)
+                .put(TextureSlot.WEST, textureSide)
+                .put(TextureSlot.EAST, textureSide)
+                .put(TextureSlot.PARTICLE, textureTop)
+                .put(TextureSlot.NORTH, textureTop)
+                .put(TextureSlot.SOUTH, textureBottom)
+                .put(TextureSlot.UP, textureLock);
+
+        ResourceLocation resourceLocation5 = ModelTemplates.CUBE_DIRECTIONAL.create(block, textureMapping, BMG.modelOutput);
+
+        BMG.blockStateOutput
+                .accept(
+                        MultiVariantGenerator.multiVariant(block, Variant.variant().with(VariantProperties.MODEL, resourceLocation5))
+                                .with(PropertyDispatch.property(BlockStateProperties.ORIENTATION).generate(frontAndTop -> BMG.applyRotation(frontAndTop, Variant.variant())))
+                );
     }
 }
