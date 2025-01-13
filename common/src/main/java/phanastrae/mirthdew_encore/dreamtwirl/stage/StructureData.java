@@ -31,6 +31,7 @@ import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.mixin.ListPoolElementAccessor;
 import phanastrae.mirthdew_encore.mixin.SinglePoolElementAccesor;
 
@@ -39,7 +40,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class StructureData {
-    private static final Block GATE_BLOCK = Blocks.CRAFTER;
+    private static final Block GATE_BLOCK = MirthdewEncoreBlocks.DOOR_MARKER;
 
     public final Structure structure;
     public final PiecesContainer piecesContainer;
