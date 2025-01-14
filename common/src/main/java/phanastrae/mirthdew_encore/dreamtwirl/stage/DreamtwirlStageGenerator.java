@@ -30,6 +30,13 @@ public class DreamtwirlStageGenerator {
     private static final ResourceLocation LARGE_PATH = MirthdewEncore.id("test/large_path");
     private static final ResourceLocation TUFF_SPIRAL = MirthdewEncore.id("test/tuff_spiral");
 
+    private static final ResourceLocation DECIDRHEUM_RING = MirthdewEncore.id("test/decidrheum_ring");
+    private static final ResourceLocation DECIDRHEUM_FOURWAY = MirthdewEncore.id("test/decidrheum_fourway");
+    private static final ResourceLocation DECIDRHEUM_CORNER = MirthdewEncore.id("test/decidrheum_corner");
+    private static final ResourceLocation DECIDRHEUM_TWISTING_PATH = MirthdewEncore.id("test/decidrheum_twisting_path");
+    private static final ResourceLocation CLINKERA_TWIRL_PATH = MirthdewEncore.id("test/clinkera_twirl_path");
+    private static final ResourceLocation CLINKERA_VESPERBILE_FOUNTAIN = MirthdewEncore.id("test/clinkera_vesperbile_fountain");
+
     private final RoomStorage roomStorage;
     private final RegionPos regionPos;
     private final ServerLevel serverWorld;
@@ -222,7 +229,7 @@ public class DreamtwirlStageGenerator {
 
         // create new room
         //Optional<DreamtwirlRoom> fourwayOptional = this.getRoomOfType(FOURWAY_MINI);
-        Optional<DreamtwirlRoom> fourwayOptional = random.nextInt(3) != 0 ? this.getBigRoom() : this.getRoomOfType(FOURWAY_MINI);
+        Optional<DreamtwirlRoom> fourwayOptional = random.nextInt(3) != 0 ? this.getBigRoom() : this.getRoomOfType(DECIDRHEUM_CORNER);
         if(fourwayOptional.isEmpty()) return;
         DreamtwirlRoom fourway = fourwayOptional.get();
 
@@ -247,7 +254,22 @@ public class DreamtwirlStageGenerator {
     }
 
     public Optional<DreamtwirlRoom> getBigRoom() {
-        ResourceLocation id = random.nextInt(3) == 0 ? (random.nextInt(8) == 0 ? LARGE_PATH : BRIDGE) : (random.nextInt(8) == 0 ? TOWER : (random.nextInt(6) == 0 ? FOURWAY_CROSSROAD : (random.nextInt(4) == 0 ? TUFF_SPIRAL : FOURWAY)));
+        ResourceLocation[] paths = new ResourceLocation[]{
+                DECIDRHEUM_CORNER,
+                DECIDRHEUM_TWISTING_PATH,
+                DECIDRHEUM_FOURWAY,
+                CLINKERA_TWIRL_PATH
+        };
+
+        ResourceLocation[] rooms = new ResourceLocation[]{
+                DECIDRHEUM_RING,
+                CLINKERA_VESPERBILE_FOUNTAIN
+        };
+
+        ResourceLocation id = random.nextInt(4) == 0
+                ? rooms[random.nextInt(2)]
+                : paths[random.nextInt(4)];
+
         return getRoomOfType(id);
     }
 
