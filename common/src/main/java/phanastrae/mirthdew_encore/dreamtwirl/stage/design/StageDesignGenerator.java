@@ -140,7 +140,7 @@ public class StageDesignGenerator {
         Room newRoom = newRoomOptional.get();
 
         // get the corresponding door for the new room
-        Optional<RoomDoor> newDoorOptional = newRoom.getRandomEmptyDoorMatching(random, door.getOrientation());
+        Optional<RoomDoor> newDoorOptional = newRoom.getRandomEmptyEntranceMatching(random, door.getOrientation());
         if(newDoorOptional.isEmpty()) {
             // if failed to add, return to roomsource
             newRoom.getRoomSource().acceptDiscardedRoom(newRoom);

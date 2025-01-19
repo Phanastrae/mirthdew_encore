@@ -34,11 +34,11 @@ public class Room {
         return getRandomDoorMatching(random, door -> !door.isConnected());
     }
 
-    public Optional<RoomDoor> getRandomEmptyDoorMatching(RandomSource random, FrontAndTop orientation) {
+    public Optional<RoomDoor> getRandomEmptyEntranceMatching(RandomSource random, FrontAndTop orientation) {
         // TODO account for the multiple up and down orientations?
         Direction targetOrientation = orientation.front().getOpposite();
 
-        return getRandomDoorMatching(random, door -> !door.isConnected() && door.getOrientation().front().equals(targetOrientation));
+        return getRandomDoorMatching(random, door -> !door.isConnected() && door.getDoorType().isEntrance && door.getOrientation().front().equals(targetOrientation));
     }
 
     public Optional<RoomDoor> getRandomDoorMatching(RandomSource random, Predicate<RoomDoor> predicate) {
