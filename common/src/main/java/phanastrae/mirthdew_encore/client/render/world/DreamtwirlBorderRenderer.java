@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import phanastrae.mirthdew_encore.client.render.shader.MirthdewEncoreShaders;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlLevelAttachment;
 import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
@@ -223,7 +223,7 @@ public class DreamtwirlBorderRenderer {
         if(world == null) {
             return;
         }
-        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(world);
         if(DTWA == null) {
             return;
         }
@@ -242,7 +242,7 @@ public class DreamtwirlBorderRenderer {
         if(world == null) {
             return false;
         }
-        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(world);
         if(DTWA == null) {
             return false;
         }

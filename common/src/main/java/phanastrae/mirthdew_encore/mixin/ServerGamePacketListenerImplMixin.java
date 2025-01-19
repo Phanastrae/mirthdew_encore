@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlLevelAttachment;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public class ServerGamePacketListenerImplMixin {
@@ -19,7 +19,7 @@ public class ServerGamePacketListenerImplMixin {
 
     @Inject(method = "handleInteract", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/border/WorldBorder;isWithinBounds(Lnet/minecraft/core/BlockPos;)Z"), cancellable = true)
     private void mirthdew_encore$cancelEntityInteraction(ServerboundInteractPacket packet, CallbackInfo ci, @Local(ordinal = 0) Entity entity) {
-        if(DreamtwirlWorldAttachment.positionsAreInSeperateDreamtwirls(this.player.level(), this.player.position(), entity.position())) {
+        if(DreamtwirlLevelAttachment.positionsAreInSeperateDreamtwirls(this.player.level(), this.player.position(), entity.position())) {
             ci.cancel();
         }
     }

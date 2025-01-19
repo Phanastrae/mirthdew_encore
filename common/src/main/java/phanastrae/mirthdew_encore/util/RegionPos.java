@@ -1,6 +1,7 @@
 package phanastrae.mirthdew_encore.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
@@ -46,6 +47,13 @@ public class RegionPos {
 
     public int getCenterZ() {
         return this.worldZ + 256;
+    }
+
+    public ChunkPos getCenterChunkPos() {
+        return new ChunkPos(
+                SectionPos.blockToSectionCoord(this.getCenterX()),
+                SectionPos.blockToSectionCoord(this.getCenterZ())
+        );
     }
 
     public ChunkPos getMinChunkPos() {

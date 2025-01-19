@@ -1,14 +1,14 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import net.minecraft.world.level.border.WorldBorder;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlBorder;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.play.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 public class DreamtwirlWorldBorder extends WorldBorder {
 
-    private final DreamtwirlWorldAttachment dreamtwirlWorldAttachment;
+    private final DreamtwirlLevelAttachment dreamtwirlWorldAttachment;
 
-    public DreamtwirlWorldBorder(DreamtwirlWorldAttachment dreamtwirlWorldAttachment) {
+    public DreamtwirlWorldBorder(DreamtwirlLevelAttachment dreamtwirlWorldAttachment) {
         this.dreamtwirlWorldAttachment = dreamtwirlWorldAttachment;
     }
 

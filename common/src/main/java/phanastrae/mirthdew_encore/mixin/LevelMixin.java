@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlLevelAttachment;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldBorder;
 import phanastrae.mirthdew_encore.duck.WorldDuckInterface;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
@@ -28,13 +28,13 @@ public class LevelMixin implements WorldDuckInterface {
     @Mutable
     @Shadow @Final private WorldBorder worldBorder;
     @Unique
-    private DreamtwirlWorldAttachment mirthdew_encore$dreamtwirlAttachment;
+    private DreamtwirlLevelAttachment mirthdew_encore$dreamtwirlAttachment;
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void mirthdew_encore$init(WritableLevelData properties, ResourceKey registryRef, RegistryAccess registryManager, Holder dimensionEntry, Supplier profiler, boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates, CallbackInfo ci) {
         Level thisWorld = (Level)(Object)this;
         if(this.dimensionTypeRegistration.is(MirthdewEncoreDimensions.DREAMTWIRL_DIM_TYPE)) {
-            this.mirthdew_encore$dreamtwirlAttachment = new DreamtwirlWorldAttachment(thisWorld);
+            this.mirthdew_encore$dreamtwirlAttachment = new DreamtwirlLevelAttachment(thisWorld);
             this.worldBorder = new DreamtwirlWorldBorder(mirthdew_encore$dreamtwirlAttachment);
         } else {
             this.mirthdew_encore$dreamtwirlAttachment = null;
@@ -43,7 +43,7 @@ public class LevelMixin implements WorldDuckInterface {
 
     @Override
     @Nullable
-    public DreamtwirlWorldAttachment mirthdew_encore$getDreamtwirlAttachment() {
+    public DreamtwirlLevelAttachment mirthdew_encore$getDreamtwirlAttachment() {
         return this.mirthdew_encore$dreamtwirlAttachment;
     }
 }

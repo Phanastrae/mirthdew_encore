@@ -19,7 +19,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.MirthdewEncore;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlBorder;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.play.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
@@ -42,7 +42,7 @@ public class EntityDreamtwirlData {
     public void tick() {
         Level world = this.entity.level();
         if(!world.isClientSide()) {
-            DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
+            DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(world);
             boolean nowInDreamtwirl = DTWA != null;
 
             RegionPos entityRegion = nowInDreamtwirl ? RegionPos.fromEntity(this.entity) : null;
@@ -191,7 +191,7 @@ public class EntityDreamtwirlData {
     }
 
     public static VoxelShape addCollisionsTo(@Nullable VoxelShape original, Entity entity) {
-        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(entity.level());
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(entity.level());
         if(DTWA == null) {
             return original;
         }

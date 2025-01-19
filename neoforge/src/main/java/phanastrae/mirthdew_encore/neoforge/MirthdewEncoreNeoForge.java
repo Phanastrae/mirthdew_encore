@@ -27,7 +27,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.*;
 import phanastrae.mirthdew_encore.MirthdewEncore;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlLevelAttachment;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreCreativeModeTabs;
@@ -218,7 +218,7 @@ public class MirthdewEncoreNeoForge {
     }
 
     public void tickLevel(LevelTickEvent.Pre event) {
-        DreamtwirlWorldAttachment.tickWorld(event.getLevel());
+        DreamtwirlLevelAttachment.tickWorld(event.getLevel());
     }
 
     public void addTooltips(ItemTooltipEvent event) {

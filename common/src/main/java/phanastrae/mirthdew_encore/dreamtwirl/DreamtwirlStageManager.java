@@ -160,7 +160,7 @@ public class DreamtwirlStageManager extends SavedData {
 
     @Nullable
     public static DreamtwirlStageManager getDreamtwirlStageManager(Level world) {
-        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(world);
         if(DTWA == null) {
             return null;
         }

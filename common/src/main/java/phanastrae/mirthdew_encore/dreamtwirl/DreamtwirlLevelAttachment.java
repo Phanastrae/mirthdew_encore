@@ -7,17 +7,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlBorder;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.play.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.duck.WorldDuckInterface;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
-public class DreamtwirlWorldAttachment {
+public class DreamtwirlLevelAttachment {
 
     public final Level world;
     @Nullable
     private DreamtwirlStageManager dreamtwirlStageManager;
 
-    public DreamtwirlWorldAttachment(Level world) {
+    public DreamtwirlLevelAttachment(Level world) {
         this.world = world;
     }
 
@@ -60,7 +60,7 @@ public class DreamtwirlWorldAttachment {
     }
 
     @Nullable
-    public static DreamtwirlWorldAttachment fromWorld(Level world) {
+    public static DreamtwirlLevelAttachment fromLevel(Level world) {
         return ((WorldDuckInterface)world).mirthdew_encore$getDreamtwirlAttachment();
     }
 
@@ -68,7 +68,7 @@ public class DreamtwirlWorldAttachment {
         if(entity == null) return;
         if(entity.level() != world) return;
 
-        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(world);
         if(DTWA == null) return;
 
         RegionPos regionPos = RegionPos.fromEntity(entity);
@@ -77,14 +77,14 @@ public class DreamtwirlWorldAttachment {
     }
 
     public static void tickWorld(Level world) {
-        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(world);
         if(DTWA == null) return;
 
         DTWA.tick();
     }
 
     public static boolean positionsAreInSeperateDreamtwirls(Level world, Vec3 pos1, Vec3 pos2) {
-        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(world);
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(world);
         if(DTWA == null) {
             return false;
         } else {

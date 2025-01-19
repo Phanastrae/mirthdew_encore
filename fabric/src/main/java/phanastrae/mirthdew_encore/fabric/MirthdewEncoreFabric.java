@@ -23,7 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreLogStripping;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlLevelAttachment;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.fabric.block.MirthdewEncoreCompostChances;
@@ -86,7 +86,7 @@ public class MirthdewEncoreFabric implements ModInitializer {
 		CommandRegistrationCallback.EVENT.register(MirthdewEncoreCommands::registerCommands);
 
 		// world tick start
-		ServerTickEvents.START_WORLD_TICK.register(DreamtwirlWorldAttachment::tickWorld);
+		ServerTickEvents.START_WORLD_TICK.register(DreamtwirlLevelAttachment::tickWorld);
 	}
 
 	public void setupCreativeTabs() {

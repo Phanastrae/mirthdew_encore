@@ -1,4 +1,4 @@
-package phanastrae.mirthdew_encore.dreamtwirl.stage;
+package phanastrae.mirthdew_encore.dreamtwirl.stage.play;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -7,7 +7,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 public class DreamtwirlBorder {
-    public static final int BORDER_SIZE = 16;
+    public static final int REGION_SIZE = 512;
+    public static final int PADDING_SIZE = 16;
 
     public final RegionPos regionPos;
     public final int minX;
@@ -19,10 +20,10 @@ public class DreamtwirlBorder {
     public DreamtwirlBorder(RegionPos regionPos) {
         this.regionPos = regionPos;
 
-        this.minX = regionPos.worldX + BORDER_SIZE;
-        this.minZ = regionPos.worldZ + BORDER_SIZE;
-        this.maxX = regionPos.worldX + 512 - BORDER_SIZE;
-        this.maxZ = regionPos.worldZ + 512 - BORDER_SIZE;
+        this.minX = regionPos.worldX + PADDING_SIZE;
+        this.minZ = regionPos.worldZ + PADDING_SIZE;
+        this.maxX = regionPos.worldX + REGION_SIZE - PADDING_SIZE;
+        this.maxZ = regionPos.worldZ + REGION_SIZE - PADDING_SIZE;
 
         VoxelShape inside = Shapes.box(
                 minX,
@@ -33,12 +34,12 @@ public class DreamtwirlBorder {
                 maxZ
         );
         VoxelShape outside = Shapes.box(
-                regionPos.worldX - BORDER_SIZE,
+                regionPos.worldX - PADDING_SIZE,
                 Double.NEGATIVE_INFINITY,
-                regionPos.worldZ - BORDER_SIZE,
-                regionPos.worldX + 512 + BORDER_SIZE,
+                regionPos.worldZ - PADDING_SIZE,
+                regionPos.worldX + REGION_SIZE + PADDING_SIZE,
                 Double.POSITIVE_INFINITY,
-                regionPos.worldZ + 512 + BORDER_SIZE
+                regionPos.worldZ + REGION_SIZE + PADDING_SIZE
         );
         this.voxelShape = Shapes.join(
                 outside,

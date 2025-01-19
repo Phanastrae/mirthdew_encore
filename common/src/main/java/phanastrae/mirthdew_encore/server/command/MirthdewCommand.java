@@ -11,9 +11,10 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import phanastrae.mirthdew_encore.MirthdewEncore;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.EntityDreamtwirlData;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.destroy.StageNuker;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
@@ -199,7 +200,15 @@ public class MirthdewCommand {
         } else {
             long time = System.nanoTime();
 
-            dreamtwirlStage.generate(source.getLevel());
+            // TODO add a seed parameter to the command
+            //long dreamtwirlSeed = source.getLevel().getSeed() ^ regionPos.id;
+            long dreamtwirlSeed = source.getLevel().getRandom().nextLong();
+            try {
+                dreamtwirlStage.generate(dreamtwirlSeed, source.getLevel());
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw e;
+            }
 
             long time2 = System.nanoTime();
             long dif = time2 - time;
@@ -224,7 +233,7 @@ public class MirthdewCommand {
             long time = System.nanoTime();
 
             try {
-                dreamtwirlStage.clear(source.getLevel());
+                StageNuker.clear(source.getLevel(), dreamtwirlStage);
             } catch (Exception e) {
                 MirthdewEncore.LOGGER.info(e.getMessage());
             }

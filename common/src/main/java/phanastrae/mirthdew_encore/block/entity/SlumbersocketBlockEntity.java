@@ -185,11 +185,11 @@ public class SlumbersocketBlockEntity extends BlockEntity {
                 64,
                 regionPos.getCenterZ() + random.nextInt(256) - 128
         );
-        if(stage.getWorld() instanceof ServerLevel serverWorld) {
+        if(stage.getLevel() instanceof ServerLevel serverWorld) {
             EndPlatformFeature.createEndPlatform(serverWorld, targetPos, true);
         }
 
-        newStack.set(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT, LocationComponent.fromPosAndWorld(targetPos.getBottomCenter(), stage.getWorld()));
+        newStack.set(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT, LocationComponent.fromPosAndWorld(targetPos.getBottomCenter(), stage.getLevel()));
         blockEntity.setHeldItem(newStack);
 
         Vec3 socketPos = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);

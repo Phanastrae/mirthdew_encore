@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlLevelAttachment;
 
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -27,7 +27,7 @@ public class ServerLevelMixin {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void mirthdew_encore$init(MinecraftServer server, Executor workerExecutor, LevelStorageSource.LevelStorageAccess session, ServerLevelData properties, ResourceKey worldKey, LevelStem dimensionOptions, ChunkProgressListener worldGenerationProgressListener, boolean debugWorld, long seed, List spawners, boolean shouldTickTime, RandomSequences randomSequencesState, CallbackInfo ci) {
         ServerLevel thisWorld = (ServerLevel) (Object)this;
-        DreamtwirlWorldAttachment DTWA = DreamtwirlWorldAttachment.fromWorld(thisWorld);
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(thisWorld);
         if(DTWA != null) {
             DTWA.setDreamtwirlStageManager(thisWorld);
         }
@@ -35,7 +35,7 @@ public class ServerLevelMixin {
 
     @Inject(method = "mayInteract", at = @At("HEAD"), cancellable = true)
     private void mirthdew_encore$preventAdjacentDreamtwirlInteraction(Player player, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if(DreamtwirlWorldAttachment.positionsAreInSeperateDreamtwirls(player.level(), player.position(), Vec3.atCenterOf(pos))) {
+        if(DreamtwirlLevelAttachment.positionsAreInSeperateDreamtwirls(player.level(), player.position(), Vec3.atCenterOf(pos))) {
             cir.setReturnValue(false);
         }
     }

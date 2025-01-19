@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import phanastrae.mirthdew_encore.compat.Compat;
-import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldAttachment;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlLevelAttachment;
 import phanastrae.mirthdew_encore.duck.EntityDuckInterface;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreEntityTypeTags;
@@ -69,7 +69,7 @@ public abstract class EntityMixin implements EntityDuckInterface {
 
             // dreamtwirl border collisions
             ImmutableList.Builder<VoxelShape> builder = new ImmutableList.Builder<>();
-            DreamtwirlWorldAttachment.findBorderCollision(thisEntity, thisEntity.level(), builder);
+            DreamtwirlLevelAttachment.findBorderCollision(thisEntity, thisEntity.level(), builder);
             List<VoxelShape> list = builder.build();
             if(!list.isEmpty()) {
                 value = collideWithShapes(value, box, list);
