@@ -4,7 +4,10 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.FrontAndTop;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -12,7 +15,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import phanastrae.mirthdew_encore.block.entity.DoorMarkerBlockEntity;
+import phanastrae.mirthdew_encore.duck.PlayerEntityDuckInterface;
 
 public class DoorMarkerBlock extends Block implements EntityBlock, GameMasterBlock {
     public static final MapCodec<DoorMarkerBlock> CODEC = simpleCodec(DoorMarkerBlock::new);
@@ -44,6 +49,11 @@ public class DoorMarkerBlock extends Block implements EntityBlock, GameMasterBlo
     }
 
     @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new DoorMarkerBlockEntity(pos, state);
+    }
+
+    @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction direction = context.getClickedFace();
         Direction direction1;
@@ -57,7 +67,13 @@ public class DoorMarkerBlock extends Block implements EntityBlock, GameMasterBlo
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new DoorMarkerBlockEntity(pos, state);
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        if (blockentity instanceof DoorMarkerBlockEntity doorMarkerBlockEntity && player.canUseGameMasterBlocks()) {
+            ((PlayerEntityDuckInterface)player).mirthdew_encore$openDoorMarkerBlock(doorMarkerBlockEntity);
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        } else {
+            return InteractionResult.PASS;
+        }
     }
 }

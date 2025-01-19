@@ -7,6 +7,8 @@ import net.minecraft.world.entity.player.Player;
 import phanastrae.mirthdew_encore.client.network.MirthdewEncoreClientPacketHandler;
 import phanastrae.mirthdew_encore.network.packet.FoodDebtUpdatePayload;
 import phanastrae.mirthdew_encore.network.packet.MirthUpdatePayload;
+import phanastrae.mirthdew_encore.network.packet.SetDoorMarkerBlockPayload;
+import phanastrae.mirthdew_encore.server.network.MirthdewEncoreServerPacketHandler;
 
 import java.util.function.BiConsumer;
 
@@ -15,10 +17,12 @@ public class MirthdewEncorePayloads {
     public static void init(Helper helper) {
         helper.registerS2C(MirthUpdatePayload.PACKET_ID, MirthUpdatePayload.PACKET_CODEC, MirthdewEncoreClientPacketHandler::handleMirthUpdate);
         helper.registerS2C(FoodDebtUpdatePayload.PACKET_ID, FoodDebtUpdatePayload.PACKET_CODEC, MirthdewEncoreClientPacketHandler::handleFoodDebtUpdate);
+
+        helper.registerC2S(SetDoorMarkerBlockPayload.PACKET_ID, SetDoorMarkerBlockPayload.PACKET_CODEC, MirthdewEncoreServerPacketHandler::handleSetDoorMarkerBlock);
     }
 
-    @FunctionalInterface
     public interface Helper {
         <T extends CustomPacketPayload> void registerS2C(CustomPacketPayload.Type<T> id, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, BiConsumer<T, Player> clientCallback);
+        <T extends CustomPacketPayload> void registerC2S(CustomPacketPayload.Type<T> id, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, BiConsumer<T, Player> serverCallback);
     }
 }

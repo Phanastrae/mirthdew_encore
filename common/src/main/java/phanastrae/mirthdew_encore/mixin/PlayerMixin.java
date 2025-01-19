@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import phanastrae.mirthdew_encore.block.entity.DoorMarkerBlockEntity;
 import phanastrae.mirthdew_encore.duck.PlayerEntityDuckInterface;
 import phanastrae.mirthdew_encore.entity.MirthdewEncorePlayerEntityAttachment;
 
@@ -69,5 +70,9 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerEntityDu
     @Override
     public MirthdewEncorePlayerEntityAttachment mirthdew_encore$getAttachment() {
         return mirthdew_encore$playerEntityAttachment;
+    }
+
+    @Override
+    public void mirthdew_encore$openDoorMarkerBlock(DoorMarkerBlockEntity doorMarkerBlockEntity) {
     }
 }

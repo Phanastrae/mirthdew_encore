@@ -215,6 +215,11 @@
   "mirthdew_encore.card_spell.tooltip.name": "Name: \"%s\"",
   "mirthdew_encore.card_spell.tooltip.recharge_delay_ms": "Recharge Delay: %sms",
 
+  "mirthdew_encore.door_marker.door_type_label": "Door Type:",
+  "mirthdew_encore.door_type.entrance": "Entrance Only",
+  "mirthdew_encore.door_type.exit": "Exit Only",
+  "mirthdew_encore.door_type.both": "Two-way",
+
   "tag.fluid.mirthdew_encore.vesperbile": "Vesperbile",
   "tag.item.mirthdew_encore.decidrheum_logs": "Decidrheum Logs"
 }

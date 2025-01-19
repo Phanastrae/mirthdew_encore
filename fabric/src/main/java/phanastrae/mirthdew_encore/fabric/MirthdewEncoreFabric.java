@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.minecraft.core.Registry;
@@ -74,7 +75,7 @@ public class MirthdewEncoreFabric implements ModInitializer {
 		setupCreativeTabs();
 
 		// register payloads
-		registerPayloads();
+		registerServerPayloads();
 
 		// setup composting chances
 		MirthdewEncoreCompostChances.init();
@@ -150,11 +151,17 @@ public class MirthdewEncoreFabric implements ModInitializer {
 		});
 	}
 
-	public void registerPayloads() {
+	public void registerServerPayloads() {
 		MirthdewEncorePayloads.init(new MirthdewEncorePayloads.Helper() {
 			@Override
 			public <T extends CustomPacketPayload> void registerS2C(CustomPacketPayload.Type<T> id, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, BiConsumer<T, Player> clientCallback) {
 				PayloadTypeRegistry.playS2C().register(id, codec);
+			}
+
+			@Override
+			public <T extends CustomPacketPayload> void registerC2S(CustomPacketPayload.Type<T> id, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, BiConsumer<T, Player> serverCallback) {
+				PayloadTypeRegistry.playC2S().register(id, codec);
+				ServerPlayNetworking.registerGlobalReceiver(id, (payload, context) -> serverCallback.accept(payload, context.player()));
 			}
 		});
 	}

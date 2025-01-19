@@ -36,7 +36,7 @@ public class MirthdewEncoreClientFabric implements ClientModInitializer {
 		MirthdewEncoreClient.init();
 
 		// payloads
-		initClientPayloads();
+		registerClientPayloads();
 
 		// entity renderers
 		MirthdewEncoreEntityRenderers.init(this::registerEntityRenderer);
@@ -90,11 +90,16 @@ public class MirthdewEncoreClientFabric implements ClientModInitializer {
 		WorldRenderEvents.AFTER_SETUP.register(context -> DreamtwirlBorderRenderer.render(context.positionMatrix(), context.world(), context.camera()));
 	}
 
-	public void initClientPayloads() {
+	public void registerClientPayloads() {
 		MirthdewEncorePayloads.init(new MirthdewEncorePayloads.Helper() {
 			@Override
 			public <T extends CustomPacketPayload> void registerS2C(CustomPacketPayload.Type<T> id, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, BiConsumer<T, Player> clientCallback) {
 				ClientPlayNetworking.registerGlobalReceiver(id, (payload, context) -> clientCallback.accept(payload, context.player()));
+			}
+
+			@Override
+			public <T extends CustomPacketPayload> void registerC2S(CustomPacketPayload.Type<T> id, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, BiConsumer<T, Player> serverCallback) {
+				// empty
 			}
 		});
 	}

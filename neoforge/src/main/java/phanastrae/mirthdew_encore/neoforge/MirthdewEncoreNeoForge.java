@@ -206,6 +206,11 @@ public class MirthdewEncoreNeoForge {
             public <T extends CustomPacketPayload> void registerS2C(CustomPacketPayload.Type<T> id, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, BiConsumer<T, Player> clientCallback) {
                 registrar.playToClient(id, codec, (payload, context) -> clientCallback.accept(payload, context.player()));
             }
+
+            @Override
+            public <T extends CustomPacketPayload> void registerC2S(CustomPacketPayload.Type<T> id, StreamCodec<? super RegistryFriendlyByteBuf, T> codec, BiConsumer<T, Player> serverCallback) {
+                registrar.playToServer(id, codec, (payload, context) -> serverCallback.accept(payload, context.player()));
+            }
         });
     }
 
