@@ -198,24 +198,12 @@ public class MirthdewCommand {
         if(dreamtwirlStage == null) {
             throw FAILED_DOES_NOT_EXIST_EXCEPTION.create();
         } else {
-            long time = System.nanoTime();
-
             // TODO add a seed parameter to the command
             //long dreamtwirlSeed = source.getLevel().getSeed() ^ regionPos.id;
             long dreamtwirlSeed = source.getLevel().getRandom().nextLong();
-            try {
-                dreamtwirlStage.generate(dreamtwirlSeed, source.getLevel());
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw e;
-            }
+            dreamtwirlStage.generate(dreamtwirlSeed, source.getLevel());
 
-            long time2 = System.nanoTime();
-            long dif = time2 - time;
-            long ms = dif / 1000000;
-            MirthdewEncore.LOGGER.info("Generated in {}ms", ms);
-
-            source.sendSuccess(() -> Component.literal("Generated Dreamtwirl"), true);
+            source.sendSuccess(() -> Component.literal("Begun Dreamtwirl Generation"), true); // TODO translations
             return 1;
         }
     }

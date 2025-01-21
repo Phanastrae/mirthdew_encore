@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import org.jetbrains.annotations.Nullable;
-import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.StageAreaData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.collision_map.CollisionMapEntry;
@@ -30,6 +29,10 @@ public class StageDesignGenerator {
     private final RoomSourceCollection roomSourceCollection;
     private final StageDesignData designData;
 
+    boolean entrancePlaced = false;
+    int remainingEntrancePlaceAttempts = 50;
+    int remainingRoomPlaceAttempts = 25000;
+
     public StageDesignGenerator(DreamtwirlStage stage, ServerLevel serverLevel, long dreamtwirlSeed, RoomSourceCollection roomSourceCollection) {
         this.serverLevel = serverLevel;
 
@@ -41,26 +44,53 @@ public class StageDesignGenerator {
         this.designData = new StageDesignData(this.stageAreaData);
     }
 
-    public void generate() {
-        // get entrance room source
+    public boolean tick() {
+        for(int i = 0; i < 400; i++) {
+            boolean done = this.tickSingle();
+
+            if(done) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean tickSingle() {
+        if(!this.entrancePlaced) {
+            this.attemptEntrancePlacement();
+            return false;
+        }
+        if(this.remainingRoomPlaceAttempts > 0) {
+            this.attemptRoomPlacement();
+            return false;
+        }
+
+        // return true if done
+        return true;
+    }
+
+    public void attemptEntrancePlacement() {
+        this.remainingEntrancePlaceAttempts--;
+
         Optional<RoomSource> entrance = this.roomSourceCollection.getEntrance(this.random);
         if(entrance.isEmpty()) {
-            MirthdewEncore.LOGGER.info("Failed to generate dreamtwirl entrance!");
+            // failed to generate entrance room
             return;
         }
-
-        // place entrance
         BlockPos entranceBlockPos = this.stageAreaData.offsetCenterBlockPos(-128, -this.serverLevel.getHeight() / 4, 0);
         if(!this.tryAddRoomCenteredAt(entrance.get(), entranceBlockPos, true)) {
-            MirthdewEncore.LOGGER.info("Something went wrong trying to place the dreamtwirl entrance!!");
+            // failed to place entrance room
             return;
         }
 
-        // place lots of rooms
-        for(int i = 0; i < 25000; i++) {
-            this.sprawl(this.random);
-        }
+        this.entrancePlaced = true;
+    }
 
+    public void attemptRoomPlacement() {
+        this.remainingRoomPlaceAttempts--;
+
+        this.sprawl(this.random);
     }
 
     public StageDesignData getDesignData() {

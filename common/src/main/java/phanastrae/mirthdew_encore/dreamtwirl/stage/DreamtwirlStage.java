@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignGenerator;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSourceCollection;
@@ -29,6 +30,9 @@ public class DreamtwirlStage {
 
     private final StageAreaData stageAreaData;
     private final PlaceReadyRoomStorage roomStorage;
+
+    @Nullable
+    private StageDesignGenerator stageDesignGenerator;
 
     private boolean markDirty = false;
 
@@ -70,23 +74,7 @@ public class DreamtwirlStage {
 
     public void generate(long stageSeed, ServerLevel serverLevel) {
         RoomSourceCollection roomSources = RoomSourceCollection.create(serverLevel, VistaTypes.DECIDRHEUM_FOREST);
-
-        StageDesignGenerator stageDesignGenerator = new StageDesignGenerator(this, serverLevel, stageSeed, roomSources);
-        stageDesignGenerator.generate();
-
-        sendRoomsToStorage(this.getRoomStorage(), stageDesignGenerator.getDesignData());
-        this.markDirty();
-
-        if(SEND_DEBUG_INFO) {
-            List<ServerPlayer> players = serverLevel.getPlayers(p -> true);
-            if(!players.isEmpty()) {
-                DreamtwirlDebug.DebugInfo debugInfo = DreamtwirlDebugPayload.createDebugInfo(stageDesignGenerator.getDesignData(), this.id);
-                DreamtwirlDebugPayload payload = new DreamtwirlDebugPayload(debugInfo);
-                for(ServerPlayer player : players) {
-                    XPlatInterface.INSTANCE.sendPayload(player, payload);
-                }
-            }
-        }
+        this.stageDesignGenerator = new StageDesignGenerator(this, serverLevel, stageSeed, roomSources);
     }
 
     public static void sendRoomsToStorage(PlaceReadyRoomStorage prrs, StageDesignData designData) {
@@ -98,6 +86,28 @@ public class DreamtwirlStage {
     public void tick(ServerLevel level) {
         // TODO tweak, optimise, etc.
         RandomSource random = level.getRandom();
+
+        if(this.stageDesignGenerator != null) {
+            boolean done = this.stageDesignGenerator.tick();
+            if(done) {
+                sendRoomsToStorage(this.getRoomStorage(), stageDesignGenerator.getDesignData());
+
+                if(SEND_DEBUG_INFO) {
+                    List<ServerPlayer> players = level.getPlayers(p -> true);
+                    if(!players.isEmpty()) {
+                        DreamtwirlDebug.DebugInfo debugInfo = DreamtwirlDebugPayload.createDebugInfo(stageDesignGenerator.getDesignData(), this.id);
+                        DreamtwirlDebugPayload payload = new DreamtwirlDebugPayload(debugInfo);
+                        for(ServerPlayer player : players) {
+                            XPlatInterface.INSTANCE.sendPayload(player, payload);
+                        }
+                    }
+                }
+                this.stageDesignGenerator = null;
+            }
+
+            // TODO serialization
+            this.markDirty();
+        }
 
         boolean placedRoom = false;
         for(PlaceReadyRoom room : this.roomStorage.getRooms()) {
@@ -114,6 +124,8 @@ public class DreamtwirlStage {
 
                 RoomPlacer.spawnParticles(level, room.getPrefab());
                 room.setNeighborsCanSpawn();
+
+                // TODO serialization
                 this.markDirty();
             }
         }
