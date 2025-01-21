@@ -109,12 +109,13 @@ public class DreamtwirlStage {
                 continue;
             }
 
-            room.place(level, this.stageAreaData.getInBoundsBoundingBox());
-            placedRoom = true;
+            if(room.place(level, this.stageAreaData.getInBoundsBoundingBox())) {
+                placedRoom = true;
 
-            RoomPlacer.spawnParticles(level, room.getPrefab());
-            room.setNeighborsCanSpawn();
-            this.markDirty();
+                RoomPlacer.spawnParticles(level, room.getPrefab());
+                room.setNeighborsCanSpawn();
+                this.markDirty();
+            }
         }
 
         if(placedRoom) {

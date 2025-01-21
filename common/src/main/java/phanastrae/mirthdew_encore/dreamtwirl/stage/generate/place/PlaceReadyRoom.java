@@ -18,10 +18,16 @@ public class PlaceReadyRoom {
         this.prefab = prefab;
     }
 
-    public void place(ServerLevel level, BoundingBox stageBB) {
+    public boolean place(ServerLevel level, BoundingBox stageBB) {
         if(!this.isPlaced) {
-            RoomPlacer.placeStructure(this.prefab, level, stageBB);
-            this.isPlaced = true;
+            if(RoomPlacer.placeStructure(this.prefab, level, stageBB)) {
+                this.isPlaced = true;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
         }
     }
 
