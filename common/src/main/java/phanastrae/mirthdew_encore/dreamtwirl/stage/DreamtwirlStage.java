@@ -2,6 +2,7 @@ package phanastrae.mirthdew_encore.dreamtwirl.stage;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignData;
@@ -11,9 +12,14 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceReadyRoom
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceReadyRoomStorage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.RoomPlacer;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista.VistaTypes;
+import phanastrae.mirthdew_encore.network.packet.DreamtwirlDebugPayload;
+import phanastrae.mirthdew_encore.services.XPlatInterface;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
+import java.util.List;
+
 public class DreamtwirlStage {
+    public static boolean SEND_DEBUG_INFO = true;
 
     private final Level level;
 
@@ -70,6 +76,17 @@ public class DreamtwirlStage {
 
         sendRoomsToStorage(this.getRoomStorage(), stageDesignGenerator.getDesignData());
         this.markDirty();
+
+        if(SEND_DEBUG_INFO) {
+            List<ServerPlayer> players = serverLevel.getPlayers(p -> true);
+            if(!players.isEmpty()) {
+                DreamtwirlDebug.DebugInfo debugInfo = DreamtwirlDebugPayload.createDebugInfo(stageDesignGenerator.getDesignData(), this.id);
+                DreamtwirlDebugPayload payload = new DreamtwirlDebugPayload(debugInfo);
+                for(ServerPlayer player : players) {
+                    XPlatInterface.INSTANCE.sendPayload(player, payload);
+                }
+            }
+        }
     }
 
     public static void sendRoomsToStorage(PlaceReadyRoomStorage prrs, StageDesignData designData) {

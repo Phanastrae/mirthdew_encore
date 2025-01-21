@@ -5,6 +5,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import phanastrae.mirthdew_encore.client.network.MirthdewEncoreClientPacketHandler;
+import phanastrae.mirthdew_encore.network.packet.DreamtwirlDebugPayload;
 import phanastrae.mirthdew_encore.network.packet.FoodDebtUpdatePayload;
 import phanastrae.mirthdew_encore.network.packet.MirthUpdatePayload;
 import phanastrae.mirthdew_encore.network.packet.SetDoorMarkerBlockPayload;
@@ -17,6 +18,9 @@ public class MirthdewEncorePayloads {
     public static void init(Helper helper) {
         helper.registerS2C(MirthUpdatePayload.PACKET_ID, MirthUpdatePayload.PACKET_CODEC, MirthdewEncoreClientPacketHandler::handleMirthUpdate);
         helper.registerS2C(FoodDebtUpdatePayload.PACKET_ID, FoodDebtUpdatePayload.PACKET_CODEC, MirthdewEncoreClientPacketHandler::handleFoodDebtUpdate);
+
+        helper.registerS2C(DreamtwirlDebugPayload.PACKET_ID, DreamtwirlDebugPayload.PACKET_CODEC, MirthdewEncoreClientPacketHandler::handleDreamtwirlDebug);
+
 
         helper.registerC2S(SetDoorMarkerBlockPayload.PACKET_ID, SetDoorMarkerBlockPayload.PACKET_CODEC, MirthdewEncoreServerPacketHandler::handleSetDoorMarkerBlock);
     }

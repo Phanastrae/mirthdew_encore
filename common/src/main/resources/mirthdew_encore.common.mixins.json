@@ -27,6 +27,7 @@
   "client": [
     "client.BlockEntityRenderersAccessor",
     "client.CameraAccessor",
+    "client.DebugRendererMixin",
     "client.DripHangParticleAccessor",
     "client.DripstoneFallAndLandParticleAccessor",
     "client.FallAndLandParticleAccessor",
