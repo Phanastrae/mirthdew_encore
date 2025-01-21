@@ -11,6 +11,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlDebug;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.graph.DirectedEdge;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.graph.DoorNode;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,8 @@ public class DreamtwirlDebugPayload implements CustomPacketPayload {
 
         int id = 0;
         for(DoorNode node : nodes) {
-            DreamtwirlDebug.DebugNode debugNode = new DreamtwirlDebug.DebugNode(id, node.getDoor().getPos());
+            RoomDoor door = node.getDoor();
+            DreamtwirlDebug.DebugNode debugNode = new DreamtwirlDebug.DebugNode(id, door.getPos(), door.getDoorType());
             nodeMap.put(node, debugNode);
             id++;
         }
@@ -50,7 +52,7 @@ public class DreamtwirlDebugPayload implements CustomPacketPayload {
             debugEdges.add(debugEdge);
         }
 
-        return new DreamtwirlDebug.DebugInfo(dreamtwirlId, nodeMap.values().stream().toList(), debugEdges);
+        return new DreamtwirlDebug.DebugInfo(dreamtwirlId, nodeMap.values().toArray(new DreamtwirlDebug.DebugNode[0]), debugEdges.toArray(new DreamtwirlDebug.DebugEdge[0]));
     }
 
     public void write(FriendlyByteBuf buf) {

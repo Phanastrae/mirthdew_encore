@@ -4,9 +4,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.Nullable;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,35 +35,41 @@ public class DreamtwirlDebug {
     public static class DebugInfo {
 
         private final long dreamtwirlId;
-        private final List<DebugNode> nodes;
-        private final List<DebugEdge> edges;
-        private Map<Integer, DebugNode> nodeIdMap = new Object2ObjectOpenHashMap<>();
+        private final DebugNode[] nodes;
+        private final DebugEdge[] edges;
 
-        public DebugInfo(long dreamtwirlId, List<DebugNode> nodes, List<DebugEdge> edges) {
+        public DebugInfo(long dreamtwirlId, DebugNode[] nodes, DebugEdge[] edges) {
             this.dreamtwirlId = dreamtwirlId;
             this.nodes = nodes;
             this.edges = edges;
-            this.nodes.forEach(node -> this.nodeIdMap.put(node.id, node));
         }
 
         @Nullable
         public DebugNode getNodeOfId(int id) {
-            return this.nodeIdMap.getOrDefault(id, null);
+            if(0 <= id && id < nodes.length) {
+                return nodes[id];
+            } else {
+                return null;
+            }
         }
 
         public static DebugInfo read(FriendlyByteBuf buf) {
             long dreamtwirlId = buf.readLong();
 
             int nodeCount = buf.readInt();
-            List<DebugNode> nodes = new ArrayList<>(nodeCount);
+            DebugNode[] nodes = new DebugNode[nodeCount];
             for(int i = 0; i < nodeCount; i++) {
-                nodes.add(DebugNode.read(buf));
+                DebugNode node = DebugNode.read(buf);
+                if(0 <= node.id && node.id < nodeCount) {
+                    nodes[node.id] = node;
+                }
             }
 
             int edgeCount = buf.readInt();
-            List<DebugEdge> edges = new ArrayList<>(edgeCount);
+            DebugEdge[] edges = new DebugEdge[edgeCount];
             for(int i = 0; i < edgeCount; i++) {
-                edges.add(DebugEdge.read(buf));
+                DebugEdge edge = DebugEdge.read(buf);
+                edges[i] = edge;
             }
 
             return new DebugInfo(dreamtwirlId, nodes, edges);
@@ -73,11 +78,11 @@ public class DreamtwirlDebug {
         public void write(FriendlyByteBuf buf) {
             buf.writeLong(this.dreamtwirlId);
 
-            buf.writeInt(this.nodes.size());
+            buf.writeInt(this.nodes.length);
             for(DebugNode node : this.nodes) {
                 node.write(buf);
             }
-            buf.writeInt(this.edges.size());
+            buf.writeInt(this.edges.length);
             for(DebugEdge edge : this.edges) {
                 edge.write(buf);
             }
@@ -87,24 +92,25 @@ public class DreamtwirlDebug {
             return dreamtwirlId;
         }
 
-        public List<DebugNode> getNodes() {
+        public DebugNode[] getNodes() {
             return nodes;
         }
 
-        public List<DebugEdge> getEdges() {
+        public DebugEdge[] getEdges() {
             return edges;
         }
     }
 
-    public record DebugNode(int id, BlockPos pos) {
+    public record DebugNode(int id, BlockPos pos, RoomDoor.DoorType doorType) {
 
         public static DebugNode read(FriendlyByteBuf buf) {
-            return new DebugNode(buf.readInt(), buf.readBlockPos());
+            return new DebugNode(buf.readInt(), buf.readBlockPos(), buf.readEnum(RoomDoor.DoorType.class));
         }
 
         public void write(FriendlyByteBuf buf) {
             buf.writeInt(this.id);
             buf.writeBlockPos(this.pos);
+            buf.writeEnum(this.doorType);
         }
     }
 
