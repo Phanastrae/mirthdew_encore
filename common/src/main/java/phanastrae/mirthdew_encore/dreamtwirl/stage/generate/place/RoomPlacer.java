@@ -38,7 +38,7 @@ public class RoomPlacer {
                 0.15);
     }
 
-    public static boolean placeStructure(Room room, ServerLevel serverLevel, BoundingBox areaBox) {
+    public static boolean placeStructure(Room room, ServerLevel serverLevel, BoundingBox areaBox, boolean forceLoadChunks) {
         Structure structure = room.getRoomSource().getStructure();
         PiecesContainer piecesContainer = room.getPiecesContainer();
         List<StructurePiece> list = piecesContainer.pieces();
@@ -50,6 +50,9 @@ public class RoomPlacer {
 
         ChunkPos chunkPosStart = new ChunkPos(SectionPos.blockToSectionCoord(blockBox.minX()), SectionPos.blockToSectionCoord(blockBox.minZ()));
         ChunkPos chunkPosEnd = new ChunkPos(SectionPos.blockToSectionCoord(blockBox.maxX()), SectionPos.blockToSectionCoord(blockBox.maxZ()));
+        if(forceLoadChunks) {
+            ChunkPos.rangeClosed(chunkPosStart, chunkPosEnd).forEach(p -> serverLevel.getChunk(p.x, p.z));
+        }
         // check the entire structure is loaded
         if (ChunkPos.rangeClosed(chunkPosStart, chunkPosEnd).anyMatch(p -> !serverLevel.isLoaded(p.getWorldPosition()))) {
             return false;

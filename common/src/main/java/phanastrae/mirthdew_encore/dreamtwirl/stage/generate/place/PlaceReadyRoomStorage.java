@@ -50,6 +50,7 @@ public class PlaceReadyRoomStorage {
         for(PlaceReadyRoom room : this.rooms) {
             if(room.getPrefab().getRoomSource().getRoomType().isEntrance()) {
                 room.setCanPlace(true);
+                room.setIsEntrance(true);
             }
         }
     }

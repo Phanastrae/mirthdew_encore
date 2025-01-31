@@ -48,7 +48,12 @@ public class DreamtwirlStageManager extends SavedData {
 
     @Nullable
     public DreamtwirlStage getDreamtwirlIfPresent(RegionPos regionPos) {
-        return this.dreamtwirls.getOrDefault(regionPos.id, null);
+        return this.getDreamtwirlIfPresent(regionPos.id);
+    }
+
+    @Nullable
+    public DreamtwirlStage getDreamtwirlIfPresent(long id) {
+        return this.dreamtwirls.getOrDefault(id, null);
     }
 
     public DreamtwirlStage getDreamtwirl(long id) {

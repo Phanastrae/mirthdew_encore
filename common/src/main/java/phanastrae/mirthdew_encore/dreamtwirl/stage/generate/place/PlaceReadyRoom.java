@@ -9,6 +9,7 @@ import java.util.List;
 
 public class PlaceReadyRoom {
 
+    private boolean isEntrance = false;
     private final Room prefab;
     private boolean isPlaced = false;
     private boolean canPlace = false;
@@ -20,7 +21,7 @@ public class PlaceReadyRoom {
 
     public boolean place(ServerLevel level, BoundingBox stageBB) {
         if(!this.isPlaced) {
-            if(RoomPlacer.placeStructure(this.prefab, level, stageBB)) {
+            if(RoomPlacer.placeStructure(this.prefab, level, stageBB, this.isEntrance)) {
                 this.isPlaced = true;
                 return true;
             } else {
@@ -29,6 +30,14 @@ public class PlaceReadyRoom {
         } else {
             return true;
         }
+    }
+
+    public void setIsEntrance(boolean entrance) {
+        isEntrance = entrance;
+    }
+
+    public boolean isEntrance() {
+        return isEntrance;
     }
 
     public void setNeighborsCanSpawn() {

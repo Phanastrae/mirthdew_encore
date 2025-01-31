@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignGenerator;
@@ -33,6 +34,10 @@ public class DreamtwirlStage {
 
     @Nullable
     private StageDesignGenerator stageDesignGenerator;
+
+    // TODO serialize/store this value properly
+    @Nullable
+    private Vec3 entrancePos;
 
     private boolean markDirty = false;
 
@@ -70,6 +75,15 @@ public class DreamtwirlStage {
         long id = nbt.getLong("Id");
         long timestamp = nbt.getLong("Timestamp");
         return new DreamtwirlStage(level, id, timestamp);
+    }
+
+    public boolean isReady() {
+        return this.entrancePos != null;
+    }
+
+    @Nullable
+    public Vec3 getEntrancePos() {
+        return this.entrancePos;
     }
 
     public void generate(long stageSeed, ServerLevel serverLevel) {
@@ -120,6 +134,10 @@ public class DreamtwirlStage {
             }
 
             if(room.place(level, this.stageAreaData.getInBoundsBoundingBox())) {
+                if(room.isEntrance()) {
+                    // TODO add some sort of entrance block/marker
+                    this.entrancePos = room.getPrefab().getBoundingBox().getCenter().getCenter();
+                }
                 placedRoom = true;
 
                 RoomPlacer.spawnParticles(level, room.getPrefab());

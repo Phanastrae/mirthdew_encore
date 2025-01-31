@@ -23,6 +23,9 @@ public class MirthdewEncoreDataComponentTypes {
     public static final DataComponentType<LocationComponent> LOCATION_COMPONENT =
             DataComponentType.<LocationComponent>builder().persistent(LocationComponent.CODEC).networkSynchronized(LocationComponent.PACKET_CODEC).cacheEncoding().build();
 
+    public static final DataComponentType<LinkedDreamtwirlComponent> LINKED_DREAMTWIRL =
+            DataComponentType.<LinkedDreamtwirlComponent>builder().persistent(LinkedDreamtwirlComponent.CODEC).networkSynchronized(LinkedDreamtwirlComponent.PACKET_CODEC).cacheEncoding().build();
+
     public static final DataComponentType<Integer> MIRTHDEW_VIAL_AMPLIFIER =
             DataComponentType.<Integer>builder().persistent(ExtraCodecs.intRange(0, 15)).networkSynchronized(ByteBufCodecs.VAR_INT).build();
 
@@ -35,6 +38,7 @@ public class MirthdewEncoreDataComponentTypes {
         r.accept(id("spell_deck_contents"), SPELL_DECK_CONTENTS);
         r.accept(id("mirthdew_vial_amplifier"), MIRTHDEW_VIAL_AMPLIFIER);
         r.accept(id("location_component"), LOCATION_COMPONENT);
+        r.accept(id("linked_dreamtwirl"), LINKED_DREAMTWIRL);
         r.accept(id("food_when_full"), FOOD_WHEN_FULL);
     }
 

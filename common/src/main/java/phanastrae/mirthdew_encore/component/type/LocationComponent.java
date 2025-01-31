@@ -35,8 +35,8 @@ public record LocationComponent(double x, double y, double z, ResourceLocation d
             LocationComponent::new
     );
 
-    public static LocationComponent fromPosAndWorld(Vec3 pos, Level world) {
-        return new LocationComponent(pos.x, pos.y, pos.z, world.dimension().location());
+    public static LocationComponent fromPosAndLevel(Vec3 pos, Level level) {
+        return new LocationComponent(pos.x, pos.y, pos.z, level.dimension().location());
     }
 
     public Vec3 getPos() {
@@ -44,7 +44,7 @@ public record LocationComponent(double x, double y, double z, ResourceLocation d
     }
 
     @Nullable
-    public Level getWorld(MinecraftServer server) {
+    public Level getLevel(MinecraftServer server) {
         return server.getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
     }
 }

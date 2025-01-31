@@ -255,7 +255,7 @@ public class SlumberveilBlock extends Block implements Portal {
             if(!itemStack.isEmpty() && itemStack.has(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
                 LocationComponent locationComponent = itemStack.get(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT);
                 Vec3 targetPos = locationComponent.getPos();
-                Level targetWorld = locationComponent.getWorld(world.getServer());
+                Level targetWorld = locationComponent.getLevel(world.getServer());
                 if(targetWorld != null) {
                     boolean validTarget = true;
                     DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getDreamtwirlStageManager(targetWorld);
