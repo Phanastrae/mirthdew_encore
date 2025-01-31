@@ -42,8 +42,8 @@ public class VericDreamsnareBlockEntityRenderer implements BlockEntityRenderer<V
     @Override
     public void render(VericDreamsnareBlockEntity entity, float tickDelta, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay) {
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderType.entityCutout(TEXTURE));
-        Level world = entity.getLevel();
-        long time = world == null ? 0 : world.getGameTime();
+        Level level = entity.getLevel();
+        long time = level == null ? 0 : level.getGameTime();
 
         boolean holdingItem = entity.isHoldingItem();
 
@@ -59,12 +59,15 @@ public class VericDreamsnareBlockEntityRenderer implements BlockEntityRenderer<V
         double offset = 0.5 + 0.25 * Math.sin(Math.toRadians(((time % 90) + tickDelta) * 4));
         double tongueLength = holdingItem ? offset : entity.getTongueLength(tickDelta);
 
-        float yaw = (float) Mth.atan2(offsetNormalised.x, offsetNormalised.z);
+        float yaw = (float)Mth.atan2(offsetNormalised.x, offsetNormalised.z);
         float pitch = (float)Mth.atan2(offsetNormalised.y, offsetNormalised.horizontalDistance());
         matrices.mulPose(Axis.YP.rotation(yaw));
         matrices.mulPose(Axis.XN.rotation(pitch - Mth.HALF_PI));
 
         float l = (float)tongueLength;
+
+        float spinRotation = l * Mth.TWO_PI / 5F;
+        matrices.mulPose(Axis.YP.rotation(spinRotation));
 
         matrices.pushPose();
         matrices.translate(0, l - 1, 0);
@@ -81,7 +84,7 @@ public class VericDreamsnareBlockEntityRenderer implements BlockEntityRenderer<V
         if(holdingItem) {
             ItemStack itemStack = entity.getHeldItem();
 
-            if(world != null) {
+            if(level != null) {
                 matrices.pushPose();
 
                 matrices.mulPose(Axis.YP.rotationDegrees(((time % 120) + tickDelta) * 3));
@@ -98,7 +101,7 @@ public class VericDreamsnareBlockEntityRenderer implements BlockEntityRenderer<V
                         false,
                         matrices,
                         vertexConsumers,
-                        world,
+                        level,
                         light,
                         overlay,
                         0

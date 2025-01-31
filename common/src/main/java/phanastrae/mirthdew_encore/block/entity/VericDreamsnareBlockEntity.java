@@ -1,15 +1,13 @@
 package phanastrae.mirthdew_encore.block.entity;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.*;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.*;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.GameEventTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.ContainerHelper;
@@ -209,10 +207,6 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         return this.prevTongueDistance + tickDelta * (this.tongueDistance - this.prevTongueDistance);
     }
 
-    public void markForUpdate(ServerLevel world) {
-        world.getChunkSource().blockChanged(this.getBlockPos());
-    }
-
     public void setHeldItem(ItemStack itemStack) {
         this.heldItem.set(0, itemStack);
         this.setChanged();
@@ -234,13 +228,19 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         return this.snaredEntity;
     }
 
-    public static void tick(Level world, BlockPos pos, BlockState state, VericDreamsnareBlockEntity snare) {
-        snare.tick(world, pos, state);
+    public void sendUpdate() {
+        if(this.level != null && !this.level.isClientSide && this.level.getBlockState(this.getBlockPos()) == this.getBlockState()) {
+            this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 2);
+        }
     }
 
-    public void tick(Level world, BlockPos pos, BlockState state) {
-        if(!world.isClientSide()) {
-            VibrationSystem.Ticker.tick(world, this.getVibrationData(), this.getVibrationUser());
+    public static void tick(Level level, BlockPos pos, BlockState state, VericDreamsnareBlockEntity snare) {
+        snare.tick(level, pos, state);
+    }
+
+    public void tick(Level level, BlockPos pos, BlockState state) {
+        if(!level.isClientSide()) {
+            VibrationSystem.Ticker.tick(level, this.getVibrationData(), this.getVibrationUser());
         }
 
         if(this.tongueDistance <= 0 && !this.tongueExtended) {
@@ -256,7 +256,7 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
             this.setTongueDistance(Math.max(this.tongueDistance - (this.entitySnared ? 0.1 : 0.3), 0));
         }
 
-        if(!world.isClientSide() && world instanceof ServerLevel serverWorld) {
+        if(!level.isClientSide() && level instanceof ServerLevel serverWorld) {
             if(this.tongueDistance != this.prevTongueDistance) {
                 this.tongueOffset = this.tongueBaseOffset.add(offset.scale(this.tongueDistance / offsetLength));
             }
@@ -266,16 +266,16 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
                 Vec3 tMin = tonguePos.subtract(0.2, 0.2, 0.2);
                 Vec3 tMax = tonguePos.add(0.2, 0.2, 0.2);
                 AABB box = new AABB(tMin, tMax);
-                for(Entity entity : world.getEntities(null, box)) {
+                for(Entity entity : level.getEntities(null, box)) {
                     if(entity instanceof DreamspeckEntity dreamspeckEntity && !dreamspeckEntity.isSnared()) {
                         dreamspeckEntity.setSnare(this.getBlockPos());
                         this.snaredEntity = entity;
                         this.setEntitySnared(true);
                         this.setTongueExtended(false);
-                        this.markForUpdate(serverWorld);
+                        this.sendUpdate();
                     } else {
                         if(!(entity instanceof ItemEntity)) {
-                            entity.hurt(MirthdewEncoreDamageTypes.of(world, DREAMSNARE_TONGUE), 2);
+                            entity.hurt(MirthdewEncoreDamageTypes.of(level, DREAMSNARE_TONGUE), 2);
                         }
                     }
                 }
@@ -283,7 +283,7 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
 
             if(this.tongueDistance >= offsetLength) {
                 this.setTongueExtended(false);
-                this.markForUpdate(serverWorld);
+                this.sendUpdate();
             }
 
             if(this.entitySnared) {
@@ -301,34 +301,36 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
 
                     this.snaredEntity = null;
                     this.setEntitySnared(false);
-                    this.markForUpdate(serverWorld);
+                    this.sendUpdate();
                 }
             }
         }
     }
 
-    public void eatEntity(ServerLevel world, Entity entity) {
+    public void eatEntity(ServerLevel level, Entity entity) {
         entity.discard();
+
         this.setHeldItem(MirthdewEncoreItems.DREAMSEED.getDefaultInstance());
-        world.sendParticles(ParticleTypes.SCULK_CHARGE_POP, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5, 100, 0.25, 0.25, 0.25, 0.02);
+
+        level.sendParticles(ParticleTypes.SCULK_CHARGE_POP, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5, 100, 0.25, 0.25, 0.25, 0.02);
     }
 
-    public void attack(ServerLevel world, @Nullable Entity entity) {
+    public void attack(ServerLevel level, @Nullable Entity entity) {
         if (entity == null) return;
-        if (world.getDifficulty() == Difficulty.PEACEFUL && !(entity instanceof DreamspeckEntity)) return;
+        if (level.getDifficulty() == Difficulty.PEACEFUL && !(entity instanceof DreamspeckEntity)) return;
 
         BlockPos blockPos = this.getBlockPos();
-        world.gameEvent(GameEvent.SHRIEK, blockPos, GameEvent.Context.of(entity));
+        level.gameEvent(GameEvent.SHRIEK, blockPos, GameEvent.Context.of(entity));
 
         Vec3 target = entity.position().add(0, entity.getBbHeight() * 0.5, 0);
-        this.attack(world, target);
+        this.attack(level, target);
     }
 
-    public void attack(ServerLevel world, Vec3 target) {
+    public void attack(ServerLevel level, Vec3 target) {
         BlockPos pos = this.getBlockPos();
         Vec3 tongueBasePos = new Vec3(pos.getX(), pos.getY(), pos.getZ()).add(this.tongueBaseOffset);
 
-        BlockHitResult blockHitResult = world.clip(new ClipContext(
+        BlockHitResult blockHitResult = level.clip(new ClipContext(
                 tongueBasePos,
                 target,
                 ClipContext.Block.COLLIDER,
@@ -352,7 +354,9 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         this.setTongueTargetOffset(offset.add(this.tongueBaseOffset));
         this.tongueOffset = this.tongueTargetOffset;
         this.setTongueExtended(true);
-        this.markForUpdate(world);
+        this.sendUpdate();
+
+        level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.SCULK_SENSOR_PLACE, SoundSource.HOSTILE, 4.0F, 1.4F);
     }
 
     public boolean canAttack(Entity entity) {
