@@ -25,6 +25,8 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
     @Override
     protected void addTags(HolderLookup.Provider wrapperLookup) {
         addFamiliesToTag(BlockTags.MINEABLE_WITH_PICKAXE,
+                MirthdewEncoreBlockFamilies.BACCHENITE_BRICKS,
+                MirthdewEncoreBlockFamilies.BACCHENITE_TILES,
                 MirthdewEncoreBlockFamilies.UNGUISHALE,
                 MirthdewEncoreBlockFamilies.UNGUISHALE_BRICKS,
                 MirthdewEncoreBlockFamilies.UNGUISHALE_TILES,
@@ -47,6 +49,8 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 MirthdewEncoreBlockFamilies.PSYRITE_GRATE
         );
         addTagsForFamilies(false, true,
+                MirthdewEncoreBlockFamilies.BACCHENITE_BRICKS,
+                MirthdewEncoreBlockFamilies.BACCHENITE_TILES,
                 MirthdewEncoreBlockFamilies.UNGUISHALE,
                 MirthdewEncoreBlockFamilies.UNGUISHALE_BRICKS,
                 MirthdewEncoreBlockFamilies.UNGUISHALE_TILES,
@@ -77,6 +81,8 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
         FabricTagBuilder mineableWithPickaxe = getOrCreateTagBuilder(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(
                         SLUMBERSOCKET,
+
+                        BACCHENITE_BLOCK,
 
                         UNGUISHALE,
 

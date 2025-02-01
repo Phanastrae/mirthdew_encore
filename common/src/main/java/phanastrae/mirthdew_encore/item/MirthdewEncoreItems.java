@@ -23,6 +23,18 @@ public class MirthdewEncoreItems {
     public static final Item DREAMSEED = blockOf(MirthdewEncoreBlocks.DREAMSEED, settings().rarity(Rarity.UNCOMMON).fireResistant());
     public static final Item SLUMBERSOCKET = blockOf(MirthdewEncoreBlocks.SLUMBERSOCKET);
 
+    public static final Item BACCHENITE_BLOCK = blockOf(MirthdewEncoreBlocks.BACCHENITE_BLOCK);
+
+    public static final Item BACCHENITE_BRICKS = blockOf(MirthdewEncoreBlocks.BACCHENITE_BRICKS);
+    public static final Item BACCHENITE_BRICK_STAIRS = blockOf(MirthdewEncoreBlocks.BACCHENITE_BRICK_STAIRS);
+    public static final Item BACCHENITE_BRICK_SLAB = blockOf(MirthdewEncoreBlocks.BACCHENITE_BRICK_SLAB);
+    public static final Item BACCHENITE_BRICK_WALL = blockOf(MirthdewEncoreBlocks.BACCHENITE_BRICK_WALL);
+
+    public static final Item BACCHENITE_TILES = blockOf(MirthdewEncoreBlocks.BACCHENITE_TILES);
+    public static final Item BACCHENITE_TILE_STAIRS = blockOf(MirthdewEncoreBlocks.BACCHENITE_TILE_STAIRS);
+    public static final Item BACCHENITE_TILE_SLAB = blockOf(MirthdewEncoreBlocks.BACCHENITE_TILE_SLAB);
+    public static final Item BACCHENITE_TILE_WALL = blockOf(MirthdewEncoreBlocks.BACCHENITE_TILE_WALL);
+
     public static final Item UNGUISHALE = blockOf(MirthdewEncoreBlocks.UNGUISHALE);
     public static final Item UNGUISHALE_STAIRS = blockOf(MirthdewEncoreBlocks.UNGUISHALE_STAIRS);
     public static final Item UNGUISHALE_SLAB = blockOf(MirthdewEncoreBlocks.UNGUISHALE_SLAB);
@@ -183,8 +195,9 @@ public class MirthdewEncoreItems {
     public static final Item DOOR_MARKER = blockOf(MirthdewEncoreBlocks.DOOR_MARKER, settings().rarity(Rarity.EPIC));
 
 
-    public static final Item VESPERBILE_BUCKET = new BucketItem(MirthdewEncoreFluids.VESPERBILE, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1));
+    public static final Item VESPERBILE_BUCKET = new BucketItem(MirthdewEncoreFluids.VESPERBILE, settings().craftRemainder(Items.BUCKET).stacksTo(1));
 
+    public static final Item BACCHENITE_SHARD = new Item(settings());
 
     public static final FoodProperties CLINKERA_SCRAPS_FOOD = new FoodProperties.Builder().nutrition(1).saturationModifier(0.1F).alwaysEdible().fast().build();
     public static final FoodProperties PSYRITE_NUGGET_FOOD = new FoodProperties.Builder().nutrition(3).saturationModifier(0.3F).alwaysEdible().build();
@@ -226,6 +239,19 @@ public class MirthdewEncoreItems {
         rwig.accept(id("veric_dreamsnare"), VERIC_DREAMSNARE);
         rwig.accept(id("dreamseed"), DREAMSEED);
         rwig.accept(id("slumbersocket"), SLUMBERSOCKET);
+
+        rwig.accept(id("bacchenite_shard"), BACCHENITE_SHARD);
+        rwig.accept(id("bacchenite_block"), BACCHENITE_BLOCK);
+
+        rwig.accept(id("bacchenite_bricks"), BACCHENITE_BRICKS);
+        rwig.accept(id("bacchenite_brick_stairs"), BACCHENITE_BRICK_STAIRS);
+        rwig.accept(id("bacchenite_brick_slab"), BACCHENITE_BRICK_SLAB);
+        rwig.accept(id("bacchenite_brick_wall"), BACCHENITE_BRICK_WALL);
+
+        rwig.accept(id("bacchenite_tiles"), BACCHENITE_TILES);
+        rwig.accept(id("bacchenite_tile_stairs"), BACCHENITE_TILE_STAIRS);
+        rwig.accept(id("bacchenite_tile_slab"), BACCHENITE_TILE_SLAB);
+        rwig.accept(id("bacchenite_tile_wall"), BACCHENITE_TILE_WALL);
 
         rwig.accept(id("unguishale"), UNGUISHALE);
         rwig.accept(id("unguishale_stairs"), UNGUISHALE_STAIRS);

@@ -51,6 +51,10 @@ public class RecipeProvider extends FabricRecipeProvider {
                 )
                 .save(exporter);
 
+        twoByTwoPacker(exporter, RecipeCategory.BUILDING_BLOCKS, BACCHENITE_BLOCK, BACCHENITE_SHARD);
+        savePolished(BACCHENITE_BRICKS, BACCHENITE_BLOCK, exporter);
+        savePolished(BACCHENITE_TILES, BACCHENITE_BRICKS, exporter);
+
         savePolished(UNGUISHALE_BRICKS, UNGUISHALE, exporter);
         savePolished(UNGUISHALE_TILES, UNGUISHALE_BRICKS, exporter);
 
@@ -119,6 +123,16 @@ public class RecipeProvider extends FabricRecipeProvider {
         oreBlasting(exporter, PSYRITE_SMELTABLES, RecipeCategory.MISC, PSYRITE_INGOT, 0.7F, 100, "psyrite_ingot");
 
         // stonecutting
+        scBlocks(exporter, BACCHENITE_BRICKS, 1, BACCHENITE_BLOCK);
+        scBlocks(exporter, BACCHENITE_BRICK_STAIRS, 1, BACCHENITE_BRICKS, BACCHENITE_BLOCK);
+        scBlocks(exporter, BACCHENITE_BRICK_SLAB, 2, BACCHENITE_BRICKS, BACCHENITE_BLOCK);
+        scWalls(exporter, BACCHENITE_BRICK_WALL, 1, BACCHENITE_BRICKS, BACCHENITE_BLOCK);
+
+        scBlocks(exporter, BACCHENITE_TILES, 1, BACCHENITE_BLOCK);
+        scBlocks(exporter, BACCHENITE_TILE_STAIRS, 1, BACCHENITE_TILES, BACCHENITE_BRICKS, BACCHENITE_BLOCK);
+        scBlocks(exporter, BACCHENITE_TILE_SLAB, 2, BACCHENITE_TILES, BACCHENITE_BRICKS, BACCHENITE_BLOCK);
+        scWalls(exporter, BACCHENITE_TILE_WALL, 1, BACCHENITE_TILES, BACCHENITE_BRICKS, BACCHENITE_BLOCK);
+
         scBlocks(exporter, UNGUISHALE_STAIRS, 1, UNGUISHALE);
         scBlocks(exporter, UNGUISHALE_SLAB, 2, UNGUISHALE);
         scWalls(exporter, UNGUISHALE_WALL, 1, UNGUISHALE);

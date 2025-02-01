@@ -192,6 +192,16 @@ public class MirthdewEncoreCreativeModeTabs {
                 DECIDRHEUM_BUTTON
         );
         helper.addAfter(WAXED_OXIDIZED_COPPER_BULB, BUILDING_BLOCKS,
+                BACCHENITE_BLOCK,
+                BACCHENITE_BRICKS,
+                BACCHENITE_BRICK_STAIRS,
+                BACCHENITE_BRICK_SLAB,
+                BACCHENITE_BRICK_WALL,
+                BACCHENITE_TILES,
+                BACCHENITE_TILE_STAIRS,
+                BACCHENITE_TILE_SLAB,
+                BACCHENITE_TILE_WALL,
+
                 PSYRITE_BLOCK,
                 CUT_PSYRITE,
                 CUT_PSYRITE_STAIRS,
@@ -274,6 +284,9 @@ public class MirthdewEncoreCreativeModeTabs {
         helper.addAfter(RAW_GOLD_BLOCK, NATURAL_BLOCKS,
                 RAW_PSYRITE_BLOCK
         );
+        helper.addAfter(AMETHYST_CLUSTER, NATURAL_BLOCKS,
+                BACCHENITE_BLOCK
+        );
 
         // functional blocks
         helper.add(FUNCTIONAL_BLOCKS,
@@ -314,6 +327,9 @@ public class MirthdewEncoreCreativeModeTabs {
         );
 
         // ingredients
+        helper.addAfter(AMETHYST_SHARD, INGREDIENTS,
+                BACCHENITE_SHARD
+        );
         helper.addAfter(RAW_GOLD, INGREDIENTS,
                 RAW_PSYRITE
         );

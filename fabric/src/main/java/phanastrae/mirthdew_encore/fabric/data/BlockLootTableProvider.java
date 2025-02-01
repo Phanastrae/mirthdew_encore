@@ -29,6 +29,8 @@ public class BlockLootTableProvider extends FabricBlockLootTableProvider {
     @Override
     public void generate() {
         forEachBlockInFamilies(this::dropSelf,
+                MirthdewEncoreBlockFamilies.BACCHENITE_BRICKS,
+                MirthdewEncoreBlockFamilies.BACCHENITE_TILES,
                 MirthdewEncoreBlockFamilies.UNGUISHALE,
                 MirthdewEncoreBlockFamilies.UNGUISHALE_BRICKS,
                 MirthdewEncoreBlockFamilies.UNGUISHALE_TILES,
@@ -56,6 +58,8 @@ public class BlockLootTableProvider extends FabricBlockLootTableProvider {
 
         dropSelf(
                 SLUMBERSOCKET,
+
+                BACCHENITE_BLOCK,
 
                 CLINKERA_LATTICE,
 

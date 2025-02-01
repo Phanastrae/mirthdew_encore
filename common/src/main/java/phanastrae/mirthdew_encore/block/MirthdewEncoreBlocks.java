@@ -57,7 +57,36 @@ public class MirthdewEncoreBlocks {
             .replaceable()
     );
 
-    public static Block UNGUISHALE = new Block(createSettings()
+    public static final Block BACCHENITE_BLOCK = new Block(createSettings()
+            .mapColor(MapColor.COLOR_BLUE)
+            .strength(1.25F)
+            .sound(SoundType.AMETHYST)
+            .requiresCorrectToolForDrops()
+    );
+
+    public static final Block BACCHENITE_BRICKS = new Block(createSettings()
+            .mapColor(MapColor.COLOR_BLUE)
+            .strength(1.25F)
+            .sound(SoundType.AMETHYST)
+            .requiresCorrectToolForDrops()
+    );
+
+    public static final Block BACCHENITE_BRICK_STAIRS = stairsOf(BACCHENITE_BRICKS);
+    public static final Block BACCHENITE_BRICK_SLAB = slabOf(BACCHENITE_BRICKS);
+    public static final Block BACCHENITE_BRICK_WALL = wallOf(BACCHENITE_BRICKS);
+
+    public static final Block BACCHENITE_TILES = new Block(createSettings()
+            .mapColor(MapColor.COLOR_BLUE)
+            .strength(1.25F)
+            .sound(SoundType.AMETHYST)
+            .requiresCorrectToolForDrops()
+    );
+
+    public static final Block BACCHENITE_TILE_STAIRS = stairsOf(BACCHENITE_TILES);
+    public static final Block BACCHENITE_TILE_SLAB = slabOf(BACCHENITE_TILES);
+    public static final Block BACCHENITE_TILE_WALL = wallOf(BACCHENITE_TILES);
+
+    public static final Block UNGUISHALE = new Block(createSettings()
             .mapColor(MapColor.COLOR_LIGHT_GRAY)
             .instrument(NoteBlockInstrument.SNARE)
             .strength(0.6F, 0.4F)
@@ -65,11 +94,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block UNGUISHALE_STAIRS = stairsOf(UNGUISHALE);
-    public static Block UNGUISHALE_SLAB = slabOf(UNGUISHALE);
-    public static Block UNGUISHALE_WALL = wallOf(UNGUISHALE);
+    public static final Block UNGUISHALE_STAIRS = stairsOf(UNGUISHALE);
+    public static final Block UNGUISHALE_SLAB = slabOf(UNGUISHALE);
+    public static final Block UNGUISHALE_WALL = wallOf(UNGUISHALE);
 
-    public static Block UNGUISHALE_BRICKS = new Block(createSettings()
+    public static final Block UNGUISHALE_BRICKS = new Block(createSettings()
             .mapColor(MapColor.COLOR_LIGHT_GRAY)
             .instrument(NoteBlockInstrument.SNARE)
             .strength(0.8F, 0.6F)
@@ -77,11 +106,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block UNGUISHALE_BRICK_STAIRS = stairsOf(UNGUISHALE_BRICKS);
-    public static Block UNGUISHALE_BRICK_SLAB = slabOf(UNGUISHALE_BRICKS);
-    public static Block UNGUISHALE_BRICK_WALL = wallOf(UNGUISHALE_BRICKS);
+    public static final Block UNGUISHALE_BRICK_STAIRS = stairsOf(UNGUISHALE_BRICKS);
+    public static final Block UNGUISHALE_BRICK_SLAB = slabOf(UNGUISHALE_BRICKS);
+    public static final Block UNGUISHALE_BRICK_WALL = wallOf(UNGUISHALE_BRICKS);
 
-    public static Block UNGUISHALE_TILES = new Block(createSettings()
+    public static final Block UNGUISHALE_TILES = new Block(createSettings()
             .mapColor(MapColor.COLOR_LIGHT_GRAY)
             .instrument(NoteBlockInstrument.SNARE)
             .strength(0.8F, 0.6F)
@@ -89,9 +118,9 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block UNGUISHALE_TILE_STAIRS = stairsOf(UNGUISHALE_TILES);
-    public static Block UNGUISHALE_TILE_SLAB = slabOf(UNGUISHALE_TILES);
-    public static Block UNGUISHALE_TILE_WALL = wallOf(UNGUISHALE_TILES);
+    public static final Block UNGUISHALE_TILE_STAIRS = stairsOf(UNGUISHALE_TILES);
+    public static final Block UNGUISHALE_TILE_SLAB = slabOf(UNGUISHALE_TILES);
+    public static final Block UNGUISHALE_TILE_WALL = wallOf(UNGUISHALE_TILES);
 
     public static final Block CLINKERA_PLANKS = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_LIGHT_GRAY)
@@ -100,27 +129,27 @@ public class MirthdewEncoreBlocks {
             .sound(SoundType.WOOD)
     );
 
-    public static BlockSetType CLINKERA_BLOCKSET = new BlockSetType("mirthdew_encore:clinkera");
-    public static WoodType CLINKERA_WOODSET = new WoodType("mirthdew_encore:clinkera", CLINKERA_BLOCKSET);
+    public static final BlockSetType CLINKERA_BLOCKSET = new BlockSetType("mirthdew_encore:clinkera");
+    public static final WoodType CLINKERA_WOODSET = new WoodType("mirthdew_encore:clinkera", CLINKERA_BLOCKSET);
 
-    public static Block CLINKERA_STAIRS = stairsOf(CLINKERA_PLANKS);
-    public static Block CLINKERA_SLAB = slabOf(CLINKERA_PLANKS);
-    public static Block CLINKERA_FENCE = fenceOf(CLINKERA_PLANKS);
-    public static Block CLINKERA_FENCE_GATE = fenceGateOf(CLINKERA_WOODSET, CLINKERA_PLANKS);
-    public static Block CLINKERA_LATTICE = new LatticeBlock(copyShallow(CLINKERA_PLANKS).noOcclusion());
-    public static Block CLINKERA_DOOR = doorOf(CLINKERA_BLOCKSET, CLINKERA_PLANKS, 2.5F);
-    public static Block CLINKERA_TRAPDOOR = trapdoorOf(CLINKERA_BLOCKSET, CLINKERA_PLANKS, 2.5F);
-    public static Block CLINKERA_PRESSURE_PLATE = pressurePlateOf(CLINKERA_BLOCKSET, CLINKERA_PLANKS);
-    public static Block CLINKERA_BUTTON = buttonOf(CLINKERA_BLOCKSET, 30, CLINKERA_PLANKS);
+    public static final Block CLINKERA_STAIRS = stairsOf(CLINKERA_PLANKS);
+    public static final Block CLINKERA_SLAB = slabOf(CLINKERA_PLANKS);
+    public static final Block CLINKERA_FENCE = fenceOf(CLINKERA_PLANKS);
+    public static final Block CLINKERA_FENCE_GATE = fenceGateOf(CLINKERA_WOODSET, CLINKERA_PLANKS);
+    public static final Block CLINKERA_LATTICE = new LatticeBlock(copyShallow(CLINKERA_PLANKS).noOcclusion());
+    public static final Block CLINKERA_DOOR = doorOf(CLINKERA_BLOCKSET, CLINKERA_PLANKS, 2.5F);
+    public static final Block CLINKERA_TRAPDOOR = trapdoorOf(CLINKERA_BLOCKSET, CLINKERA_PLANKS, 2.5F);
+    public static final Block CLINKERA_PRESSURE_PLATE = pressurePlateOf(CLINKERA_BLOCKSET, CLINKERA_PLANKS);
+    public static final Block CLINKERA_BUTTON = buttonOf(CLINKERA_BLOCKSET, 30, CLINKERA_PLANKS);
 
-    public static Block ONYXSCALE = new Block(createSettings()
+    public static final Block ONYXSCALE = new Block(createSettings()
             .mapColor(MapColor.COLOR_BLACK)
             .instrument(NoteBlockInstrument.SNARE)
             .strength(0.9F, 0.6F)
             .sound(SoundType.TUFF)
     );
 
-    public static Block RHEUMDAUBED_ONYXSCALE = new RheumdaubedOnyxscaleBlock(createSettings()
+    public static final Block RHEUMDAUBED_ONYXSCALE = new RheumdaubedOnyxscaleBlock(createSettings()
             .mapColor(MapColor.TERRACOTTA_YELLOW)
             .instrument(NoteBlockInstrument.SNARE)
             .strength(1.3F, 0.9F)
@@ -184,20 +213,20 @@ public class MirthdewEncoreBlocks {
             .sound(SoundType.WOOD)
     );
 
-    public static BlockSetType DECIDRHEUM_BLOCKSET = new BlockSetType("mirthdew_encore:decidrheum");
-    public static WoodType DECIDRHEUM_WOODSET = new WoodType("mirthdew_encore:decidrheum", DECIDRHEUM_BLOCKSET);
+    public static final BlockSetType DECIDRHEUM_BLOCKSET = new BlockSetType("mirthdew_encore:decidrheum");
+    public static final WoodType DECIDRHEUM_WOODSET = new WoodType("mirthdew_encore:decidrheum", DECIDRHEUM_BLOCKSET);
 
-    public static Block DECIDRHEUM_STAIRS = stairsOf(DECIDRHEUM_PLANKS);
-    public static Block DECIDRHEUM_SLAB = slabOf(DECIDRHEUM_PLANKS);
-    public static Block DECIDRHEUM_FENCE = fenceOf(DECIDRHEUM_PLANKS);
-    public static Block DECIDRHEUM_FENCE_GATE = fenceGateOf(DECIDRHEUM_WOODSET, DECIDRHEUM_PLANKS);
-    public static Block DECIDRHEUM_LATTICE = new LatticeBlock(copyShallow(DECIDRHEUM_PLANKS).noOcclusion());
-    public static Block DECIDRHEUM_DOOR = doorOf(DECIDRHEUM_BLOCKSET, DECIDRHEUM_PLANKS, 2.5F);
-    public static Block DECIDRHEUM_TRAPDOOR = trapdoorOf(DECIDRHEUM_BLOCKSET, DECIDRHEUM_PLANKS, 2.5F);
-    public static Block DECIDRHEUM_PRESSURE_PLATE = pressurePlateOf(DECIDRHEUM_BLOCKSET, DECIDRHEUM_PLANKS);
-    public static Block DECIDRHEUM_BUTTON = buttonOf(DECIDRHEUM_BLOCKSET, 30, DECIDRHEUM_PLANKS);
+    public static final Block DECIDRHEUM_STAIRS = stairsOf(DECIDRHEUM_PLANKS);
+    public static final Block DECIDRHEUM_SLAB = slabOf(DECIDRHEUM_PLANKS);
+    public static final Block DECIDRHEUM_FENCE = fenceOf(DECIDRHEUM_PLANKS);
+    public static final Block DECIDRHEUM_FENCE_GATE = fenceGateOf(DECIDRHEUM_WOODSET, DECIDRHEUM_PLANKS);
+    public static final Block DECIDRHEUM_LATTICE = new LatticeBlock(copyShallow(DECIDRHEUM_PLANKS).noOcclusion());
+    public static final Block DECIDRHEUM_DOOR = doorOf(DECIDRHEUM_BLOCKSET, DECIDRHEUM_PLANKS, 2.5F);
+    public static final Block DECIDRHEUM_TRAPDOOR = trapdoorOf(DECIDRHEUM_BLOCKSET, DECIDRHEUM_PLANKS, 2.5F);
+    public static final Block DECIDRHEUM_PRESSURE_PLATE = pressurePlateOf(DECIDRHEUM_BLOCKSET, DECIDRHEUM_PLANKS);
+    public static final Block DECIDRHEUM_BUTTON = buttonOf(DECIDRHEUM_BLOCKSET, 30, DECIDRHEUM_PLANKS);
 
-    public static Block DECIDRHEUM_LEAVES = new DecidrheumLeavesBlock(createSettings()
+    public static final Block DECIDRHEUM_LEAVES = new DecidrheumLeavesBlock(createSettings()
             .mapColor(MapColor.TERRACOTTA_ORANGE)
             .strength(0.2F, 0.2F)
             .randomTicks()
@@ -210,7 +239,7 @@ public class MirthdewEncoreBlocks {
             .isRedstoneConductor(MirthdewEncoreBlocks::never)
     );
 
-    public static Block DECIDRHEUM_SAPLING = new DecidrheumSaplingBlock(DecidrheumSaplingBlock.DECIDRHEUM, createSettings()
+    public static final Block DECIDRHEUM_SAPLING = new DecidrheumSaplingBlock(DecidrheumSaplingBlock.DECIDRHEUM, createSettings()
             .mapColor(MapColor.COLOR_YELLOW)
             .noCollission()
             .randomTicks()
@@ -219,9 +248,9 @@ public class MirthdewEncoreBlocks {
             .pushReaction(PushReaction.DESTROY)
     );
 
-    public static Block POTTED_DECIDRHEUM_SAPLING = flowerPot(DECIDRHEUM_SAPLING);
+    public static final Block POTTED_DECIDRHEUM_SAPLING = flowerPot(DECIDRHEUM_SAPLING);
 
-    public static Block GACHERIMM = new RotatedPillarBlock(createSettings()
+    public static final Block GACHERIMM = new RotatedPillarBlock(createSettings()
             .mapColor(MapColor.TERRACOTTA_PURPLE)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(0.9F, 0.9F)
@@ -229,22 +258,22 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block ORANGE_NOVACLAG = novaclag(MapColor.COLOR_ORANGE);
-    public static Block LIME_NOVACLAG = novaclag(MapColor.COLOR_LIGHT_GREEN);
-    public static Block CYAN_NOVACLAG = novaclag(MapColor.COLOR_CYAN);
-    public static Block MAGNETA_NOVACLAG = novaclag(MapColor.COLOR_MAGENTA);
+    public static final Block ORANGE_NOVACLAG = novaclag(MapColor.COLOR_ORANGE);
+    public static final Block LIME_NOVACLAG = novaclag(MapColor.COLOR_LIGHT_GREEN);
+    public static final Block CYAN_NOVACLAG = novaclag(MapColor.COLOR_CYAN);
+    public static final Block MAGNETA_NOVACLAG = novaclag(MapColor.COLOR_MAGENTA);
 
-    public static Block ORANGE_FOGHAIR = foghair(MapColor.COLOR_ORANGE);
-    public static Block LIME_FOGHAIR = foghair(MapColor.COLOR_LIGHT_GREEN);
-    public static Block CYAN_FOGHAIR = foghair(MapColor.COLOR_CYAN);
-    public static Block MAGNETA_FOGHAIR = foghair(MapColor.COLOR_MAGENTA);
+    public static final Block ORANGE_FOGHAIR = foghair(MapColor.COLOR_ORANGE);
+    public static final Block LIME_FOGHAIR = foghair(MapColor.COLOR_LIGHT_GREEN);
+    public static final Block CYAN_FOGHAIR = foghair(MapColor.COLOR_CYAN);
+    public static final Block MAGNETA_FOGHAIR = foghair(MapColor.COLOR_MAGENTA);
 
-    public static Block POTTED_ORANGE_FOGHAIR = flowerPot(ORANGE_FOGHAIR, 9);
-    public static Block POTTED_LIME_FOGHAIR = flowerPot(LIME_FOGHAIR, 9);
-    public static Block POTTED_CYAN_FOGHAIR = flowerPot(CYAN_FOGHAIR, 9);
-    public static Block POTTED_MAGNETA_FOGHAIR = flowerPot(MAGNETA_FOGHAIR, 9);
+    public static final Block POTTED_ORANGE_FOGHAIR = flowerPot(ORANGE_FOGHAIR, 9);
+    public static final Block POTTED_LIME_FOGHAIR = flowerPot(LIME_FOGHAIR, 9);
+    public static final Block POTTED_CYAN_FOGHAIR = flowerPot(CYAN_FOGHAIR, 9);
+    public static final Block POTTED_MAGNETA_FOGHAIR = flowerPot(MAGNETA_FOGHAIR, 9);
 
-    public static Block ROUGH_GACHERIMM = new Block(createSettings()
+    public static final Block ROUGH_GACHERIMM = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_PURPLE)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(0.9F, 0.9F)
@@ -252,11 +281,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block ROUGH_GACHERIMM_STAIRS = stairsOf(ROUGH_GACHERIMM);
-    public static Block ROUGH_GACHERIMM_SLAB = slabOf(ROUGH_GACHERIMM);
-    public static Block ROUGH_GACHERIMM_WALL = wallOf(ROUGH_GACHERIMM);
+    public static final Block ROUGH_GACHERIMM_STAIRS = stairsOf(ROUGH_GACHERIMM);
+    public static final Block ROUGH_GACHERIMM_SLAB = slabOf(ROUGH_GACHERIMM);
+    public static final Block ROUGH_GACHERIMM_WALL = wallOf(ROUGH_GACHERIMM);
 
-    public static Block GACHERIMM_BRICKS = new Block(createSettings()
+    public static final Block GACHERIMM_BRICKS = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_PURPLE)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(0.9F, 0.9F)
@@ -264,11 +293,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block GACHERIMM_BRICK_STAIRS = stairsOf(GACHERIMM_BRICKS);
-    public static Block GACHERIMM_BRICK_SLAB = slabOf(GACHERIMM_BRICKS);
-    public static Block GACHERIMM_BRICK_WALL = wallOf(GACHERIMM_BRICKS);
+    public static final Block GACHERIMM_BRICK_STAIRS = stairsOf(GACHERIMM_BRICKS);
+    public static final Block GACHERIMM_BRICK_SLAB = slabOf(GACHERIMM_BRICKS);
+    public static final Block GACHERIMM_BRICK_WALL = wallOf(GACHERIMM_BRICKS);
 
-    public static Block GACHERIMM_TILES = new Block(createSettings()
+    public static final Block GACHERIMM_TILES = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_PURPLE)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(0.9F, 0.9F)
@@ -276,32 +305,32 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block GACHERIMM_TILE_STAIRS = stairsOf(GACHERIMM_TILES);
-    public static Block GACHERIMM_TILE_SLAB = slabOf(GACHERIMM_TILES);
-    public static Block GACHERIMM_TILE_WALL = wallOf(GACHERIMM_TILES);
+    public static final Block GACHERIMM_TILE_STAIRS = stairsOf(GACHERIMM_TILES);
+    public static final Block GACHERIMM_TILE_SLAB = slabOf(GACHERIMM_TILES);
+    public static final Block GACHERIMM_TILE_WALL = wallOf(GACHERIMM_TILES);
 
-    public static Block POLISHED_GACHERIMM = new Block(createSettings()
+    public static final Block POLISHED_GACHERIMM = new Block(createSettings()
             .mapColor(MapColor.COLOR_PURPLE)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(0.9F, 0.9F)
             .sound(SoundType.DEEPSLATE)
     );
 
-    public static Block POLISHED_GACHERIMM_STAIRS = stairsOf(POLISHED_GACHERIMM);
-    public static Block POLISHED_GACHERIMM_SLAB = slabOf(POLISHED_GACHERIMM);
-    public static Block POLISHED_GACHERIMM_WALL = wallOf(POLISHED_GACHERIMM);
+    public static final Block POLISHED_GACHERIMM_STAIRS = stairsOf(POLISHED_GACHERIMM);
+    public static final Block POLISHED_GACHERIMM_SLAB = slabOf(POLISHED_GACHERIMM);
+    public static final Block POLISHED_GACHERIMM_WALL = wallOf(POLISHED_GACHERIMM);
 
-    public static Block CUT_POLISHED_GACHERIMM = new Block(createSettings()
+    public static final Block CUT_POLISHED_GACHERIMM = new Block(createSettings()
             .mapColor(MapColor.COLOR_PURPLE)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(0.9F, 0.9F)
             .sound(SoundType.DEEPSLATE)
     );
 
-    public static Block CUT_POLISHED_GACHERIMM_STAIRS = stairsOf(CUT_POLISHED_GACHERIMM);
-    public static Block CUT_POLISHED_GACHERIMM_SLAB = slabOf(CUT_POLISHED_GACHERIMM);
+    public static final Block CUT_POLISHED_GACHERIMM_STAIRS = stairsOf(CUT_POLISHED_GACHERIMM);
+    public static final Block CUT_POLISHED_GACHERIMM_SLAB = slabOf(CUT_POLISHED_GACHERIMM);
 
-    public static Block REVERIME = new Block(createSettings()
+    public static final Block REVERIME = new Block(createSettings()
             .mapColor(MapColor.ICE)
             .strength(2.2F, 1.3F)
             .friction(0.85F)
@@ -309,11 +338,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block REVERIME_STAIRS = stairsOf(REVERIME);
-    public static Block REVERIME_SLAB = slabOf(REVERIME);
-    public static Block REVERIME_WALL = wallOf(REVERIME);
+    public static final Block REVERIME_STAIRS = stairsOf(REVERIME);
+    public static final Block REVERIME_SLAB = slabOf(REVERIME);
+    public static final Block REVERIME_WALL = wallOf(REVERIME);
 
-    public static Block FROSTED_REVERIME = new Block(createSettings()
+    public static final Block FROSTED_REVERIME = new Block(createSettings()
             .mapColor(MapColor.ICE)
             .strength(2.5F, 1.8F)
             .friction(0.93F)
@@ -321,7 +350,7 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block REVERIME_BRICKS = new Block(createSettings()
+    public static final Block REVERIME_BRICKS = new Block(createSettings()
             .mapColor(MapColor.ICE)
             .strength(2.2F, 1.3F)
             .friction(0.85F)
@@ -329,11 +358,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block REVERIME_BRICK_STAIRS = stairsOf(REVERIME_BRICKS);
-    public static Block REVERIME_BRICK_SLAB = slabOf(REVERIME_BRICKS);
-    public static Block REVERIME_BRICK_WALL = wallOf(REVERIME_BRICKS);
+    public static final Block REVERIME_BRICK_STAIRS = stairsOf(REVERIME_BRICKS);
+    public static final Block REVERIME_BRICK_SLAB = slabOf(REVERIME_BRICKS);
+    public static final Block REVERIME_BRICK_WALL = wallOf(REVERIME_BRICKS);
 
-    public static Block REVERIME_TILES = new Block(createSettings()
+    public static final Block REVERIME_TILES = new Block(createSettings()
             .mapColor(MapColor.ICE)
             .strength(2.2F, 1.3F)
             .friction(0.85F)
@@ -341,11 +370,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block REVERIME_TILE_STAIRS = stairsOf(REVERIME_TILES);
-    public static Block REVERIME_TILE_SLAB = slabOf(REVERIME_TILES);
-    public static Block REVERIME_TILE_WALL = wallOf(REVERIME_TILES);
+    public static final Block REVERIME_TILE_STAIRS = stairsOf(REVERIME_TILES);
+    public static final Block REVERIME_TILE_SLAB = slabOf(REVERIME_TILES);
+    public static final Block REVERIME_TILE_WALL = wallOf(REVERIME_TILES);
 
-    public static Block POLISHED_REVERIME = new Block(createSettings()
+    public static final Block POLISHED_REVERIME = new Block(createSettings()
             .mapColor(MapColor.ICE)
             .strength(2.2F, 1.3F)
             .friction(0.9F)
@@ -353,11 +382,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block POLISHED_REVERIME_STAIRS = stairsOf(POLISHED_REVERIME);
-    public static Block POLISHED_REVERIME_SLAB = slabOf(POLISHED_REVERIME);
-    public static Block POLISHED_REVERIME_WALL = wallOf(POLISHED_REVERIME);
+    public static final Block POLISHED_REVERIME_STAIRS = stairsOf(POLISHED_REVERIME);
+    public static final Block POLISHED_REVERIME_SLAB = slabOf(POLISHED_REVERIME);
+    public static final Block POLISHED_REVERIME_WALL = wallOf(POLISHED_REVERIME);
 
-    public static Block POLISHED_REVERIME_BRICKS = new Block(createSettings()
+    public static final Block POLISHED_REVERIME_BRICKS = new Block(createSettings()
             .mapColor(MapColor.ICE)
             .strength(2.2F, 1.3F)
             .friction(0.9F)
@@ -365,11 +394,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block POLISHED_REVERIME_BRICK_STAIRS = stairsOf(POLISHED_REVERIME_BRICKS);
-    public static Block POLISHED_REVERIME_BRICK_SLAB = slabOf(POLISHED_REVERIME_BRICKS);
-    public static Block POLISHED_REVERIME_BRICK_WALL = wallOf(POLISHED_REVERIME_BRICKS);
+    public static final Block POLISHED_REVERIME_BRICK_STAIRS = stairsOf(POLISHED_REVERIME_BRICKS);
+    public static final Block POLISHED_REVERIME_BRICK_SLAB = slabOf(POLISHED_REVERIME_BRICKS);
+    public static final Block POLISHED_REVERIME_BRICK_WALL = wallOf(POLISHED_REVERIME_BRICKS);
 
-    public static Block CUT_POLISHED_REVERIME = new Block(createSettings()
+    public static final Block CUT_POLISHED_REVERIME = new Block(createSettings()
             .mapColor(MapColor.ICE)
             .strength(2.2F, 1.3F)
             .friction(0.9F)
@@ -377,10 +406,10 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block CUT_POLISHED_REVERIME_STAIRS = stairsOf(CUT_POLISHED_REVERIME);
-    public static Block CUT_POLISHED_REVERIME_SLAB = slabOf(CUT_POLISHED_REVERIME);
+    public static final Block CUT_POLISHED_REVERIME_STAIRS = stairsOf(CUT_POLISHED_REVERIME);
+    public static final Block CUT_POLISHED_REVERIME_SLAB = slabOf(CUT_POLISHED_REVERIME);
 
-    public static Block ROSENGLACE = new Block(createSettings()
+    public static final Block ROSENGLACE = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_PINK)
             .strength(3.5F, 2.2F)
             .friction(0.98F)
@@ -388,7 +417,7 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block SCARABRIM = new Block(createSettings()
+    public static final Block SCARABRIM = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_BLACK)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(1.8F, 3.0F)
@@ -396,11 +425,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block SCARABRIM_STAIRS = stairsOf(SCARABRIM);
-    public static Block SCARABRIM_SLAB = slabOf(SCARABRIM);
-    public static Block SCARABRIM_WALL = wallOf(SCARABRIM);
+    public static final Block SCARABRIM_STAIRS = stairsOf(SCARABRIM);
+    public static final Block SCARABRIM_SLAB = slabOf(SCARABRIM);
+    public static final Block SCARABRIM_WALL = wallOf(SCARABRIM);
 
-    public static Block POLISHED_SCARABRIM = new Block(createSettings()
+    public static final Block POLISHED_SCARABRIM = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_BLACK)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(1.8F, 3.0F)
@@ -408,11 +437,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block POLISHED_SCARABRIM_STAIRS = stairsOf(POLISHED_SCARABRIM);
-    public static Block POLISHED_SCARABRIM_SLAB = slabOf(POLISHED_SCARABRIM);
-    public static Block POLISHED_SCARABRIM_WALL = wallOf(POLISHED_SCARABRIM);
+    public static final Block POLISHED_SCARABRIM_STAIRS = stairsOf(POLISHED_SCARABRIM);
+    public static final Block POLISHED_SCARABRIM_SLAB = slabOf(POLISHED_SCARABRIM);
+    public static final Block POLISHED_SCARABRIM_WALL = wallOf(POLISHED_SCARABRIM);
 
-    public static Block SCARABRIM_BRICKS = new Block(createSettings()
+    public static final Block SCARABRIM_BRICKS = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_BLACK)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(1.8F, 3.0F)
@@ -420,11 +449,11 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block SCARABRIM_BRICK_STAIRS = stairsOf(SCARABRIM_BRICKS);
-    public static Block SCARABRIM_BRICK_SLAB = slabOf(SCARABRIM_BRICKS);
-    public static Block SCARABRIM_BRICK_WALL = wallOf(SCARABRIM_BRICKS);
+    public static final Block SCARABRIM_BRICK_STAIRS = stairsOf(SCARABRIM_BRICKS);
+    public static final Block SCARABRIM_BRICK_SLAB = slabOf(SCARABRIM_BRICKS);
+    public static final Block SCARABRIM_BRICK_WALL = wallOf(SCARABRIM_BRICKS);
 
-    public static Block SUNFLECKED_SCARABRIM = new SunfleckedScarabrimBlock(createSettings()
+    public static final Block SUNFLECKED_SCARABRIM = new SunfleckedScarabrimBlock(createSettings()
             .mapColor(MapColor.COLOR_YELLOW)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(1.2F, 1.7F)
@@ -434,25 +463,25 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block CHALKTISSUE = new Block(createSettings()
+    public static final Block CHALKTISSUE = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_WHITE)
             .strength(2.3F, 2.5F)
             .sound(SoundType.MUD)
     );
 
-    public static Block FLAKING_CHALKTISSUE = new Block(createSettings()
+    public static final Block FLAKING_CHALKTISSUE = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_WHITE)
             .strength(2.3F, 2.5F)
             .sound(SoundType.MUD)
     );
 
-    public static Block SUNSLAKED_CHALKTISSUE = new Block(createSettings()
+    public static final Block SUNSLAKED_CHALKTISSUE = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_WHITE)
             .strength(2.3F, 2.5F)
             .sound(SoundType.MUD)
     );
 
-    public static Block GACHERIMM_PSYRITE_ORE = new DropExperienceBlock(ConstantInt.of(0), createSettings()
+    public static final Block GACHERIMM_PSYRITE_ORE = new DropExperienceBlock(ConstantInt.of(0), createSettings()
             .mapColor(MapColor.TERRACOTTA_PURPLE)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(1.5F, 2.0F)
@@ -460,7 +489,7 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block SCARABRIM_PSYRITE_ORE = new DropExperienceBlock(ConstantInt.of(0), createSettings()
+    public static final Block SCARABRIM_PSYRITE_ORE = new DropExperienceBlock(ConstantInt.of(0), createSettings()
             .mapColor(MapColor.TERRACOTTA_BLACK)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(1.8F, 3.0F)
@@ -468,34 +497,34 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static Block SUNSLAKED_PSYRITE_ORE = new DropExperienceBlock(ConstantInt.of(0), createSettings()
+    public static final Block SUNSLAKED_PSYRITE_ORE = new DropExperienceBlock(ConstantInt.of(0), createSettings()
             .mapColor(MapColor.TERRACOTTA_WHITE)
             .strength(2.3F, 2.5F)
             .sound(SoundType.MUD)
     );
 
-    public static Block RAW_PSYRITE_BLOCK = new Block(createSettings()
+    public static final Block RAW_PSYRITE_BLOCK = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_PINK)
             .instrument(NoteBlockInstrument.BASEDRUM)
             .strength(5.0F, 6.0F)
             .requiresCorrectToolForDrops()
     );
 
-    public static BlockSetType PSYRITE_BLOCKSET = new BlockSetType("mirthdew_encore:psyrite");
-    public static Block PSYRITE_BLOCK = new Block(createSettings()
+    public static final BlockSetType PSYRITE_BLOCKSET = new BlockSetType("mirthdew_encore:psyrite");
+    public static final Block PSYRITE_BLOCK = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_PINK)
             .strength(3.0F, 6.0F)
             .requiresCorrectToolForDrops()
             .sound(SoundType.COPPER)
     );
 
-    public static Block CUT_PSYRITE = new Block(fullCopy(PSYRITE_BLOCK));
-    public static Block CUT_PSYRITE_STAIRS = stairsOf(PSYRITE_BLOCK);
-    public static Block CUT_PSYRITE_SLAB = slabOf(PSYRITE_BLOCK);
+    public static final Block CUT_PSYRITE = new Block(fullCopy(PSYRITE_BLOCK));
+    public static final Block CUT_PSYRITE_STAIRS = stairsOf(PSYRITE_BLOCK);
+    public static final Block CUT_PSYRITE_SLAB = slabOf(PSYRITE_BLOCK);
 
-    public static Block CHISELED_PSYRITE = new Block(fullCopy(PSYRITE_BLOCK));
+    public static final Block CHISELED_PSYRITE = new Block(fullCopy(PSYRITE_BLOCK));
 
-    public static Block PSYRITE_PILLAR = new RotatedPillarBlock(fullCopy(PSYRITE_BLOCK));
+    public static final Block PSYRITE_PILLAR = new RotatedPillarBlock(fullCopy(PSYRITE_BLOCK));
 
     public static final Block PSYRITE_GRATE = new CustomWaterloggedTransparentBlock(createSettings()
             .mapColor(PSYRITE_BLOCK.defaultMapColor())
@@ -509,7 +538,7 @@ public class MirthdewEncoreBlocks {
             .noOcclusion()
     );
 
-    public static Block PSYRITE_GRATE_SLAB = new TransparentSlabBlock(copyShallow(PSYRITE_GRATE));
+    public static final Block PSYRITE_GRATE_SLAB = new TransparentSlabBlock(copyShallow(PSYRITE_GRATE));
 
     public static final Block PSYRITE_DOOR = new CustomDoorBlock(PSYRITE_BLOCKSET, createSettings()
             .mapColor(PSYRITE_BLOCK.defaultMapColor())
@@ -560,7 +589,7 @@ public class MirthdewEncoreBlocks {
             .pushReaction(PushReaction.BLOCK)
     );
 
-    public static Block VESPERBILE = new VesperbileLiquidBlock(
+    public static final Block VESPERBILE = new VesperbileLiquidBlock(
             MirthdewEncoreFluids.VESPERBILE,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.TERRACOTTA_MAGENTA)
@@ -580,6 +609,18 @@ public class MirthdewEncoreBlocks {
         r.accept(id("dreamseed"), DREAMSEED);
         r.accept(id("slumbersocket"), SLUMBERSOCKET);
         r.accept(id("slumberveil"), SLUMBERVEIL);
+
+        r.accept(id("bacchenite_block"), BACCHENITE_BLOCK);
+
+        r.accept(id("bacchenite_bricks"), BACCHENITE_BRICKS);
+        r.accept(id("bacchenite_brick_stairs"), BACCHENITE_BRICK_STAIRS);
+        r.accept(id("bacchenite_brick_slab"), BACCHENITE_BRICK_SLAB);
+        r.accept(id("bacchenite_brick_wall"), BACCHENITE_BRICK_WALL);
+
+        r.accept(id("bacchenite_tiles"), BACCHENITE_TILES);
+        r.accept(id("bacchenite_tile_stairs"), BACCHENITE_TILE_STAIRS);
+        r.accept(id("bacchenite_tile_slab"), BACCHENITE_TILE_SLAB);
+        r.accept(id("bacchenite_tile_wall"), BACCHENITE_TILE_WALL);
 
         r.accept(id("unguishale"), UNGUISHALE);
         r.accept(id("unguishale_stairs"), UNGUISHALE_STAIRS);

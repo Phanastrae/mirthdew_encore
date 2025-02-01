@@ -15,6 +15,17 @@ public class MirthdewEncoreBlockFamilies {
     private static final String RECIPE_GROUP_PREFIX_WOODEN = "wooden";
     private static final String RECIPE_UNLOCKED_BY_HAS_PLANKS = "has_planks";
 
+    public static final BlockFamily BACCHENITE_BRICKS = familyBuilder(MirthdewEncoreBlocks.BACCHENITE_BRICKS)
+            .stairs(MirthdewEncoreBlocks.BACCHENITE_BRICK_STAIRS)
+            .slab(MirthdewEncoreBlocks.BACCHENITE_BRICK_SLAB)
+            .wall(MirthdewEncoreBlocks.BACCHENITE_BRICK_WALL)
+            .getFamily();
+    public static final BlockFamily BACCHENITE_TILES = familyBuilder(MirthdewEncoreBlocks.BACCHENITE_TILES)
+            .stairs(MirthdewEncoreBlocks.BACCHENITE_TILE_STAIRS)
+            .slab(MirthdewEncoreBlocks.BACCHENITE_TILE_SLAB)
+            .wall(MirthdewEncoreBlocks.BACCHENITE_TILE_WALL)
+            .getFamily();
+
     public static final BlockFamily UNGUISHALE = familyBuilder(MirthdewEncoreBlocks.UNGUISHALE)
             .stairs(MirthdewEncoreBlocks.UNGUISHALE_STAIRS)
             .slab(MirthdewEncoreBlocks.UNGUISHALE_SLAB)

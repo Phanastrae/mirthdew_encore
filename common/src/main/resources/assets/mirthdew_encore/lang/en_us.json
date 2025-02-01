@@ -1,4 +1,13 @@
 {
+  "block.mirthdew_encore.bacchenite_block": "Block of Bacchenite",
+  "block.mirthdew_encore.bacchenite_bricks": "Bacchenite Bricks",
+  "block.mirthdew_encore.bacchenite_brick_slab": "Bacchenite Brick Slab",
+  "block.mirthdew_encore.bacchenite_brick_stairs": "Bacchenite Brick Stairs",
+  "block.mirthdew_encore.bacchenite_brick_wall": "Bacchenite Brick Wall",
+  "block.mirthdew_encore.bacchenite_tiles": "Bacchenite Tiles",
+  "block.mirthdew_encore.bacchenite_tile_slab": "Bacchenite Tile Slab",
+  "block.mirthdew_encore.bacchenite_tile_stairs": "Bacchenite Tile Stairs",
+  "block.mirthdew_encore.bacchenite_tile_wall": "Bacchenite Tile Wall",
   "block.mirthdew_encore.chalktissue": "Chalktissue",
   "block.mirthdew_encore.chiseled_psyrite": "Chiseled Psyrite",
   "block.mirthdew_encore.clinkera_button": "Clinkera Button",
@@ -168,6 +177,7 @@
 
   "gui.mirthdew_encore.mirth": "Mirth: %s",
 
+  "item.mirthdew_encore.bacchenite_shard": "Bacchenite Shard",
   "item.mirthdew_encore.clinkera_scraps": "Clinkera Scraps",
   "item.mirthdew_encore.dreamspeck_spawn_egg": "Dreamspeck Spawn Egg",
   "item.mirthdew_encore.psyrite_ingot": "Psyrite Ingot",

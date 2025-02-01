@@ -34,6 +34,8 @@ public class ModelProvider extends FabricModelProvider {
                 .forEach(blockFamily -> BMG.family(blockFamily.getBaseBlock()).generateFor(blockFamily));
 
         forMultiple(BMG, BlockModelGenerators::createTrivialCube,
+                BACCHENITE_BLOCK,
+
                 DECIDRHEUM_LEAVES,
 
                 FROSTED_REVERIME,
@@ -105,16 +107,23 @@ public class ModelProvider extends FabricModelProvider {
     @Override
     public void generateItemModels(ItemModelGenerators IMG) {
         generateFlat(IMG,
-                MirthdewEncoreItems.SPELL_CARD,
-                MirthdewEncoreItems.SPELL_DECK,
-                MirthdewEncoreItems.MIRTHDEW_VIAL,
-                MirthdewEncoreItems.SPECTRAL_CANDY,
                 MirthdewEncoreItems.SLUMBERING_EYE,
+
+                MirthdewEncoreItems.BACCHENITE_SHARD,
+
                 MirthdewEncoreItems.CLINKERA_SCRAPS,
+
                 MirthdewEncoreItems.RAW_PSYRITE,
                 MirthdewEncoreItems.PSYRITE_INGOT,
                 MirthdewEncoreItems.PSYRITE_NUGGET,
-                MirthdewEncoreItems.VESPERBILE_BUCKET
+
+                MirthdewEncoreItems.VESPERBILE_BUCKET,
+
+                MirthdewEncoreItems.SPELL_CARD,
+                MirthdewEncoreItems.SPELL_DECK,
+
+                MirthdewEncoreItems.MIRTHDEW_VIAL,
+                MirthdewEncoreItems.SPECTRAL_CANDY
         );
     }
 
