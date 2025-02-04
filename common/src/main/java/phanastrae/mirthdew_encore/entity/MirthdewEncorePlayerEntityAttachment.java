@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 import phanastrae.mirthdew_encore.card_spell.PlayerEntityMirthData;
-import phanastrae.mirthdew_encore.duck.PlayerEntityDuckInterface;
+import phanastrae.mirthdew_encore.duck.PlayerDuckInterface;
 
 public class MirthdewEncorePlayerEntityAttachment {
 
@@ -52,6 +52,6 @@ public class MirthdewEncorePlayerEntityAttachment {
     }
 
     public static MirthdewEncorePlayerEntityAttachment fromPlayer(Player player) {
-        return ((PlayerEntityDuckInterface)player).mirthdew_encore$getAttachment();
+        return ((PlayerDuckInterface)player).mirthdew_encore$getAttachment();
     }
 }

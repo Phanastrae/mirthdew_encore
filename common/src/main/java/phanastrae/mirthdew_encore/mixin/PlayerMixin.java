@@ -15,13 +15,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import phanastrae.mirthdew_encore.block.entity.DoorMarkerBlockEntity;
-import phanastrae.mirthdew_encore.duck.PlayerEntityDuckInterface;
+import phanastrae.mirthdew_encore.duck.PlayerDuckInterface;
 import phanastrae.mirthdew_encore.entity.MirthdewEncorePlayerEntityAttachment;
 
 import static phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY;
 
 @Mixin(Player.class)
-public abstract class PlayerMixin extends LivingEntity implements PlayerEntityDuckInterface {
+public abstract class PlayerMixin extends LivingEntity implements PlayerDuckInterface {
 
     @Unique
     private MirthdewEncorePlayerEntityAttachment mirthdew_encore$playerEntityAttachment;

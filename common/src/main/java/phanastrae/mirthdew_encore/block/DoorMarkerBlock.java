@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import phanastrae.mirthdew_encore.block.entity.DoorMarkerBlockEntity;
-import phanastrae.mirthdew_encore.duck.PlayerEntityDuckInterface;
+import phanastrae.mirthdew_encore.duck.PlayerDuckInterface;
 
 public class DoorMarkerBlock extends Block implements EntityBlock, GameMasterBlock {
     public static final MapCodec<DoorMarkerBlock> CODEC = simpleCodec(DoorMarkerBlock::new);
@@ -70,7 +70,7 @@ public class DoorMarkerBlock extends Block implements EntityBlock, GameMasterBlo
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         BlockEntity blockentity = level.getBlockEntity(pos);
         if (blockentity instanceof DoorMarkerBlockEntity doorMarkerBlockEntity && player.canUseGameMasterBlocks()) {
-            ((PlayerEntityDuckInterface)player).mirthdew_encore$openDoorMarkerBlock(doorMarkerBlockEntity);
+            ((PlayerDuckInterface)player).mirthdew_encore$openDoorMarkerBlock(doorMarkerBlockEntity);
             return InteractionResult.sidedSuccess(level.isClientSide);
         } else {
             return InteractionResult.PASS;

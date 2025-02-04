@@ -223,7 +223,7 @@ public class MirthdewEncoreNeoForge {
     }
 
     public void tickLevel(LevelTickEvent.Pre event) {
-        DreamtwirlLevelAttachment.tickWorld(event.getLevel());
+        DreamtwirlLevelAttachment.tickLevel(event.getLevel());
     }
 
     public void addTooltips(ItemTooltipEvent event) {

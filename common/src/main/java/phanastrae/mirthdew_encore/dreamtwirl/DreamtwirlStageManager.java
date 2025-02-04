@@ -1,6 +1,6 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
-import com.google.common.collect.Maps;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -14,25 +14,32 @@ import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.MirthdewEncore;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.BasicStageData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
 public class DreamtwirlStageManager extends SavedData {
 
-    private final Map<Long, DreamtwirlStage> dreamtwirls = Maps.newHashMap();
-    private final ServerLevel world;
+    private final Map<Long, BasicStageData> basicStageDatas = new Object2ObjectOpenHashMap<>();
+    private final Map<Long, DreamtwirlStage> dreamtwirls = new Object2ObjectOpenHashMap<>();
+
+    private final ServerLevel level;
     private final RandomSource random = RandomSource.create();
 
-    public static Factory<DreamtwirlStageManager> getPersistentStateType(ServerLevel world) {
+    public DreamtwirlStageManager(ServerLevel level) {
+        this.level = level;
+        this.setDirty();
+    }
+
+    public static Factory<DreamtwirlStageManager> getPersistentStateType(ServerLevel level) {
         return new Factory<>(
-                () -> new DreamtwirlStageManager(world),
-                (nbt, registryLookup) -> fromNbt(world, nbt),
+                () -> new DreamtwirlStageManager(level),
+                (nbt, registryLookup) -> fromNbt(level, nbt),
                 null
         );
     }
@@ -41,9 +48,33 @@ public class DreamtwirlStageManager extends SavedData {
         return "mirthdew_encore_dreamtwirls";
     }
 
-    public DreamtwirlStageManager(ServerLevel world) {
-        this.world = world;
-        this.setDirty();
+    @Override
+    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+        ListTag nbtList = new ListTag();
+
+        for(BasicStageData bsd : this.basicStageDatas.values()) {
+            CompoundTag nbtCompound = new CompoundTag();
+            bsd.writeNbt(nbtCompound);
+            nbtList.add(nbtCompound);
+        }
+
+        nbt.put("DreamtwirlStages", nbtList);
+
+        return nbt;
+    }
+
+    public static DreamtwirlStageManager fromNbt(ServerLevel level, CompoundTag nbt) {
+        DreamtwirlStageManager dreamtwirlStageManager = new DreamtwirlStageManager(level);
+
+        ListTag nbtList = nbt.getList("DreamtwirlStages", Tag.TAG_COMPOUND);
+
+        for(int i = 0; i < nbtList.size(); ++i) {
+            CompoundTag nbtCompound = nbtList.getCompound(i);
+            BasicStageData bsd = BasicStageData.fromNbt(level, nbtCompound);
+            dreamtwirlStageManager.basicStageDatas.put(bsd.getId(), bsd);
+        }
+
+        return dreamtwirlStageManager;
     }
 
     @Nullable
@@ -53,38 +84,40 @@ public class DreamtwirlStageManager extends SavedData {
 
     @Nullable
     public DreamtwirlStage getDreamtwirlIfPresent(long id) {
-        return this.dreamtwirls.getOrDefault(id, null);
+        if(this.dreamtwirls.containsKey(id)) {
+            return this.dreamtwirls.get(id);
+        } else if(this.basicStageDatas.containsKey(id)) {
+            BasicStageData basicStageData = this.basicStageDatas.get(id);
+
+            DreamtwirlStage dreamtwirlStage = getStageSavedData(basicStageData);
+            this.dreamtwirls.put(id, dreamtwirlStage);
+
+            this.setDirty();
+            return dreamtwirlStage;
+        } else {
+            return null;
+        }
     }
 
-    public DreamtwirlStage getDreamtwirl(long id) {
-        return this.dreamtwirls.get(id);
+    public BasicStageData getBasicStageData(long id) {
+        return this.basicStageDatas.get(id);
     }
 
     public void tick() {
-        Iterator<DreamtwirlStage> iterator = this.dreamtwirls.values().iterator();
-
-        boolean markDirty = false;
-        while(iterator.hasNext()) {
-            DreamtwirlStage dreamtwirlStage = iterator.next();
-
-            dreamtwirlStage.tick(this.world);
-
-            if(dreamtwirlStage.isDirty()) {
-                markDirty = true;
-                dreamtwirlStage.markDirty(false);
-            }
-        }
-
-        if(markDirty) {
-            this.setDirty();
+        for(DreamtwirlStage dreamtwirlStage : this.dreamtwirls.values()) {
+            dreamtwirlStage.tick(this.level);
         }
     }
 
-    public void forEach(BiConsumer<Long, DreamtwirlStage> biConsumer) {
-        this.dreamtwirls.forEach(biConsumer);
+    public void forEach(BiConsumer<Long, BasicStageData> biConsumer) {
+        this.basicStageDatas.forEach(biConsumer);
     }
 
     public int getDreamtwirlStageCount() {
+        return this.basicStageDatas.size();
+    }
+
+    public int getDreamtwirlLoadedStagesCount() {
         return this.dreamtwirls.size();
     }
 
@@ -109,7 +142,7 @@ public class DreamtwirlStageManager extends SavedData {
                 // multiply by 2 to assure region sized gaps between all Dreamtwirls
                 RegionPos candidatePos = new RegionPos(randomX * 2, randomZ * 2);
                 long candidateId = candidatePos.id;
-                if(!this.dreamtwirls.containsKey(candidateId)) {
+                if(!this.basicStageDatas.containsKey(candidateId)) {
                     return Optional.of(candidatePos);
                 }
             }
@@ -125,47 +158,40 @@ public class DreamtwirlStageManager extends SavedData {
 
         long id = regionPos.id;
         if(this.dreamtwirls.containsKey(id)) {
-            return this.getDreamtwirl(id);
+            return this.dreamtwirls.get(id);
         } else {
-            DreamtwirlStage dreamtwirlStage = new DreamtwirlStage(this.world, id, this.world.getGameTime());
+            BasicStageData basicStageData = this.getOrCreateBasicStageData(regionPos);
+
+            DreamtwirlStage dreamtwirlStage = getStageSavedData(basicStageData);
             this.dreamtwirls.put(id, dreamtwirlStage);
+
             this.setDirty();
             return dreamtwirlStage;
         }
     }
 
-    @Override
-    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        ListTag nbtList = new ListTag();
+    public BasicStageData getOrCreateBasicStageData(RegionPos regionPos) {
+        long id = regionPos.id;
+        if(this.basicStageDatas.containsKey(id)) {
+            return this.getBasicStageData(id);
+        } else {
+            BasicStageData basicStageData = new BasicStageData(regionPos.id, this.level.getGameTime());
+            this.basicStageDatas.put(id, basicStageData);
 
-        for(DreamtwirlStage dreamtwirlStage : this.dreamtwirls.values()) {
-            CompoundTag nbtCompound = new CompoundTag();
-            dreamtwirlStage.writeNbt(nbtCompound);
-            nbtList.add(nbtCompound);
+            this.setDirty();
+            return basicStageData;
         }
-
-        nbt.put("DreamtwirlStages", nbtList);
-
-        return nbt;
     }
 
-    public static DreamtwirlStageManager fromNbt(ServerLevel world, CompoundTag nbt) {
-        DreamtwirlStageManager dreamtwirlStageManager = new DreamtwirlStageManager(world);
-
-        ListTag nbtList = nbt.getList("DreamtwirlStages", Tag.TAG_COMPOUND);
-
-        for(int i = 0; i < nbtList.size(); ++i) {
-            CompoundTag nbtCompound = nbtList.getCompound(i);
-            DreamtwirlStage dreamtwirlStage = DreamtwirlStage.fromNbt(world, nbtCompound);
-            dreamtwirlStageManager.dreamtwirls.put(dreamtwirlStage.getId(), dreamtwirlStage);
-        }
-
-        return dreamtwirlStageManager;
+    public DreamtwirlStage getStageSavedData(BasicStageData basicStageData) {
+        return this.level.getDataStorage().computeIfAbsent(
+                DreamtwirlStage.getPersistentStateType(this.level, basicStageData),
+                DreamtwirlStage.nameFor(basicStageData.getRegionPos()));
     }
 
     @Nullable
-    public static DreamtwirlStageManager getDreamtwirlStageManager(Level world) {
-        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(world);
+    public static DreamtwirlStageManager getDreamtwirlStageManager(Level level) {
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(level);
         if(DTWA == null) {
             return null;
         }
@@ -174,11 +200,11 @@ public class DreamtwirlStageManager extends SavedData {
 
     @Nullable
     public static DreamtwirlStageManager getMainDreamtwirlStageManager(MinecraftServer server) {
-        ServerLevel dreamtwirlWorld = server.getLevel(MirthdewEncoreDimensions.DREAMTWIRL_WORLD);
-        if(dreamtwirlWorld == null) {
+        ServerLevel dreamtwirlLevel = server.getLevel(MirthdewEncoreDimensions.DREAMTWIRL_WORLD);
+        if(dreamtwirlLevel == null) {
             return null;
         } else {
-            return getDreamtwirlStageManager(dreamtwirlWorld);
+            return getDreamtwirlStageManager(dreamtwirlLevel);
         }
     }
 
@@ -186,8 +212,7 @@ public class DreamtwirlStageManager extends SavedData {
     public static DreamtwirlStage getStage(Level level, RegionPos regionPos) {
         DreamtwirlStageManager dsm = getDreamtwirlStageManager(level);
         if(dsm != null) {
-            DreamtwirlStage stage = dsm.getDreamtwirlIfPresent(regionPos);
-            return stage;
+            return dsm.getDreamtwirlIfPresent(regionPos);
         }
         return null;
     }

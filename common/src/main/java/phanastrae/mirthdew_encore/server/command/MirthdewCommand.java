@@ -177,7 +177,7 @@ public class MirthdewCommand {
 
         if(count > 0) {
             source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.list.count", count), false);
-            dreamtwirlStageManager.forEach((id, dreamtwirlStage) -> {
+            dreamtwirlStageManager.forEach((id, basicStageData) -> {
                 RegionPos regionPos = new RegionPos(id);
                 source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.list.entry", regionPos.regionX, regionPos.regionZ), false);
             });

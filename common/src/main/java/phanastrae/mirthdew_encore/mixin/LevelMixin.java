@@ -14,13 +14,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlLevelAttachment;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlWorldBorder;
-import phanastrae.mirthdew_encore.duck.WorldDuckInterface;
+import phanastrae.mirthdew_encore.duck.LevelDuckInterface;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
 import java.util.function.Supplier;
 
 @Mixin(Level.class)
-public class LevelMixin implements WorldDuckInterface {
+public class LevelMixin implements LevelDuckInterface {
 
     @Shadow
     @Final

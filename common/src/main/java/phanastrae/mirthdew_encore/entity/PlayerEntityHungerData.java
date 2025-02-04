@@ -1,6 +1,6 @@
 package phanastrae.mirthdew_encore.entity;
 
-import phanastrae.mirthdew_encore.duck.HungerManagerDuckInterface;
+import phanastrae.mirthdew_encore.duck.FoodDataDuckInterface;
 
 import static phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY;
 
@@ -133,11 +133,11 @@ public class PlayerEntityHungerData {
     }
 
     public int getFoodLevelDebt() {
-        return ((HungerManagerDuckInterface)this.player.getFoodData()).mirthdew_encore$getFoodLevelDebt();
+        return ((FoodDataDuckInterface)this.player.getFoodData()).mirthdew_encore$getFoodLevelDebt();
     }
 
     public void setFoodLevelDebt(int foodLevelDebt) {
-        ((HungerManagerDuckInterface)this.player.getFoodData()).mirthdew_encore$setFoodLevelDebt(foodLevelDebt);
+        ((FoodDataDuckInterface)this.player.getFoodData()).mirthdew_encore$setFoodLevelDebt(foodLevelDebt);
     }
 
     public static PlayerEntityHungerData fromPlayer(Player player) {

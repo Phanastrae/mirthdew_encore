@@ -87,7 +87,7 @@ public class MirthdewEncoreFabric implements ModInitializer {
 		CommandRegistrationCallback.EVENT.register(MirthdewEncoreCommands::registerCommands);
 
 		// world tick start
-		ServerTickEvents.START_WORLD_TICK.register(DreamtwirlLevelAttachment::tickWorld);
+		ServerTickEvents.START_WORLD_TICK.register(DreamtwirlLevelAttachment::tickLevel);
 	}
 
 	public void setupCreativeTabs() {

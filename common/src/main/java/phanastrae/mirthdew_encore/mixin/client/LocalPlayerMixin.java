@@ -14,11 +14,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import phanastrae.mirthdew_encore.block.entity.DoorMarkerBlockEntity;
 import phanastrae.mirthdew_encore.client.gui.screens.inventory.DoorMarkerEditScreen;
-import phanastrae.mirthdew_encore.duck.PlayerEntityDuckInterface;
+import phanastrae.mirthdew_encore.duck.PlayerDuckInterface;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreFluidTags;
 
 @Mixin(LocalPlayer.class)
-public abstract class LocalPlayerMixin extends AbstractClientPlayer implements PlayerEntityDuckInterface {
+public abstract class LocalPlayerMixin extends AbstractClientPlayer implements PlayerDuckInterface {
 
     @Shadow public Input input;
 

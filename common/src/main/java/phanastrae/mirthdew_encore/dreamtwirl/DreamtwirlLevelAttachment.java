@@ -8,27 +8,27 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.play.DreamtwirlBorder;
-import phanastrae.mirthdew_encore.duck.WorldDuckInterface;
+import phanastrae.mirthdew_encore.duck.LevelDuckInterface;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 public class DreamtwirlLevelAttachment {
 
-    public final Level world;
+    public final Level level;
     @Nullable
     private DreamtwirlStageManager dreamtwirlStageManager;
 
-    public DreamtwirlLevelAttachment(Level world) {
-        this.world = world;
+    public DreamtwirlLevelAttachment(Level level) {
+        this.level = level;
     }
 
     public void tick() {
-        if(!this.world.isClientSide && this.world instanceof ServerLevel serverWorld) {
+        if(!this.level.isClientSide && this.level instanceof ServerLevel serverWorld) {
             tickServer(serverWorld);
         }
     }
 
-    private void tickServer(ServerLevel serverWorld) {
-        //EntityList serverEntityList = ((ServerLevelAccessor)serverWorld).getEntityList();
+    private void tickServer(ServerLevel level) {
+        //EntityList serverEntityList = ((ServerLevelAccessor)level).getEntityList();
 
         //serverEntityList.forEach(this::tickEntity);
 
@@ -48,10 +48,10 @@ public class DreamtwirlLevelAttachment {
         return this.dreamtwirlStageManager;
     }
 
-    public void setDreamtwirlStageManager(ServerLevel serverWorld) {
-        this.dreamtwirlStageManager = serverWorld.getDataStorage().computeIfAbsent(
-                DreamtwirlStageManager.getPersistentStateType(serverWorld),
-                DreamtwirlStageManager.nameFor(serverWorld.dimensionTypeRegistration())
+    public void setDreamtwirlStageManager(ServerLevel level) {
+        this.dreamtwirlStageManager = level.getDataStorage().computeIfAbsent(
+                DreamtwirlStageManager.getPersistentStateType(level),
+                DreamtwirlStageManager.nameFor(level.dimensionTypeRegistration())
         );
     }
 
@@ -60,15 +60,15 @@ public class DreamtwirlLevelAttachment {
     }
 
     @Nullable
-    public static DreamtwirlLevelAttachment fromLevel(Level world) {
-        return ((WorldDuckInterface)world).mirthdew_encore$getDreamtwirlAttachment();
+    public static DreamtwirlLevelAttachment fromLevel(Level level) {
+        return ((LevelDuckInterface) level).mirthdew_encore$getDreamtwirlAttachment();
     }
 
-    public static void findBorderCollision(@Nullable Entity entity, Level world, ImmutableList.Builder<VoxelShape> builder) {
+    public static void findBorderCollision(@Nullable Entity entity, Level level, ImmutableList.Builder<VoxelShape> builder) {
         if(entity == null) return;
-        if(entity.level() != world) return;
+        if(entity.level() != level) return;
 
-        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(world);
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(level);
         if(DTWA == null) return;
 
         RegionPos regionPos = RegionPos.fromEntity(entity);
@@ -76,15 +76,15 @@ public class DreamtwirlLevelAttachment {
         builder.add(border.voxelShape);
     }
 
-    public static void tickWorld(Level world) {
-        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(world);
+    public static void tickLevel(Level level) {
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(level);
         if(DTWA == null) return;
 
         DTWA.tick();
     }
 
-    public static boolean positionsAreInSeperateDreamtwirls(Level world, Vec3 pos1, Vec3 pos2) {
-        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(world);
+    public static boolean positionsAreInSeperateDreamtwirls(Level level, Vec3 pos1, Vec3 pos2) {
+        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(level);
         if(DTWA == null) {
             return false;
         } else {

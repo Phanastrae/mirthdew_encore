@@ -8,10 +8,10 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import phanastrae.mirthdew_encore.duck.HungerManagerDuckInterface;
+import phanastrae.mirthdew_encore.duck.FoodDataDuckInterface;
 
 @Mixin(FoodData.class)
-public class FoodDataMixin implements HungerManagerDuckInterface {
+public class FoodDataMixin implements FoodDataDuckInterface {
 
     @Unique private int mirthdew_encore$foodLevelDebt = 0;
 

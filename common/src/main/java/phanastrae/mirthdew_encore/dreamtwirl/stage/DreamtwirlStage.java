@@ -1,11 +1,13 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
@@ -23,15 +25,14 @@ import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.List;
 
-public class DreamtwirlStage {
-    public static final String KEY_ID = "Id";
-    public static final String KEY_TIMESTAMP = "Timestamp";
+public class DreamtwirlStage extends SavedData {
     public static final String KEY_ACHERUNE_DATA = "acherune_data";
 
     public static boolean SEND_DEBUG_INFO = true;
 
     private final Level level;
 
+    private final BasicStageData basicStageData;
     private final long id;
     private final RegionPos regionPos;
     private final long timestamp;
@@ -43,14 +44,13 @@ public class DreamtwirlStage {
     @Nullable
     private StageDesignGenerator stageDesignGenerator;
 
-    private boolean markDirty = false;
-
-    public DreamtwirlStage(Level level, long id, long timestamp) {
+    public DreamtwirlStage(Level level, BasicStageData basicStageData) {
         this.level = level;
 
-        this.id = id;
-        this.regionPos = new RegionPos(id);
-        this.timestamp = timestamp;
+        this.basicStageData = basicStageData;
+        this.id = basicStageData.getId();
+        this.regionPos = basicStageData.getRegionPos();
+        this.timestamp = basicStageData.getTimestamp();
 
         this.stageAreaData = new StageAreaData(
                 this.regionPos,
@@ -60,6 +60,25 @@ public class DreamtwirlStage {
         );
         this.roomStorage = new PlaceReadyRoomStorage();
         this.stageAcherunes = new StageAcherunes();
+
+        this.setDirty();
+    }
+
+    @Override
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        tag.put(KEY_ACHERUNE_DATA, this.stageAcherunes.writeNbt(new CompoundTag()));
+
+        return tag;
+    }
+
+    public static DreamtwirlStage fromNbt(Level level, BasicStageData bsd, CompoundTag tag) {
+        DreamtwirlStage stage = new DreamtwirlStage(level, bsd);
+
+        if(tag.contains(KEY_ACHERUNE_DATA, Tag.TAG_COMPOUND)) {
+            stage.getStageAcherunes().readNbt(tag.getCompound(KEY_ACHERUNE_DATA));
+        }
+
+        return stage;
     }
 
     public static boolean isIdAllowed(long id) {
@@ -68,26 +87,6 @@ public class DreamtwirlStage {
 
     public static boolean isIdAllowed(RegionPos rp) {
         return ((rp.regionX & 0x1) == 0) && ((rp.regionZ & 0x1) == 0);
-    }
-
-    public CompoundTag writeNbt(CompoundTag nbt) {
-        nbt.putLong(KEY_ID, this.getId());
-        nbt.putLong(KEY_TIMESTAMP, this.getTimestamp());
-
-        nbt.put(KEY_ACHERUNE_DATA, this.stageAcherunes.writeNbt(new CompoundTag()));
-        return nbt;
-    }
-
-    public static DreamtwirlStage fromNbt(Level level, CompoundTag nbt) {
-        long id = nbt.getLong(KEY_ID);
-        long timestamp = nbt.getLong(KEY_TIMESTAMP);
-
-        DreamtwirlStage stage = new DreamtwirlStage(level, id, timestamp);
-
-        if(nbt.contains(KEY_ACHERUNE_DATA, Tag.TAG_COMPOUND)) {
-            stage.getStageAcherunes().readNbt(nbt.getCompound(KEY_ACHERUNE_DATA));
-        }
-        return stage;
     }
 
     public boolean isReady() {
@@ -138,7 +137,7 @@ public class DreamtwirlStage {
             }
 
             // TODO serialization
-            this.markDirty();
+            this.setDirty();
         }
 
         boolean placedRoom = false;
@@ -162,25 +161,13 @@ public class DreamtwirlStage {
                 room.setNeighborsCanSpawn();
 
                 // TODO serialization
-                this.markDirty();
+                this.setDirty();
             }
         }
 
         if(placedRoom) {
             this.roomStorage.getRooms().removeIf(PlaceReadyRoom::isPlaced);
         }
-    }
-
-    public void markDirty() {
-        this.markDirty(true);
-    }
-
-    public void markDirty(boolean value) {
-        this.markDirty = value;
-    }
-
-    public boolean isDirty() {
-        return this.markDirty;
     }
 
     public long getId() {
@@ -209,5 +196,17 @@ public class DreamtwirlStage {
 
     public StageAcherunes getStageAcherunes() {
         return stageAcherunes;
+    }
+
+    public static SavedData.Factory<DreamtwirlStage> getPersistentStateType(Level level, BasicStageData bsd) {
+        return new SavedData.Factory<>(
+                () -> new DreamtwirlStage(level, bsd),
+                (nbt, registryLookup) -> fromNbt(level, bsd, nbt),
+                null
+        );
+    }
+
+    public static String nameFor(RegionPos regionPos) {
+        return "mirthdew_dreamtwirl_stage." + regionPos.regionX + "." + regionPos.regionZ;
     }
 }
