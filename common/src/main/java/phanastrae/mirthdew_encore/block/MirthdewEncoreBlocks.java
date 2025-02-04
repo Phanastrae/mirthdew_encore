@@ -57,6 +57,14 @@ public class MirthdewEncoreBlocks {
             .replaceable()
     );
 
+    public static final Block GREATER_ACHERUNE = new GreaterAcheruneBlock(createSettings()
+            .mapColor(MapColor.COLOR_PURPLE)
+            .strength(-1.0F, 3600000.0F)
+            .sound(SoundType.AMETHYST)
+            .noLootTable()
+            .isValidSpawn(MirthdewEncoreBlocks::never)
+    );
+
     public static final Block BACCHENITE_BLOCK = new Block(createSettings()
             .mapColor(MapColor.COLOR_BLUE)
             .strength(1.25F)
@@ -580,6 +588,14 @@ public class MirthdewEncoreBlocks {
                     .noLootTable()
     );
 
+    public static final Block GREATER_ACHERUNE_MARKER = new GreaterAcheruneMarkerBlock(createSettings()
+            .mapColor(MapColor.COLOR_MAGENTA)
+            .strength(-1.0F, 3600000.0F)
+            .sound(SoundType.AMETHYST)
+            .noLootTable()
+            .isValidSpawn(MirthdewEncoreBlocks::never)
+    );
+
     public static final Block DREAMTWIRL_BARRIER = new DreamtwirlBarrierBlock(createSettings()
             .strength(-1.0F, 3600000.8F)
             .mapColor(MapColor.NONE)
@@ -609,6 +625,8 @@ public class MirthdewEncoreBlocks {
         r.accept(id("dreamseed"), DREAMSEED);
         r.accept(id("slumbersocket"), SLUMBERSOCKET);
         r.accept(id("slumberveil"), SLUMBERVEIL);
+
+        r.accept(id("greater_acherune"), GREATER_ACHERUNE);
 
         r.accept(id("bacchenite_block"), BACCHENITE_BLOCK);
 
@@ -790,6 +808,7 @@ public class MirthdewEncoreBlocks {
         r.accept(id("psyrite_lattice"), PSYRITE_LATTICE);
 
         r.accept(id("door_marker"), DOOR_MARKER);
+        r.accept(id("greater_acherune_marker"), GREATER_ACHERUNE_MARKER);
 
         r.accept(id("dreamtwirl_barrier"), DREAMTWIRL_BARRIER);
 

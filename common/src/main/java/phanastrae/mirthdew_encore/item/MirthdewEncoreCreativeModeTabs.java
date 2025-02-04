@@ -70,7 +70,7 @@ public class MirthdewEncoreCreativeModeTabs {
     public static void setupEntires(Helper helper) {
         // mirthdew tab
         addQueuedItems(helper);
-        addMirthdewVialsToTab(helper, MIRTHDEW_ENCORE_KEY, null);
+        addMirthdewVialsToTab(helper, MIRTHDEW_ENCORE_KEY, VESPERBILE_BUCKET.getDefaultInstance());
         addAllSpellCardsToTab(helper, MIRTHDEW_ENCORE_KEY);
 
         // building blocks
@@ -292,7 +292,9 @@ public class MirthdewEncoreCreativeModeTabs {
         helper.add(FUNCTIONAL_BLOCKS,
                 DREAMSEED,
                 SLUMBERSOCKET,
-                SLUMBERING_EYE
+                SLUMBERING_EYE,
+
+                GREATER_ACHERUNE
         );
 
         // redstone blocks
@@ -348,7 +350,8 @@ public class MirthdewEncoreCreativeModeTabs {
         // op blocks
         if(helper.operatorTabEnabled()) {
             helper.add(OP_BLOCKS,
-                    DOOR_MARKER
+                    DOOR_MARKER,
+                    GREATER_ACHERUNE_MARKER
             );
         }
     }

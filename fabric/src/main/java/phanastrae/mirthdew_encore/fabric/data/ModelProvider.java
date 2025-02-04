@@ -34,6 +34,8 @@ public class ModelProvider extends FabricModelProvider {
                 .forEach(blockFamily -> BMG.family(blockFamily.getBaseBlock()).generateFor(blockFamily));
 
         forMultiple(BMG, BlockModelGenerators::createTrivialCube,
+                GREATER_ACHERUNE,
+
                 BACCHENITE_BLOCK,
 
                 DECIDRHEUM_LEAVES,
@@ -48,7 +50,9 @@ public class ModelProvider extends FabricModelProvider {
                 GACHERIMM_PSYRITE_ORE,
                 SCARABRIM_PSYRITE_ORE,
                 SUNSLAKED_PSYRITE_ORE,
-                RAW_PSYRITE_BLOCK
+                RAW_PSYRITE_BLOCK,
+
+                GREATER_ACHERUNE_MARKER
         );
 
         forMultiple(BMG, BlockModelGenerators::createRotatedVariantBlock,

@@ -11,19 +11,27 @@ import java.util.function.BiConsumer;
 
 public class MirthdewEncoreBlockEntityTypes {
 
+    public static final BlockEntityType<VericDreamsnareBlockEntity> VERIC_DREAMSNARE = create(
+            "veric_dreamsnare", VericDreamsnareBlockEntity::new, MirthdewEncoreBlocks.VERIC_DREAMSNARE);
+
     public static final BlockEntityType<SlumbersocketBlockEntity> SLUMBERSOCKET = create(
             "slumbersocket", SlumbersocketBlockEntity::new, MirthdewEncoreBlocks.SLUMBERSOCKET);
 
-    public static final BlockEntityType<VericDreamsnareBlockEntity> VERIC_DREAMSNARE = create(
-            "veric_dreamsnare", VericDreamsnareBlockEntity::new, MirthdewEncoreBlocks.VERIC_DREAMSNARE);
+    public static final BlockEntityType<GreaterAcheruneBlockEntity> GREATER_ACHERUNE = create(
+            "greater_acherune", GreaterAcheruneBlockEntity::new, MirthdewEncoreBlocks.GREATER_ACHERUNE);
 
     public static final BlockEntityType<DoorMarkerBlockEntity> DOOR_MARKER = create(
             "door_marker", DoorMarkerBlockEntity::new, MirthdewEncoreBlocks.DOOR_MARKER);
 
+    public static final BlockEntityType<GreaterAcheruneMarkerBlockEntity> GREATER_ACHERUNE_MARKER = create(
+            "greater_acherune_marker", GreaterAcheruneMarkerBlockEntity::new, MirthdewEncoreBlocks.GREATER_ACHERUNE_MARKER);
+
     public static void init(BiConsumer<ResourceLocation, BlockEntityType<?>> r) {
-        r.accept(id("slumbersocket"), SLUMBERSOCKET);
         r.accept(id("veric_dreamsnare"), VERIC_DREAMSNARE);
+        r.accept(id("slumbersocket"), SLUMBERSOCKET);
+        r.accept(id("greater_acherune"), GREATER_ACHERUNE);
         r.accept(id("door_marker"), DOOR_MARKER);
+        r.accept(id("greater_acherune_marker"), GREATER_ACHERUNE_MARKER);
     }
 
     private static ResourceLocation id(String path) {

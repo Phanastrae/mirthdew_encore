@@ -165,7 +165,7 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         if(stage == null) return;
 
         if(stage.isReady()) {
-            Vec3 entrance = stage.getEntrancePos();
+            Vec3 entrance = stage.getEntrancePos(level.getRandom());
             if(entrance != null) {
                 ItemStack newStack = heldItem.copy();
                 newStack.remove(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL);

@@ -18,6 +18,7 @@ import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSource;
 
@@ -100,10 +101,15 @@ public class RoomPlacer {
             // i think this is here because in the event the room changes (ie datapack changes after world reload once i add serialization), the door positions could change
             // and thus it would make sense to do the block state setting separately to avoid having any new gates not getting set
 
-            List<StructureTemplate.StructureBlockInfo> gateInfos = RoomSource.getDoors(poolElement, structureTemplateManager, structurePiece.getPosition(), structurePiece.getRotation(), random);
-            for(StructureTemplate.StructureBlockInfo gateInfo : gateInfos) {
+            List<StructureTemplate.StructureBlockInfo> doorInfos = RoomSource.getDoorMarkerInfos(poolElement, structureTemplateManager, structurePiece.getPosition(), structurePiece.getRotation(), random);
+            for(StructureTemplate.StructureBlockInfo doorInfo : doorInfos) {
                 // TODO handle properly (ie add a custom replace state etc)
-                world.setBlockAndUpdate(gateInfo.pos(), Blocks.AIR.defaultBlockState());
+                world.setBlockAndUpdate(doorInfo.pos(), Blocks.AIR.defaultBlockState());
+            }
+
+            List<StructureTemplate.StructureBlockInfo> greaterAcheruneInfos = RoomSource.getGreaterAcheruneMarkerInfos(poolElement, structureTemplateManager, structurePiece.getPosition(), structurePiece.getRotation(), random);
+            for(StructureTemplate.StructureBlockInfo runeInfo : greaterAcheruneInfos) {
+                world.setBlockAndUpdate(runeInfo.pos(), MirthdewEncoreBlocks.GREATER_ACHERUNE.defaultBlockState());
             }
         }
     }

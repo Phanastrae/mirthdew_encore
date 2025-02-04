@@ -23,6 +23,8 @@ public class MirthdewEncoreItems {
     public static final Item DREAMSEED = blockOf(MirthdewEncoreBlocks.DREAMSEED, settings().rarity(Rarity.UNCOMMON).fireResistant());
     public static final Item SLUMBERSOCKET = blockOf(MirthdewEncoreBlocks.SLUMBERSOCKET);
 
+    public static final Item GREATER_ACHERUNE = blockOf(MirthdewEncoreBlocks.GREATER_ACHERUNE);
+
     public static final Item BACCHENITE_BLOCK = blockOf(MirthdewEncoreBlocks.BACCHENITE_BLOCK);
 
     public static final Item BACCHENITE_BRICKS = blockOf(MirthdewEncoreBlocks.BACCHENITE_BRICKS);
@@ -193,6 +195,7 @@ public class MirthdewEncoreItems {
     public static final Item PSYRITE_LATTICE = blockOf(MirthdewEncoreBlocks.PSYRITE_LATTICE);
 
     public static final Item DOOR_MARKER = blockOf(MirthdewEncoreBlocks.DOOR_MARKER, settings().rarity(Rarity.EPIC));
+    public static final Item GREATER_ACHERUNE_MARKER = blockOf(MirthdewEncoreBlocks.GREATER_ACHERUNE_MARKER, settings().rarity(Rarity.EPIC));
 
 
     public static final Item VESPERBILE_BUCKET = new BucketItem(MirthdewEncoreFluids.VESPERBILE, settings().craftRemainder(Items.BUCKET).stacksTo(1));
@@ -239,6 +242,8 @@ public class MirthdewEncoreItems {
         rwig.accept(id("veric_dreamsnare"), VERIC_DREAMSNARE);
         rwig.accept(id("dreamseed"), DREAMSEED);
         rwig.accept(id("slumbersocket"), SLUMBERSOCKET);
+
+        rwig.accept(id("greater_acherune"), GREATER_ACHERUNE);
 
         rwig.accept(id("bacchenite_shard"), BACCHENITE_SHARD);
         rwig.accept(id("bacchenite_block"), BACCHENITE_BLOCK);
@@ -428,6 +433,7 @@ public class MirthdewEncoreItems {
         r.accept(id("spell_deck"), SPELL_DECK);
 
         rwig.accept(id("door_marker"), DOOR_MARKER);
+        rwig.accept(id("greater_acherune_marker"), GREATER_ACHERUNE_MARKER);
     }
 
     private static ResourceLocation id(String path) {

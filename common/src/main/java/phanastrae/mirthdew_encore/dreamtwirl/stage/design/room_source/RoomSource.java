@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class RoomSource {
-    private static final Block DOOR_MARKER = MirthdewEncoreBlocks.DOOR_MARKER;
-
     private final RoomType roomType;
     private final Structure structure;
     private final List<Room> goodPrefabs;
@@ -114,7 +112,7 @@ public class RoomSource {
             if(piece instanceof PoolElementStructurePiece poolStructurePiece) {
                 StructurePoolElement poolElement = poolStructurePiece.getElement();
 
-                List<StructureTemplate.StructureBlockInfo> list = getDoors(poolElement, structureTemplateManager, poolStructurePiece.getPosition(), piece.getRotation(), random);
+                List<StructureTemplate.StructureBlockInfo> list = getDoorMarkerInfos(poolElement, structureTemplateManager, poolStructurePiece.getPosition(), piece.getRotation(), random);
 
                 for(StructureTemplate.StructureBlockInfo info : list) {
                     getDoorFromInfo(info).ifPresent(doors::add);
@@ -125,18 +123,26 @@ public class RoomSource {
         return doors;
     }
 
-    public static List<StructureTemplate.StructureBlockInfo> getDoors(StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos pos, Rotation rotation, RandomSource random) {
+    public static List<StructureTemplate.StructureBlockInfo> getDoorMarkerInfos(StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos pos, Rotation rotation, RandomSource random) {
+        return getMarkerInfos(MirthdewEncoreBlocks.DOOR_MARKER, poolElement, structureTemplateManager, pos, rotation, random);
+    }
+
+    public static List<StructureTemplate.StructureBlockInfo> getGreaterAcheruneMarkerInfos(StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos pos, Rotation rotation, RandomSource random) {
+        return getMarkerInfos(MirthdewEncoreBlocks.GREATER_ACHERUNE_MARKER, poolElement, structureTemplateManager, pos, rotation, random);
+    }
+
+    public static List<StructureTemplate.StructureBlockInfo> getMarkerInfos(Block targetBlock, StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos pos, Rotation rotation, RandomSource random) {
         if(poolElement instanceof SinglePoolElement singlePoolElement) {
             StructureTemplate structureTemplate = ((SinglePoolElementAccesor)singlePoolElement).invokeGetTemplate(structureTemplateManager);
             ObjectArrayList<StructureTemplate.StructureBlockInfo> objectArrayList = structureTemplate.filterBlocks(
-                    pos, new StructurePlaceSettings().setRotation(rotation), DOOR_MARKER, true
+                    pos, new StructurePlaceSettings().setRotation(rotation), targetBlock, true
             );
             Util.shuffle(objectArrayList, random);
             objectArrayList.sort(Comparator.<StructureTemplate.StructureBlockInfo>comparingInt(block -> Optionull.mapOrDefault(block.nbt(), nbt -> nbt.getInt("selection_priority"), 0)).reversed());
             return objectArrayList;
         } else if(poolElement instanceof ListPoolElement listPoolElement) {
             List<StructurePoolElement> elements = ((ListPoolElementAccessor)listPoolElement).getElements();
-            return getDoors(elements.getFirst(), structureTemplateManager, pos, rotation, random);
+            return getMarkerInfos(targetBlock, elements.getFirst(), structureTemplateManager, pos, rotation, random);
         } else {
             return new ObjectArrayList<>();
         }

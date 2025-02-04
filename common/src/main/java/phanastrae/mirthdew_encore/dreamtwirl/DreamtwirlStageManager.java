@@ -181,4 +181,14 @@ public class DreamtwirlStageManager extends SavedData {
             return getDreamtwirlStageManager(dreamtwirlWorld);
         }
     }
+
+    @Nullable
+    public static DreamtwirlStage getStage(Level level, RegionPos regionPos) {
+        DreamtwirlStageManager dsm = getDreamtwirlStageManager(level);
+        if(dsm != null) {
+            DreamtwirlStage stage = dsm.getDreamtwirlIfPresent(regionPos);
+            return stage;
+        }
+        return null;
+    }
 }

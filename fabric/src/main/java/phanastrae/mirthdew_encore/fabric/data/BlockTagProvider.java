@@ -224,14 +224,18 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
         getOrCreateTagBuilder(BlockTags.DRAGON_IMMUNE)
                 .add(
+                        GREATER_ACHERUNE,
                         DREAMTWIRL_BARRIER,
-                        DOOR_MARKER
+                        DOOR_MARKER,
+                        GREATER_ACHERUNE_MARKER
                 );
 
         getOrCreateTagBuilder(BlockTags.WITHER_IMMUNE)
                 .add(
+                        GREATER_ACHERUNE,
                         DREAMTWIRL_BARRIER,
-                        DOOR_MARKER
+                        DOOR_MARKER,
+                        GREATER_ACHERUNE_MARKER
                 );
 
         getOrCreateTagBuilder(BlockTags.SNAPS_GOAT_HORN)

@@ -1,12 +1,15 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.StageAcherunes;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignGenerator;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSourceCollection;
@@ -21,6 +24,10 @@ import phanastrae.mirthdew_encore.util.RegionPos;
 import java.util.List;
 
 public class DreamtwirlStage {
+    public static final String KEY_ID = "Id";
+    public static final String KEY_TIMESTAMP = "Timestamp";
+    public static final String KEY_ACHERUNE_DATA = "acherune_data";
+
     public static boolean SEND_DEBUG_INFO = true;
 
     private final Level level;
@@ -31,13 +38,10 @@ public class DreamtwirlStage {
 
     private final StageAreaData stageAreaData;
     private final PlaceReadyRoomStorage roomStorage;
+    private final StageAcherunes stageAcherunes;
 
     @Nullable
     private StageDesignGenerator stageDesignGenerator;
-
-    // TODO serialize/store this value properly
-    @Nullable
-    private Vec3 entrancePos;
 
     private boolean markDirty = false;
 
@@ -55,6 +59,7 @@ public class DreamtwirlStage {
                 this.level.getMaxBuildHeight()
         );
         this.roomStorage = new PlaceReadyRoomStorage();
+        this.stageAcherunes = new StageAcherunes();
     }
 
     public static boolean isIdAllowed(long id) {
@@ -66,24 +71,37 @@ public class DreamtwirlStage {
     }
 
     public CompoundTag writeNbt(CompoundTag nbt) {
-        nbt.putLong("Id", this.getId());
-        nbt.putLong("Timestamp", this.getTimestamp());
+        nbt.putLong(KEY_ID, this.getId());
+        nbt.putLong(KEY_TIMESTAMP, this.getTimestamp());
+
+        nbt.put(KEY_ACHERUNE_DATA, this.stageAcherunes.writeNbt(new CompoundTag()));
         return nbt;
     }
 
     public static DreamtwirlStage fromNbt(Level level, CompoundTag nbt) {
-        long id = nbt.getLong("Id");
-        long timestamp = nbt.getLong("Timestamp");
-        return new DreamtwirlStage(level, id, timestamp);
+        long id = nbt.getLong(KEY_ID);
+        long timestamp = nbt.getLong(KEY_TIMESTAMP);
+
+        DreamtwirlStage stage = new DreamtwirlStage(level, id, timestamp);
+
+        if(nbt.contains(KEY_ACHERUNE_DATA, Tag.TAG_COMPOUND)) {
+            stage.getStageAcherunes().readNbt(nbt.getCompound(KEY_ACHERUNE_DATA));
+        }
+        return stage;
     }
 
     public boolean isReady() {
-        return this.entrancePos != null;
+        return !this.stageAcherunes.isEmpty();
     }
 
     @Nullable
-    public Vec3 getEntrancePos() {
-        return this.entrancePos;
+    public Vec3 getEntrancePos(RandomSource random) {
+        Acherune acherune = this.stageAcherunes.getRandomEmptyEntranceAcherune(random);
+        if(acherune == null) {
+            return null;
+        } else {
+            return acherune.getPos().above().getBottomCenter();
+        }
     }
 
     public void generate(long stageSeed, ServerLevel serverLevel) {
@@ -136,7 +154,7 @@ public class DreamtwirlStage {
             if(room.place(level, this.stageAreaData.getInBoundsBoundingBox())) {
                 if(room.isEntrance()) {
                     // TODO add some sort of entrance block/marker
-                    this.entrancePos = room.getPrefab().getBoundingBox().getCenter().getCenter();
+                    //this.entrancePos = room.getPrefab().getBoundingBox().getCenter().getCenter();
                 }
                 placedRoom = true;
 
@@ -187,5 +205,9 @@ public class DreamtwirlStage {
 
     public PlaceReadyRoomStorage getRoomStorage() {
         return this.roomStorage;
+    }
+
+    public StageAcherunes getStageAcherunes() {
+        return stageAcherunes;
     }
 }
