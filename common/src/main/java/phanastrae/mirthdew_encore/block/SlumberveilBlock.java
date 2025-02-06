@@ -8,11 +8,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Portal;
 import net.minecraft.world.level.block.Rotation;
@@ -30,8 +26,10 @@ import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
 import phanastrae.mirthdew_encore.block.entity.SlumbersocketBlockEntity;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
+import phanastrae.mirthdew_encore.component.type.LinkedAcheruneComponent;
 import phanastrae.mirthdew_encore.component.type.LocationComponent;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.Optional;
@@ -247,25 +245,39 @@ public class SlumberveilBlock extends Block implements Portal {
 
     @Nullable
     @Override
-    public DimensionTransition getPortalDestination(ServerLevel world, Entity entity, BlockPos pos) {
-        Optional<SlumbersocketBlockEntity> slumbersocketBlockEntityOptional = findVeilSocket(world, pos);
+    public DimensionTransition getPortalDestination(ServerLevel level, Entity entity, BlockPos pos) {
+        Optional<SlumbersocketBlockEntity> slumbersocketBlockEntityOptional = findVeilSocket(level, pos);
         if(slumbersocketBlockEntityOptional.isPresent()) {
             SlumbersocketBlockEntity slumbersocketBlockEntity = slumbersocketBlockEntityOptional.get();
             ItemStack itemStack = slumbersocketBlockEntity.getHeldItem();
-            if(!itemStack.isEmpty() && itemStack.has(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
-                LocationComponent locationComponent = itemStack.get(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT);
-                Vec3 targetPos = locationComponent.getPos();
-                Level targetWorld = locationComponent.getLevel(world.getServer());
-                if(targetWorld != null) {
+            if(!itemStack.isEmpty()) {
+                Vec3 targetPos = null;
+                Level targetWorld = null;
+                if(itemStack.has(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
+                    LocationComponent locationComponent = itemStack.get(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT);
+
+                    targetPos = locationComponent.getPos();
+                    targetWorld = locationComponent.getLevel(level.getServer());
+                } else if(itemStack.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
+                    LinkedAcheruneComponent linkedAcherune = itemStack.get(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE);
+
+                    Acherune acherune = linkedAcherune.getAcherune(level.getServer());
+                    if(acherune != null) {
+                        targetPos = acherune.getPos().above().getBottomCenter();
+                        targetWorld = linkedAcherune.getLevel(level.getServer());
+                    }
+                }
+
+                if(targetPos != null && targetWorld != null) {
                     boolean validTarget = true;
                     DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getDreamtwirlStageManager(targetWorld);
-                    if(dreamtwirlStageManager != null) {
-                        if(dreamtwirlStageManager.getDreamtwirlIfPresent(RegionPos.fromVec3d(targetPos)) == null) {
+                    if (dreamtwirlStageManager != null) {
+                        if (dreamtwirlStageManager.getDreamtwirlIfPresent(RegionPos.fromVec3d(targetPos)) == null) {
                             validTarget = false;
                         }
                     }
 
-                    if(validTarget) {
+                    if (validTarget) {
                         if (targetWorld instanceof ServerLevel serverWorld) {
                             return new DimensionTransition(
                                     serverWorld,

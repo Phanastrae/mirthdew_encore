@@ -195,6 +195,8 @@
   "item.mirthdew_encore.slumbering_eye.unbound": "Unbound",
   "item.mirthdew_encore.slumbering_eye.bound": "Bound",
   "item.mirthdew_encore.slumbering_eye.bound.to": "to %s",
+  "item.mirthdew_encore.slumbering_eye.bound.to.acherune": "An Acherune",
+  "item.mirthdew_encore.slumbering_eye.bound.to.dreamtwirl_stage": "The Stage, awaiting an Acherune...",
   "item.mirthdew_encore.slumbering_eye.bound.to.xyz": "x: %s, y: %s, z: %s",
   "item.mirthdew_encore.slumbering_eye.bound.in": "in %s",
   "item.mirthdew_encore.spectral_candy": "Spectral Candy",

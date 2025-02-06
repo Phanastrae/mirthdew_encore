@@ -34,8 +34,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
 import phanastrae.mirthdew_encore.block.entity.SlumbersocketBlockEntity;
-import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
+import phanastrae.mirthdew_encore.item.SlumberingEyeItem;
 
 public class SlumbersocketBlock extends BaseEntityBlock {
     public static final MapCodec<SlumbersocketBlock> CODEC = simpleCodec(SlumbersocketBlock::new);
@@ -138,7 +138,7 @@ public class SlumbersocketBlock extends BaseEntityBlock {
         if (blockEntity instanceof SlumbersocketBlockEntity slumberSocketBlockEntity) {
             if(!slumberSocketBlockEntity.isHoldingItem()) {
                 ItemStack itemStack = player.getItemInHand(hand);
-                if(itemStack.is(Items.ENDER_EYE) || (itemStack.is(MirthdewEncoreItems.SLUMBERING_EYE) && (itemStack.has(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT) || itemStack.has(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL)))) {
+                if(itemStack.is(Items.ENDER_EYE) || (itemStack.is(MirthdewEncoreItems.SLUMBERING_EYE) && (SlumberingEyeItem.eyeHasDestination(itemStack)))) {
                     if (!world.isClientSide) {
                         player.level().playSound(null, player, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
                         player.gameEvent(GameEvent.BLOCK_PLACE, player);

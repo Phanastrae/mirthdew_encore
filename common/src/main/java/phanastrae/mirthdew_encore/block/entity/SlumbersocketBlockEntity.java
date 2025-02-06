@@ -32,11 +32,13 @@ import phanastrae.mirthdew_encore.block.DreamseedBlock;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.block.SlumbersocketBlock;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
+import phanastrae.mirthdew_encore.component.type.LinkedAcheruneComponent;
 import phanastrae.mirthdew_encore.component.type.LinkedDreamtwirlComponent;
-import phanastrae.mirthdew_encore.component.type.LocationComponent;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
+import phanastrae.mirthdew_encore.item.SlumberingEyeItem;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.Optional;
@@ -142,7 +144,7 @@ public class SlumbersocketBlockEntity extends BlockEntity {
                     boolean dreaming = state.getValue(SlumbersocketBlock.DREAMING);
                     ItemStack heldItem = blockEntity.getHeldItem();
                     if(!dreaming) {
-                        if((heldItem.is(Items.ENDER_EYE) || heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE)) && !heldItem.has(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT) && !heldItem.has(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL)) {
+                        if((heldItem.is(Items.ENDER_EYE) || heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE)) && !SlumberingEyeItem.eyeHasDestination(heldItem)) {
                             if(level.getBlockState(pos.below()).isAir()) {
                                 attemptEat(serverLevel, pos, state, blockEntity);
                             }
@@ -165,11 +167,12 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         if(stage == null) return;
 
         if(stage.isReady()) {
-            Vec3 entrance = stage.getEntrancePos(level.getRandom());
-            if(entrance != null) {
+            Acherune acherune = stage.getEntranceAcherune(level.getRandom());
+            if(acherune != null) {
                 ItemStack newStack = heldItem.copy();
                 newStack.remove(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL);
-                newStack.set(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT, LocationComponent.fromPosAndLevel(entrance, stage.getLevel()));
+                newStack.set(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE, LinkedAcheruneComponent.fromAcheruneAndStage(stage, acherune));
+
                 blockEntity.setHeldItem(newStack);
             }
         }

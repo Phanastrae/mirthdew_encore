@@ -98,6 +98,14 @@ public class StageAcherunes {
         }
     }
 
+    public @Nullable Acherune getAcherune(Acherune.AcheruneId id) {
+        return this.map.idMap.getOrDefault(id, null);
+    }
+
+    public @Nullable Acherune getAcherune(BlockPos pos) {
+        return this.map.posMap.getOrDefault(pos, null);
+    }
+
     public static class AcheruneStorage {
         private final List<Acherune> acherunes = new ObjectArrayList<>();
         private final Map<Acherune.AcheruneId, Acherune> idMap = new Object2ObjectOpenHashMap<>();

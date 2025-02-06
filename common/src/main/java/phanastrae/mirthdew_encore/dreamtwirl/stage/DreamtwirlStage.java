@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.StageAcherunes;
@@ -94,13 +93,8 @@ public class DreamtwirlStage extends SavedData {
     }
 
     @Nullable
-    public Vec3 getEntrancePos(RandomSource random) {
-        Acherune acherune = this.stageAcherunes.getRandomEmptyEntranceAcherune(random);
-        if(acherune == null) {
-            return null;
-        } else {
-            return acherune.getPos().above().getBottomCenter();
-        }
+    public Acherune getEntranceAcherune(RandomSource random) {
+        return this.stageAcherunes.getRandomEmptyEntranceAcherune(random);
     }
 
     public void generate(long stageSeed, ServerLevel serverLevel) {
