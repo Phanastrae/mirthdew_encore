@@ -65,6 +65,13 @@ public class MirthdewEncoreBlocks {
             .isValidSpawn(MirthdewEncoreBlocks::never)
     );
 
+    public static final Block ACHERUNE_HOLLOW = new AcheruneHollowBlock(createSettings()
+            .mapColor(MapColor.COLOR_PURPLE)
+            .strength(4.5F)
+            .sound(SoundType.AMETHYST)
+            .requiresCorrectToolForDrops()
+    );
+
     public static final Block BACCHENITE_BLOCK = new Block(createSettings()
             .mapColor(MapColor.COLOR_BLUE)
             .strength(1.25F)
@@ -627,6 +634,7 @@ public class MirthdewEncoreBlocks {
         r.accept(id("slumberveil"), SLUMBERVEIL);
 
         r.accept(id("greater_acherune"), GREATER_ACHERUNE);
+        r.accept(id("acherune_hollow"), ACHERUNE_HOLLOW);
 
         r.accept(id("bacchenite_block"), BACCHENITE_BLOCK);
 

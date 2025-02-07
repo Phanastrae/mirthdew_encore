@@ -63,33 +63,55 @@ public class StageAcherunes {
         return nbt;
     }
 
-    public boolean create(BlockPos pos, Level level) {
-        if(!this.map.containsKey(pos)) {
-            long time = level.getGameTime();
-            RandomSource random = level.random;
-            for(int i = 0; i < 100; i++) {
-                // this should, in practice, basically always succeed on the first try,
-                // but theoretically if you place an absurd number of acherunes in a single tick it might not
-                // as in, if you fill the entire empty dreamtwirl space with acherunes in a single tick there is roughly a 0.00000014% chance you might need to reroll at least once
-                // (assuming i did the math right)
+    public @Nullable Acherune create(BlockPos pos, Level level) {
+        if(this.map.containsKey(pos)) {
+            // if acherune already exists at this position, return it
+            return this.map.get(pos);
+        }
 
-                long id = random.nextLong();
-                Acherune.AcheruneId aId = new Acherune.AcheruneId(time, id);
-                Acherune acherune = new Acherune(pos, aId);
-                if(!this.map.containsKey(aId)) {
-                    this.map.put(acherune);
-                    this.setDirty();
-                    return true;
-                }
+        long time = level.getGameTime();
+        RandomSource random = level.random;
+        for(int i = 0; i < 100; i++) {
+            // this should, in practice, basically always succeed on the first try,
+            // but theoretically if you place an absurd number of acherunes in a single tick it might not
+            // as in, if you fill the entire empty dreamtwirl space with acherunes in a single tick there is roughly a 0.00000014% chance you might need to reroll at least once
+            // (assuming i did the math right)
+
+            long id = random.nextLong();
+            Acherune.AcheruneId aId = new Acherune.AcheruneId(time, id);
+            Acherune acherune = new Acherune(pos, aId);
+            if(!this.map.containsKey(aId)) {
+                this.map.put(acherune);
+                this.setDirty();
+                return acherune;
             }
         }
 
-        return false;
+        return null;
     }
 
     public void remove(BlockPos pos) {
-        this.map.remove(pos);
+        if(this.map.remove(pos)) {
+            this.setDirty();
+        }
+    }
+
+    public boolean moveAcherune(BlockPos oldPos, BlockPos newPos) {
+        if(this.map.containsKey(newPos)) {
+            return false;
+        }
+
+        Acherune ac = this.map.get(oldPos);
+        if(ac == null) {
+            return false;
+        }
+
+        this.remove(oldPos);
+        ac.setPos(newPos);
+        this.map.put(ac);
+
         this.setDirty();
+        return true;
     }
 
     public boolean isEmpty() {
@@ -107,6 +129,31 @@ public class StageAcherunes {
             return null;
         } else {
             return valid.get(random.nextInt(valid.size()));
+        }
+    }
+
+    public @Nullable Acherune getNearestAcheruneToPos(BlockPos target, RandomSource random) {
+        List<Acherune> nearest = new ObjectArrayList<>();
+        long nearestDistSqr = Long.MAX_VALUE;
+        for(Acherune acherune : this.map.values()) {
+            BlockPos acPos = acherune.getPos();
+            BlockPos offset = acPos.subtract(target);
+            long distSqr = (long)offset.getX()*offset.getX() + (long)offset.getY()*offset.getY() + (long)offset.getZ()*offset.getZ();
+
+            if(distSqr < nearestDistSqr) {
+                nearestDistSqr = distSqr;
+                nearest.clear();
+            }
+
+            if(distSqr == nearestDistSqr) {
+                nearest.add(acherune);
+            }
+        }
+
+        if(nearest.isEmpty()) {
+            return null;
+        } else {
+            return nearest.get(random.nextInt(nearest.size()));
         }
     }
 
@@ -137,11 +184,14 @@ public class StageAcherunes {
             this.posMap.put(acherune.getPos(), acherune);
         }
 
-        public void remove(BlockPos blockPos) {
+        public boolean remove(BlockPos blockPos) {
             if(this.posMap.containsKey(blockPos)) {
                 Acherune acherune = this.posMap.remove(blockPos);
                 this.idMap.remove(acherune.getId());
                 this.acherunes.remove(acherune);
+                return true;
+            } else {
+                return false;
             }
         }
 
@@ -157,6 +207,10 @@ public class StageAcherunes {
 
         public boolean containsKey(BlockPos pos) {
             return this.posMap.containsKey(pos);
+        }
+
+        public Acherune get(BlockPos pos) {
+            return this.posMap.get(pos);
         }
     }
 }

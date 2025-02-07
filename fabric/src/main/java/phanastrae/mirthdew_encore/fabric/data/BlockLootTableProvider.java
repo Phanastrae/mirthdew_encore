@@ -59,6 +59,8 @@ public class BlockLootTableProvider extends FabricBlockLootTableProvider {
         dropSelf(
                 SLUMBERSOCKET,
 
+                ACHERUNE_HOLLOW,
+
                 BACCHENITE_BLOCK,
 
                 CLINKERA_LATTICE,

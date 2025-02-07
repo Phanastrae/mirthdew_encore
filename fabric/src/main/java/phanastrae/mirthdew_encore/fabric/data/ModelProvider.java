@@ -35,7 +35,8 @@ public class ModelProvider extends FabricModelProvider {
 
         forMultiple(BMG, BlockModelGenerators::createTrivialCube,
                 GREATER_ACHERUNE,
-
+                ACHERUNE_HOLLOW,
+                
                 BACCHENITE_BLOCK,
 
                 DECIDRHEUM_LEAVES,

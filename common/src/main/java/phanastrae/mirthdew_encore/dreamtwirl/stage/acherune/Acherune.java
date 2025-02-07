@@ -10,7 +10,7 @@ public class Acherune {
     public static final String KEY_TIMESTAMP = "timestamp";
     public static final String KEY_ID = "id";
 
-    private final BlockPos pos;
+    private BlockPos pos;
     private final AcheruneId id;
 
     public Acherune(BlockPos pos, AcheruneId id) {
@@ -37,6 +37,10 @@ public class Acherune {
         BlockPos pos = new BlockPos(x, y, z);
 
         return new Acherune(pos, new AcheruneId(timestamp, id));
+    }
+
+    public void setPos(BlockPos pos) {
+        this.pos = pos;
     }
 
     public BlockPos getPos() {

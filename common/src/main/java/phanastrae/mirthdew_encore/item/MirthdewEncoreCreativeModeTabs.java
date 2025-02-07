@@ -294,7 +294,8 @@ public class MirthdewEncoreCreativeModeTabs {
                 SLUMBERSOCKET,
                 SLUMBERING_EYE,
 
-                GREATER_ACHERUNE
+                GREATER_ACHERUNE,
+                ACHERUNE_HOLLOW
         );
 
         // redstone blocks

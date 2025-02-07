@@ -82,6 +82,8 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(
                         SLUMBERSOCKET,
 
+                        ACHERUNE_HOLLOW,
+
                         BACCHENITE_BLOCK,
 
                         UNGUISHALE,
@@ -296,6 +298,11 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                         GACHERIMM_PSYRITE_ORE,
                         SCARABRIM_PSYRITE_ORE,
                         SUNSLAKED_PSYRITE_ORE
+                );
+
+        getOrCreateTagBuilder(ConventionalBlockTags.RELOCATION_NOT_SUPPORTED)
+                .add(
+                        GREATER_ACHERUNE
                 );
 
         // custom

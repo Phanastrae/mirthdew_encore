@@ -24,6 +24,7 @@ public class MirthdewEncoreItems {
     public static final Item SLUMBERSOCKET = blockOf(MirthdewEncoreBlocks.SLUMBERSOCKET);
 
     public static final Item GREATER_ACHERUNE = blockOf(MirthdewEncoreBlocks.GREATER_ACHERUNE);
+    public static final Item ACHERUNE_HOLLOW = blockOf(MirthdewEncoreBlocks.ACHERUNE_HOLLOW);
 
     public static final Item BACCHENITE_BLOCK = blockOf(MirthdewEncoreBlocks.BACCHENITE_BLOCK);
 
@@ -244,6 +245,7 @@ public class MirthdewEncoreItems {
         rwig.accept(id("slumbersocket"), SLUMBERSOCKET);
 
         rwig.accept(id("greater_acherune"), GREATER_ACHERUNE);
+        rwig.accept(id("acherune_hollow"), ACHERUNE_HOLLOW);
 
         rwig.accept(id("bacchenite_shard"), BACCHENITE_SHARD);
         rwig.accept(id("bacchenite_block"), BACCHENITE_BLOCK);
