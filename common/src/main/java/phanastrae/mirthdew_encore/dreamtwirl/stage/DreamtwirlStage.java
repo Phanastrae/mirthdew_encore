@@ -58,7 +58,7 @@ public class DreamtwirlStage extends SavedData {
                 this.level.getMaxBuildHeight()
         );
         this.roomStorage = new PlaceReadyRoomStorage();
-        this.stageAcherunes = new StageAcherunes();
+        this.stageAcherunes = new StageAcherunes(this);
 
         this.setDirty();
     }

@@ -9,6 +9,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +19,16 @@ import java.util.function.Predicate;
 public class StageAcherunes {
     public static String KEY_ACHERUNE_LIST = "acherune_list";
 
+    private final DreamtwirlStage stage;
     private final AcheruneStorage map = new AcheruneStorage();
+
+    public StageAcherunes(DreamtwirlStage stage) {
+        this.stage = stage;
+    }
+
+    public void setDirty() {
+        this.stage.setDirty();
+    }
 
     public CompoundTag writeNbt(CompoundTag nbt) {
         ListTag list = new ListTag();
@@ -68,6 +78,7 @@ public class StageAcherunes {
                 Acherune acherune = new Acherune(pos, aId);
                 if(!this.map.containsKey(aId)) {
                     this.map.put(acherune);
+                    this.setDirty();
                     return true;
                 }
             }
@@ -78,6 +89,7 @@ public class StageAcherunes {
 
     public void remove(BlockPos pos) {
         this.map.remove(pos);
+        this.setDirty();
     }
 
     public boolean isEmpty() {
