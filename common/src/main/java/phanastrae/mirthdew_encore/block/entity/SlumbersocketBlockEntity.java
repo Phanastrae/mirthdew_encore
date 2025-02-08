@@ -215,18 +215,23 @@ public class SlumbersocketBlockEntity extends BlockEntity {
     }
 
     public void tryBindToAcherune(Level level, BlockPos pos) {
-        if(this.linkedAcherune != null) {
+        if(this.linkedAcherune != null && level instanceof ServerLevel serverLevel) {
             ItemStack eye = this.getHeldItem();
             if(eye.is(MirthdewEncoreItems.SLUMBERING_EYE) && eye.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
-                DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
-                if (stage != null) {
-                    if (level instanceof ServerLevel serverLevel) {
-                        this.linkedAcherune.validateLinkedPos(serverLevel.getServer(), stage.getStageAcherunes());
-                    }
+                LinkedAcheruneComponent lac = eye.get(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE);
 
-                    if (this.linkedAcherune.getLinkedPos() == null) {
-                        this.linkedAcherune.setLinkedPos(BlockPosDimensional.fromPosAndLevel(pos, level));
-                        stage.getStageAcherunes().setDirty();
+                Level acLevel = lac.getLevel(serverLevel.getServer());
+                if(acLevel != null) {
+                    DreamtwirlStage stage = DreamtwirlStageManager.getStage(acLevel, new RegionPos(lac.regionId()));
+                    if (stage != null) {
+                        if (acLevel instanceof ServerLevel acServerLevel) {
+                            this.linkedAcherune.validateLinkedPos(acServerLevel.getServer(), stage.getStageAcherunes());
+                        }
+
+                        if (this.linkedAcherune.getLinkedPos() == null) {
+                            this.linkedAcherune.setLinkedPos(BlockPosDimensional.fromPosAndLevel(pos, level));
+                            stage.getStageAcherunes().setDirty();
+                        }
                     }
                 }
             }
