@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -38,6 +39,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
+import phanastrae.mirthdew_encore.item.SlumberingEyeItem;
 import phanastrae.mirthdew_encore.util.BlockPosDimensional;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
@@ -259,6 +261,31 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         return false;
     }
 
+    public void damageEye() {
+        this.setHeldItem(SlumberingEyeItem.damageEye(this.getHeldItem()));
+        if(this.getLevel() instanceof ServerLevel serverLevel) {
+            this.markForUpdate(serverLevel);
+        }
+    }
+
+    public boolean canRepairEye() {
+        ItemStack heldItem = this.getHeldItem();
+        return heldItem.is(MirthdewEncoreItems.SLEEPY_EYE) || (heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE) && heldItem.getDamageValue() != 0);
+    }
+
+    public boolean repairEye() {
+        if(canRepairEye()) {
+            this.setHeldItem(SlumberingEyeItem.repairEye(this.getHeldItem()));
+
+            if(this.getLevel() instanceof ServerLevel serverLevel) {
+                this.markForUpdate(serverLevel);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static void attemptLinkToDreamtwirlSpawn(ServerLevel level, BlockPos pos, BlockState state, SlumbersocketBlockEntity blockEntity, ItemStack heldItem) {
         if(!heldItem.has(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL)) return;
         LinkedDreamtwirlComponent linkedDreamtwirl = heldItem.get(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL);
@@ -309,6 +336,7 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         ItemStack newStack = MirthdewEncoreItems.SLUMBERING_EYE.getDefaultInstance();
         newStack.applyComponentsAndValidate(itemStack.getComponentsPatch());
         newStack.set(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL, LinkedDreamtwirlComponent.fromStage(stage));
+        newStack.set(DataComponents.DAMAGE, 2);
         blockEntity.setHeldItem(newStack);
         blockEntity.markForUpdate(level);
 

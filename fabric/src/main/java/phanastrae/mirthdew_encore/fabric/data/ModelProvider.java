@@ -114,6 +114,7 @@ public class ModelProvider extends FabricModelProvider {
         generateFlat(IMG,
                 MirthdewEncoreItems.SLEEPY_EYE,
                 MirthdewEncoreItems.SLUMBERING_EYE,
+                MirthdewEncoreItems.OCULAR_SOPORSTEW,
 
                 MirthdewEncoreItems.BACCHENITE_SHARD,
 

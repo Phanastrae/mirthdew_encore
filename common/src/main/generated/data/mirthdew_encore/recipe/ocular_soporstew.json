@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "mirthdew_encore:vesperbile_bucket"
+    },
+    {
+      "item": "mirthdew_encore:dreamseed"
+    },
+    {
+      "item": "minecraft:carrot"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "mirthdew_encore:bacchenite_shard"
+    }
+  ],
+  "result": {
+    "count": 5,
+    "id": "mirthdew_encore:ocular_soporstew"
+  }
+}

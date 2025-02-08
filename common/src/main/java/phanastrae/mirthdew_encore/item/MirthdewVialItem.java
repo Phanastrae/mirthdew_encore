@@ -1,9 +1,5 @@
 package phanastrae.mirthdew_encore.item;
 
-import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
-import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
-
-import java.util.List;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,17 +10,15 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
+import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
+import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
+
+import java.util.List;
 
 public class MirthdewVialItem extends Item {
-    public static final FoodProperties FOOD_COMPONENT = new FoodProperties.Builder().nutrition(2).saturationModifier(0.5F).build();
 
     public MirthdewVialItem(Item.Properties settings) {
         super(settings);

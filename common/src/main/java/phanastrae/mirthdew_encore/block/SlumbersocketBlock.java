@@ -84,6 +84,7 @@ public class SlumbersocketBlock extends BaseEntityBlock {
         if (!state.is(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof SlumbersocketBlockEntity slumberSocketBlockEntity) {
+                slumberSocketBlockEntity.damageEye();
                 Containers.dropContents(world, pos, slumberSocketBlockEntity.getItems());
             }
 
@@ -118,11 +119,11 @@ public class SlumbersocketBlock extends BaseEntityBlock {
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof SlumbersocketBlockEntity slumberSocketBlockEntity) {
+            ItemStack itemStack = player.getItemInHand(hand);
             if(!slumberSocketBlockEntity.isHoldingItem()) {
-                ItemStack itemStack = player.getItemInHand(hand);
                 if(itemStack.is(Items.ENDER_EYE) || ((itemStack.is(MirthdewEncoreItems.SLEEPY_EYE) || itemStack.is(MirthdewEncoreItems.SLUMBERING_EYE)) && (SlumberingEyeItem.eyeHasDestination(itemStack)))) {
                     if (!level.isClientSide) {
-                        player.level().playSound(null, player, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
+                        level.playSound(null, pos, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
                         player.gameEvent(GameEvent.BLOCK_PLACE, player);
 
                         ItemStack newStack = itemStack.copyWithCount(1);
@@ -139,9 +140,27 @@ public class SlumbersocketBlock extends BaseEntityBlock {
                         return ItemInteractionResult.SUCCESS;
                     } else {
                         slumberSocketBlockEntity.setDefaultLookTarget(state);
+                        return ItemInteractionResult.CONSUME;
                     }
+                }
+            } else {
+                if(itemStack.is(MirthdewEncoreItems.OCULAR_SOPORSTEW)) {
+                    if(slumberSocketBlockEntity.canRepairEye()) {
+                        if (!level.isClientSide) {
+                            level.playSound(null, pos, SoundEvents.ENDERMAN_SCREAM, SoundSource.BLOCKS, 0.8F, 0.8F + level.getRandom().nextFloat() * 0.4F);
+                            player.gameEvent(GameEvent.BLOCK_CHANGE, player);
 
-                    return ItemInteractionResult.CONSUME;
+                            itemStack.consume(1, player);
+                            slumberSocketBlockEntity.repairEye();
+
+                            slumberSocketBlockEntity.checkAcherune(level, pos);
+                            slumberSocketBlockEntity.checkDreaming(level, pos, state);
+
+                            return ItemInteractionResult.SUCCESS;
+                        } else {
+                            return ItemInteractionResult.CONSUME;
+                        }
+                    }
                 }
             }
         }

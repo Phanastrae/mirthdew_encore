@@ -51,6 +51,18 @@ public class RecipeProvider extends FabricRecipeProvider {
                 )
                 .save(exporter);
 
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.FOOD, OCULAR_SOPORSTEW, 5)
+                .requires(VESPERBILE_BUCKET)
+                .requires(DREAMSEED)
+                .requires(Items.CARROT)
+                .requires(Items.AMETHYST_SHARD)
+                .requires(BACCHENITE_SHARD)
+                .unlockedBy(
+                        getHasName(DREAMSEED),
+                        has(DREAMSEED)
+                )
+                .save(exporter);
+
         twoByTwoPacker(exporter, RecipeCategory.BUILDING_BLOCKS, BACCHENITE_BLOCK, BACCHENITE_SHARD);
         savePolished(BACCHENITE_BRICKS, BACCHENITE_BLOCK, exporter);
         savePolished(BACCHENITE_TILES, BACCHENITE_BRICKS, exporter);

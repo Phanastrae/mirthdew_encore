@@ -307,7 +307,8 @@ public class MirthdewEncoreCreativeModeTabs {
         // tools and utilities
         helper.addAfter(ENDER_EYE, TOOLS_AND_UTILITIES,
                 SLEEPY_EYE,
-                SLUMBERING_EYE
+                SLUMBERING_EYE,
+                OCULAR_SOPORSTEW
         );
         helper.addAfter(MILK_BUCKET, TOOLS_AND_UTILITIES,
                 VESPERBILE_BUCKET
@@ -329,6 +330,9 @@ public class MirthdewEncoreCreativeModeTabs {
         );
         helper.addAfter(COOKED_RABBIT, FOOD_AND_DRINKS,
                 PSYRITE_NUGGET
+        );
+        helper.addAfter(SPIDER_EYE, FOOD_AND_DRINKS,
+                OCULAR_SOPORSTEW
         );
 
         // ingredients

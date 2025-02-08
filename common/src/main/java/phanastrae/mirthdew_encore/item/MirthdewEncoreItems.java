@@ -1,16 +1,12 @@
 package phanastrae.mirthdew_encore.item;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
-import phanastrae.mirthdew_encore.component.type.FoodWhenFullProperties;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityTypes;
-import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.fluid.MirthdewEncoreFluids;
 
 import java.util.function.BiConsumer;
@@ -22,6 +18,11 @@ public class MirthdewEncoreItems {
     public static final Item VERIC_DREAMSNARE = blockOf(MirthdewEncoreBlocks.VERIC_DREAMSNARE);
     public static final Item DREAMSEED = blockOf(MirthdewEncoreBlocks.DREAMSEED, settings().rarity(Rarity.UNCOMMON).fireResistant());
     public static final Item SLUMBERSOCKET = blockOf(MirthdewEncoreBlocks.SLUMBERSOCKET);
+
+    public static final Item SLEEPY_EYE = new SlumberingEyeItem(settings().stacksTo(1));
+    public static final Item SLUMBERING_EYE = new SlumberingEyeItem(settings().rarity(Rarity.UNCOMMON).durability(5));
+
+    public static final Item OCULAR_SOPORSTEW = new Item(settings().food(MirthdewEncoreFoodComponents.OCULAR_SOPORSTEW));
 
     public static final Item GREATER_ACHERUNE = blockOf(MirthdewEncoreBlocks.GREATER_ACHERUNE);
     public static final Item ACHERUNE_HOLLOW = blockOf(MirthdewEncoreBlocks.ACHERUNE_HOLLOW);
@@ -195,44 +196,32 @@ public class MirthdewEncoreItems {
     public static final Item PSYRITE_BARS = blockOf(MirthdewEncoreBlocks.PSYRITE_BARS);
     public static final Item PSYRITE_LATTICE = blockOf(MirthdewEncoreBlocks.PSYRITE_LATTICE);
 
-    public static final Item DOOR_MARKER = blockOf(MirthdewEncoreBlocks.DOOR_MARKER, settings().rarity(Rarity.EPIC));
-    public static final Item GREATER_ACHERUNE_MARKER = blockOf(MirthdewEncoreBlocks.GREATER_ACHERUNE_MARKER, settings().rarity(Rarity.EPIC));
-
-
     public static final Item VESPERBILE_BUCKET = new BucketItem(MirthdewEncoreFluids.VESPERBILE, settings().craftRemainder(Items.BUCKET).stacksTo(1));
 
     public static final Item BACCHENITE_SHARD = new Item(settings());
 
-    public static final FoodProperties CLINKERA_SCRAPS_FOOD = new FoodProperties.Builder().nutrition(1).saturationModifier(0.1F).alwaysEdible().fast().build();
-    public static final FoodProperties PSYRITE_NUGGET_FOOD = new FoodProperties.Builder().nutrition(3).saturationModifier(0.3F).alwaysEdible().build();
-
-    public static final Item CLINKERA_SCRAPS = new Item(settings().food(CLINKERA_SCRAPS_FOOD));
+    public static final Item CLINKERA_SCRAPS = new Item(settings().food(MirthdewEncoreFoodComponents.CLINKERA_SCRAPS));
 
     public static final Item RAW_PSYRITE = new Item(settings());
     public static final Item PSYRITE_INGOT = new Item(settings());
-    public static final Item PSYRITE_NUGGET = new Item(settings().food(PSYRITE_NUGGET_FOOD));
+    public static final Item PSYRITE_NUGGET = new Item(settings().food(MirthdewEncoreFoodComponents.PSYRITE_NUGGET));
 
     public static final Item MIRTHDEW_VIAL = new MirthdewVialItem(
-            settings().food(MirthdewVialItem.FOOD_COMPONENT).component(MirthdewEncoreDataComponentTypes.MIRTHDEW_VIAL_AMPLIFIER, 0).rarity(Rarity.UNCOMMON));
+            settings().food(MirthdewEncoreFoodComponents.MIRTHDEW_VIAL).component(MirthdewEncoreDataComponentTypes.MIRTHDEW_VIAL_AMPLIFIER, 0).rarity(Rarity.UNCOMMON));
 
-    public static final Item SLEEPY_EYE = new SlumberingEyeItem(settings().stacksTo(1));
-    public static final Item SLUMBERING_EYE = new SlumberingEyeItem(settings().stacksTo(1).rarity(Rarity.UNCOMMON));
-
-    public static final FoodProperties SPECTRAL_CANDY_FOOD_COMPONENT = new FoodProperties.Builder().nutrition(1).saturationModifier(4F).alwaysEdible().build();
     public static final Item SPECTRAL_CANDY = new Item(settings()
-            .food(SPECTRAL_CANDY_FOOD_COMPONENT)
+            .food(MirthdewEncoreFoodComponents.SPECTRAL_CANDY)
             .component(
                     MirthdewEncoreDataComponentTypes.FOOD_WHEN_FULL,
-                    new FoodWhenFullProperties.Builder().effect(
-                            new MobEffectInstance(
-                                    MirthdewEncoreStatusEffects.DREAMY_DIET_ENTRY, 3000, 2
-                            ), 1)
-                            .build()
+                    MirthdewEncoreFoodComponents.SPECTRAL_CANDY_WHEN_FULL
             )
     );
 
     public static final Item SPELL_CARD = new SpellCardSingularItem(settings().stacksTo(1).rarity(Rarity.UNCOMMON));
     public static final Item SPELL_DECK = new SpellCardDeckItem(settings().stacksTo(1).rarity(Rarity.RARE));
+
+    public static final Item DOOR_MARKER = blockOf(MirthdewEncoreBlocks.DOOR_MARKER, settings().rarity(Rarity.EPIC));
+    public static final Item GREATER_ACHERUNE_MARKER = blockOf(MirthdewEncoreBlocks.GREATER_ACHERUNE_MARKER, settings().rarity(Rarity.EPIC));
 
     public static void init(BiConsumer<ResourceLocation, Item> r) {
         BiConsumer<ResourceLocation, Item> rwig = (rl, i) -> { // register with item group
@@ -244,6 +233,11 @@ public class MirthdewEncoreItems {
         rwig.accept(id("veric_dreamsnare"), VERIC_DREAMSNARE);
         rwig.accept(id("dreamseed"), DREAMSEED);
         rwig.accept(id("slumbersocket"), SLUMBERSOCKET);
+
+        rwig.accept(id("sleepy_eye"), SLEEPY_EYE);
+        rwig.accept(id("slumbering_eye"), SLUMBERING_EYE);
+
+        rwig.accept(id("ocular_soporstew"), OCULAR_SOPORSTEW);
 
         rwig.accept(id("greater_acherune"), GREATER_ACHERUNE);
         rwig.accept(id("acherune_hollow"), ACHERUNE_HOLLOW);
@@ -425,13 +419,9 @@ public class MirthdewEncoreItems {
         rwig.accept(id("psyrite_bars"), PSYRITE_BARS);
         rwig.accept(id("psyrite_lattice"), PSYRITE_LATTICE);
 
-
         rwig.accept(id("vesperbile_bucket"), VESPERBILE_BUCKET);
 
-
         r.accept(id("mirthdew_vial"), MIRTHDEW_VIAL);
-        rwig.accept(id("sleepy_eye"), SLEEPY_EYE);
-        rwig.accept(id("slumbering_eye"), SLUMBERING_EYE);
         rwig.accept(id("spectral_candy"), SPECTRAL_CANDY);
         r.accept(id("spell_card"), SPELL_CARD);
         r.accept(id("spell_deck"), SPELL_DECK);
