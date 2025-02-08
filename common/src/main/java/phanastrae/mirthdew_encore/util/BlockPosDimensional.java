@@ -33,4 +33,14 @@ public record BlockPosDimensional(int x, int y, int z, ResourceLocation dimensio
         return server.getLevel(ResourceKey.create(Registries.DIMENSION, dimensionId));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if(o == this) {
+            return true;
+        } else if (o instanceof BlockPosDimensional bpd) {
+            return this.x == bpd.x && this.y == bpd.y && this.z == bpd.z && this.dimensionId.equals(bpd.dimensionId);
+        } else {
+            return false;
+        }
+    }
 }

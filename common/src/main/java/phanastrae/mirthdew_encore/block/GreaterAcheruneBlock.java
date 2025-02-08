@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
@@ -11,13 +12,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.block.entity.GreaterAcheruneBlockEntity;
+import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
 import phanastrae.mirthdew_encore.component.type.LinkedAcheruneComponent;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
@@ -31,7 +39,8 @@ import java.util.Set;
 
 import static phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE;
 
-public class GreaterAcheruneBlock extends Block implements EntityBlock {
+public class GreaterAcheruneBlock extends BaseEntityBlock {
+    public static final EnumProperty<RuneState> RUNE_STATE = EnumProperty.create("rune_state", RuneState.class);
     public static final MapCodec<GreaterAcheruneBlock> CODEC = simpleCodec(GreaterAcheruneBlock::new);
 
     @Override
@@ -41,11 +50,30 @@ public class GreaterAcheruneBlock extends Block implements EntityBlock {
 
     protected GreaterAcheruneBlock(BlockBehaviour.Properties properties) {
         super(properties);
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(RUNE_STATE, RuneState.INERT));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(RUNE_STATE);
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new GreaterAcheruneBlockEntity(pos, state);
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return createTickerHelper(type, MirthdewEncoreBlockEntityTypes.GREATER_ACHERUNE,
+                level.isClientSide() ? GreaterAcheruneBlockEntity::tickClient : GreaterAcheruneBlockEntity::tickServer);
     }
 
     @Override
@@ -59,8 +87,10 @@ public class GreaterAcheruneBlock extends Block implements EntityBlock {
 
     @Override
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
-        if(level.getBlockEntity(pos) instanceof GreaterAcheruneBlockEntity gabe) {
-            gabe.onRemove(state, level, pos, newState);
+        if (!state.is(newState.getBlock())) {
+            if (level.getBlockEntity(pos) instanceof GreaterAcheruneBlockEntity gabe) {
+                gabe.onRemove(state, level, pos, newState);
+            }
         }
 
         super.onRemove(state, level, pos, newState, movedByPiston);
@@ -68,41 +98,44 @@ public class GreaterAcheruneBlock extends Block implements EntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (level.isClientSide) {
-            return InteractionResult.SUCCESS;
-        } else {
-            DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
-            if(stage != null) {
-                StageAcherunes stageAcherunes = stage.getStageAcherunes();
-                Acherune acherune = stageAcherunes.getAcherune(pos);
-                MinecraftServer server = level.getServer();
-                if(acherune != null && server != null) {
-                    boolean valid = acherune.validateLinkedPos(server, stageAcherunes);
-                    if(valid) {
-                        BlockPosDimensional linkedPos = acherune.getLinkedPos();
-                        if (linkedPos != null) {
-                            if (linkedPos.getLevel(server) instanceof ServerLevel linkedLevel) {
-                                player.teleportTo(linkedLevel, linkedPos.x() + 0.5, linkedPos.y() + 1.0, linkedPos.z() + 0.5, Set.of(), player.getXRot(), player.getYRot());
-                                return InteractionResult.CONSUME;
+        RuneState runeState = state.getValue(RUNE_STATE);
+        if(runeState == RuneState.BOUND) {
+            if (level.isClientSide) {
+                return InteractionResult.SUCCESS;
+            } else {
+                DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
+                if (stage != null) {
+                    StageAcherunes stageAcherunes = stage.getStageAcherunes();
+                    Acherune acherune = stageAcherunes.getAcherune(pos);
+                    MinecraftServer server = level.getServer();
+                    if (acherune != null && server != null) {
+                        if (acherune.validateLinkedPos(server, stageAcherunes)) {
+                            BlockPosDimensional linkedPos = acherune.getLinkedPos();
+                            if (linkedPos != null) {
+                                if (linkedPos.getLevel(server) instanceof ServerLevel linkedLevel) {
+                                    player.teleportTo(linkedLevel, linkedPos.x() + 0.5, linkedPos.y() + 1.0, linkedPos.z() + 0.5, Set.of(), player.getYRot(), player.getXRot());
+                                }
                             }
                         }
                     }
                 }
+                return InteractionResult.CONSUME;
             }
         }
+
         return super.useWithoutItem(state, level, pos, player, hitResult);
     }
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if(stack.is(Items.ENDER_EYE)) {
-            if(level.isClientSide) {
+        if(state.getValue(RUNE_STATE) != RuneState.INERT && stack.is(Items.ENDER_EYE)) {
+            if (level.isClientSide) {
                 return ItemInteractionResult.SUCCESS;
             } else {
                 DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
-                if(stage != null) {
+                if (stage != null) {
                     Acherune acherune = stage.getStageAcherunes().getAcherune(pos);
-                    if(acherune != null) {
+                    if (acherune != null) {
                         ItemStack newStack = MirthdewEncoreItems.SLEEPY_EYE.getDefaultInstance();
                         newStack.applyComponentsAndValidate(stack.getComponentsPatch());
                         newStack.set(LINKED_ACHERUNE, LinkedAcheruneComponent.fromAcheruneAndStage(stage, acherune));
@@ -119,5 +152,22 @@ public class GreaterAcheruneBlock extends Block implements EntityBlock {
             }
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+    }
+
+    public enum RuneState implements StringRepresentable {
+        INERT("inert"),
+        UNBOUND("unbound"),
+        BOUND("bound");
+
+        String name;
+
+        RuneState(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return this.name;
+        }
     }
 }

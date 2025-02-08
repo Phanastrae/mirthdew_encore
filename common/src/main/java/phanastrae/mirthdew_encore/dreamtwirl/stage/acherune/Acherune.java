@@ -110,7 +110,7 @@ public class Acherune {
         Level level = this.linkedPos.getLevel(server);
         if(!(level instanceof ServerLevel)) return false;
 
-        BlockPos linkedBlockPos = linkedPos.getPos();
+        BlockPos linkedBlockPos = this.linkedPos.getPos();
         if(level.getBlockEntity(linkedBlockPos) instanceof SlumbersocketBlockEntity blockEntity) {
             ItemStack eye = blockEntity.getHeldItem();
             if(eye.is(MirthdewEncoreItems.SLUMBERING_EYE) && eye.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
@@ -130,7 +130,9 @@ public class Acherune {
     public record AcheruneId(long timestamp, long id) {
         @Override
         public boolean equals(Object o) {
-            if(o instanceof AcheruneId ot) {
+            if(o == this) {
+                return true;
+            } else if(o instanceof AcheruneId ot) {
                 return this.timestamp == ot.timestamp && this.id == ot.id;
             } else {
                 return false;

@@ -72,14 +72,14 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static final Block BACCHENITE_BLOCK = new Block(createSettings()
+    public static final Block BACCHENITE_BLOCK = new AcherunePoweredBlock(createSettings()
             .mapColor(MapColor.COLOR_BLUE)
             .strength(1.25F)
             .sound(SoundType.AMETHYST)
             .requiresCorrectToolForDrops()
     );
 
-    public static final Block BACCHENITE_BRICKS = new Block(createSettings()
+    public static final Block BACCHENITE_BRICKS = new AcherunePoweredBlock(createSettings()
             .mapColor(MapColor.COLOR_BLUE)
             .strength(1.25F)
             .sound(SoundType.AMETHYST)
@@ -90,7 +90,7 @@ public class MirthdewEncoreBlocks {
     public static final Block BACCHENITE_BRICK_SLAB = slabOf(BACCHENITE_BRICKS);
     public static final Block BACCHENITE_BRICK_WALL = wallOf(BACCHENITE_BRICKS);
 
-    public static final Block BACCHENITE_TILES = new Block(createSettings()
+    public static final Block BACCHENITE_TILES = new AcherunePoweredBlock(createSettings()
             .mapColor(MapColor.COLOR_BLUE)
             .strength(1.25F)
             .sound(SoundType.AMETHYST)

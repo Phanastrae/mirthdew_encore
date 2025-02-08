@@ -10,6 +10,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 
 import java.util.Collection;
@@ -72,7 +73,7 @@ public class StageAcherunes {
 
         long time = level.getGameTime();
         RandomSource random = level.random;
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < 5; i++) {
             // this should, in practice, basically always succeed on the first try,
             // but theoretically if you place an absurd number of acherunes in a single tick it might not
             // as in, if you fill the entire empty dreamtwirl space with acherunes in a single tick there is roughly a 0.00000014% chance you might need to reroll at least once
