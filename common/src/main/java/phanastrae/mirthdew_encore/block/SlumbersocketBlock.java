@@ -3,13 +3,10 @@ package phanastrae.mirthdew_encore.block;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -17,7 +14,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -61,21 +57,7 @@ public class SlumbersocketBlock extends BaseEntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        boolean dreaming = false;
-
-        Level world = ctx.getLevel();
-        if(!world.isClientSide()) {
-            ItemStack itemStack = ctx.getItemInHand();
-            CustomData nbtComponent = itemStack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY);
-
-            NonNullList<ItemStack> heldItem = NonNullList.withSize(1, ItemStack.EMPTY);
-            ContainerHelper.loadAllItems(nbtComponent.copyTag(), heldItem, world.registryAccess());
-            ItemStack heldStack = heldItem.getFirst();
-            if(!heldStack.isEmpty() && heldStack.is(MirthdewEncoreItems.SLUMBERING_EYE)) {
-                dreaming = true;
-            }
-        }
-        return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite()).setValue(DREAMING, dreaming);
+        return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
     }
 
     @Override
@@ -122,7 +104,7 @@ public class SlumbersocketBlock extends BaseEntityBlock {
         if(state.getValue(DREAMING)) {
             BlockPos downPos = pos.below();
             BlockState downState = world.getBlockState(downPos);
-            if (!downState.is(this) && downState.isAir()) {
+            if (downState.isAir()) {
                 world.setBlockAndUpdate(downPos,
                         MirthdewEncoreBlocks.SLUMBERVEIL.defaultBlockState()
                                 .setValue(SlumberveilBlock.DISTANCE, 0)
@@ -133,24 +115,25 @@ public class SlumbersocketBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof SlumbersocketBlockEntity slumberSocketBlockEntity) {
             if(!slumberSocketBlockEntity.isHoldingItem()) {
                 ItemStack itemStack = player.getItemInHand(hand);
                 if(itemStack.is(Items.ENDER_EYE) || (itemStack.is(MirthdewEncoreItems.SLUMBERING_EYE) && (SlumberingEyeItem.eyeHasDestination(itemStack)))) {
-                    if (!world.isClientSide) {
+                    if (!level.isClientSide) {
                         player.level().playSound(null, player, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
                         player.gameEvent(GameEvent.BLOCK_PLACE, player);
 
                         ItemStack newStack = itemStack.copyWithCount(1);
                         itemStack.consume(1, player);
                         slumberSocketBlockEntity.setHeldItem(newStack);
-                        if(newStack.is(MirthdewEncoreItems.SLUMBERING_EYE)) {
-                            world.setBlockAndUpdate(pos, state.setValue(SlumbersocketBlock.DREAMING, true));
-                        }
-                        if(world instanceof ServerLevel serverWorld) {
-                            slumberSocketBlockEntity.markForUpdate(serverWorld);
+
+                        slumberSocketBlockEntity.checkAcherune(level, pos);
+                        slumberSocketBlockEntity.checkDreaming(level, pos, state);
+
+                        if(level instanceof ServerLevel serverLevel) {
+                            slumberSocketBlockEntity.markForUpdate(serverLevel);
                         }
 
                         return ItemInteractionResult.SUCCESS;
@@ -179,7 +162,8 @@ public class SlumbersocketBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
-        return createTickerHelper(type, MirthdewEncoreBlockEntityTypes.SLUMBERSOCKET, SlumbersocketBlockEntity::tick);
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return createTickerHelper(type, MirthdewEncoreBlockEntityTypes.SLUMBERSOCKET,
+                level.isClientSide() ? SlumbersocketBlockEntity::tickClient : SlumbersocketBlockEntity::tickServer);
     }
 }

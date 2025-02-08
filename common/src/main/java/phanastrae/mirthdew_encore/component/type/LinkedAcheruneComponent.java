@@ -72,6 +72,10 @@ public record LinkedAcheruneComponent(long regionId, long timestamp, ResourceLoc
         DreamtwirlStage stage = getStage(server);
         if(stage == null) return null;
 
-        return stage.getStageAcherunes().getAcherune(new Acherune.AcheruneId(this.acTimestamp, this.acId));
+        return stage.getStageAcherunes().getAcherune(this.getAcheruneId());
+    }
+
+    public Acherune.AcheruneId getAcheruneId() {
+        return new Acherune.AcheruneId(this.acTimestamp, this.acId);
     }
 }

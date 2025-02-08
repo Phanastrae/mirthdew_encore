@@ -65,16 +65,16 @@ public class DreamtwirlStage extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
-        tag.put(KEY_ACHERUNE_DATA, this.stageAcherunes.writeNbt(new CompoundTag()));
+        tag.put(KEY_ACHERUNE_DATA, this.stageAcherunes.writeNbt(new CompoundTag(), registries));
 
         return tag;
     }
 
-    public static DreamtwirlStage fromNbt(Level level, BasicStageData bsd, CompoundTag tag) {
+    public static DreamtwirlStage fromNbt(Level level, BasicStageData bsd, CompoundTag tag, HolderLookup.Provider registries) {
         DreamtwirlStage stage = new DreamtwirlStage(level, bsd);
 
         if(tag.contains(KEY_ACHERUNE_DATA, Tag.TAG_COMPOUND)) {
-            stage.getStageAcherunes().readNbt(tag.getCompound(KEY_ACHERUNE_DATA));
+            stage.getStageAcherunes().readNbt(tag.getCompound(KEY_ACHERUNE_DATA), registries);
         }
 
         return stage;
@@ -195,7 +195,7 @@ public class DreamtwirlStage extends SavedData {
     public static SavedData.Factory<DreamtwirlStage> getPersistentStateType(Level level, BasicStageData bsd) {
         return new SavedData.Factory<>(
                 () -> new DreamtwirlStage(level, bsd),
-                (nbt, registryLookup) -> fromNbt(level, bsd, nbt),
+                (nbt, registryLookup) -> fromNbt(level, bsd, nbt, registryLookup),
                 null
         );
     }

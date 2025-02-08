@@ -2,13 +2,26 @@ package phanastrae.mirthdew_encore.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import phanastrae.mirthdew_encore.block.entity.GreaterAcheruneBlockEntity;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.StageAcherunes;
+import phanastrae.mirthdew_encore.util.BlockPosDimensional;
+import phanastrae.mirthdew_encore.util.RegionPos;
+
+import java.util.Set;
 
 public class GreaterAcheruneBlock extends Block implements EntityBlock {
     public static final MapCodec<GreaterAcheruneBlock> CODEC = simpleCodec(GreaterAcheruneBlock::new);
@@ -43,5 +56,32 @@ public class GreaterAcheruneBlock extends Block implements EntityBlock {
         }
 
         super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (level.isClientSide) {
+            return InteractionResult.SUCCESS;
+        } else {
+            DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
+            if(stage != null) {
+                StageAcherunes stageAcherunes = stage.getStageAcherunes();
+                Acherune acherune = stageAcherunes.getAcherune(pos);
+                MinecraftServer server = level.getServer();
+                if(acherune != null && server != null) {
+                    boolean valid = acherune.validateLinkedPos(server, stageAcherunes);
+                    if(valid) {
+                        BlockPosDimensional linkedPos = acherune.getLinkedPos();
+                        if (linkedPos != null) {
+                            if (linkedPos.getLevel(server) instanceof ServerLevel linkedLevel) {
+                                player.teleportTo(linkedLevel, linkedPos.x() + 0.5, linkedPos.y() + 1.0, linkedPos.z() + 0.5, Set.of(), player.getXRot(), player.getYRot());
+                                return InteractionResult.CONSUME;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return super.useWithoutItem(state, level, pos, player, hitResult);
     }
 }

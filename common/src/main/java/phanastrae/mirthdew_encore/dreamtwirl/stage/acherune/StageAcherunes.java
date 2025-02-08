@@ -3,6 +3,7 @@ package phanastrae.mirthdew_encore.dreamtwirl.stage.acherune;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -30,13 +31,13 @@ public class StageAcherunes {
         this.stage.setDirty();
     }
 
-    public CompoundTag writeNbt(CompoundTag nbt) {
+    public CompoundTag writeNbt(CompoundTag nbt, HolderLookup.Provider registries) {
         ListTag list = new ListTag();
 
         int index = 0;
         for(Acherune acherune : map.values()) {
             CompoundTag acTag = new CompoundTag();
-            acherune.writeNbt(acTag);
+            acherune.writeNbt(acTag, registries);
             list.add(index, acTag);
 
             index++;
@@ -46,7 +47,7 @@ public class StageAcherunes {
         return nbt;
     }
 
-    public CompoundTag readNbt(CompoundTag nbt) {
+    public CompoundTag readNbt(CompoundTag nbt, HolderLookup.Provider registries) {
         this.map.clear();
 
         if(nbt.contains(KEY_ACHERUNE_LIST)) {
@@ -54,7 +55,7 @@ public class StageAcherunes {
 
             for(int i = 0; i < listTag.size(); i++) {
                 CompoundTag acTag = listTag.getCompound(i);
-                Acherune acherune = Acherune.fromNbt(acTag);
+                Acherune acherune = Acherune.fromNbt(acTag, registries);
 
                 this.map.put(acherune);
             }

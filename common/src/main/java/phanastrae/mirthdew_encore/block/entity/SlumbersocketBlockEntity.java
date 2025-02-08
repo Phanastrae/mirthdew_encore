@@ -39,6 +39,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 import phanastrae.mirthdew_encore.item.SlumberingEyeItem;
+import phanastrae.mirthdew_encore.util.BlockPosDimensional;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.Optional;
@@ -56,6 +57,11 @@ public class SlumbersocketBlockEntity extends BlockEntity {
 
     private final NonNullList<ItemStack> heldItem = NonNullList.withSize(1, ItemStack.EMPTY);
 
+    private boolean checkedAcherune = false;
+    private @Nullable Acherune linkedAcherune;
+    private boolean checkedDreaming = false;
+    private boolean wasDreaming;
+
     public SlumbersocketBlockEntity(BlockPos pos, BlockState state) {
         super(MirthdewEncoreBlockEntityTypes.SLUMBERSOCKET, pos, state);
         this.setDefaultLookTarget(state);
@@ -63,6 +69,7 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         this.yaw = this.targetYaw;
         this.prevPitch = this.targetPitch;
         this.prevYaw = this.targetYaw;
+        this.wasDreaming = state.hasProperty(SlumbersocketBlock.DREAMING) ? state.getValue(SlumbersocketBlock.DREAMING) : false;
     }
 
     @Override
@@ -92,6 +99,9 @@ public class SlumbersocketBlockEntity extends BlockEntity {
     public void setHeldItem(ItemStack itemStack) {
         this.heldItem.set(0, itemStack);
         this.setChanged();
+
+        this.checkedAcherune = false;
+        this.checkedDreaming = false;
     }
 
     public ItemStack getHeldItem() {
@@ -112,51 +122,126 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         this.targetPitch = 0;
     }
 
-    public void markForUpdate(ServerLevel world) {
-        world.getChunkSource().blockChanged(this.getBlockPos());
+    public void markForUpdate(ServerLevel level) {
+        level.getChunkSource().blockChanged(this.getBlockPos());
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, SlumbersocketBlockEntity blockEntity) {
-        if(level.isClientSide()) {
-            double x = pos.getX() + 0.5;
-            double y = pos.getY() + 0.5;
-            double z = pos.getZ() + 0.5;
-            Player playerEntity = level.getNearestPlayer(x, y, z, 16.0, false);
-            if (playerEntity != null) {
-                Vec3 offset = playerEntity.getEyePosition().subtract(x, y, z).normalize();
-                blockEntity.targetYaw = (float)Math.toDegrees(Mth.atan2(offset.z, offset.x)) - 90;
-                blockEntity.targetPitch = (float)Math.toDegrees(Mth.atan2(offset.y, offset.horizontalDistance()));
-            } else {
-                blockEntity.setDefaultLookTarget(state);
-            }
+    public static void tickClient(Level level, BlockPos pos, BlockState state, SlumbersocketBlockEntity blockEntity) {
+        double x = pos.getX() + 0.5;
+        double y = pos.getY() + 0.5;
+        double z = pos.getZ() + 0.5;
+        Player playerEntity = level.getNearestPlayer(x, y, z, 16.0, false);
+        if (playerEntity != null) {
+            Vec3 offset = playerEntity.getEyePosition().subtract(x, y, z).normalize();
+            blockEntity.targetYaw = (float)Math.toDegrees(Mth.atan2(offset.z, offset.x)) - 90;
+            blockEntity.targetPitch = (float)Math.toDegrees(Mth.atan2(offset.y, offset.horizontalDistance()));
+        } else {
+            blockEntity.setDefaultLookTarget(state);
+        }
 
-            blockEntity.prevYaw = blockEntity.yaw;
-            blockEntity.prevPitch = blockEntity.pitch;
+        blockEntity.prevYaw = blockEntity.yaw;
+        blockEntity.prevPitch = blockEntity.pitch;
 
-            float turnSpeed = isDreaming(state) ? 0.015f : 0.07f;
-            blockEntity.yaw = Mth.rotLerp(turnSpeed, blockEntity.yaw, blockEntity.targetYaw);
-            blockEntity.pitch = Mth.lerp(turnSpeed, blockEntity.pitch, blockEntity.targetPitch);
-        } else if(level instanceof ServerLevel serverLevel) {
-            blockEntity.timer++;
+        float turnSpeed = blockEntity.getHeldItem().is(MirthdewEncoreItems.SLUMBERING_EYE) ? 0.015f : 0.07f;
+        blockEntity.yaw = Mth.rotLerp(turnSpeed, blockEntity.yaw, blockEntity.targetYaw);
+        blockEntity.pitch = Mth.lerp(turnSpeed, blockEntity.pitch, blockEntity.targetPitch);
+    }
 
-            if (blockEntity.timer % 100 == 0) {
-                if(state.hasProperty(SlumbersocketBlock.DREAMING)) {
-                    boolean dreaming = state.getValue(SlumbersocketBlock.DREAMING);
-                    ItemStack heldItem = blockEntity.getHeldItem();
-                    if(!dreaming) {
-                        if((heldItem.is(Items.ENDER_EYE) || heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE)) && !SlumberingEyeItem.eyeHasDestination(heldItem)) {
-                            if(level.getBlockState(pos.below()).isAir()) {
-                                attemptEat(serverLevel, pos, state, blockEntity);
-                            }
-                        }
-                    } else {
-                        if(heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE) && heldItem.has(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL)) {
-                            attemptLinkToDreamtwirlSpawn(serverLevel, pos, state, blockEntity, heldItem);
+    public static void tickServer(Level level, BlockPos pos, BlockState state, SlumbersocketBlockEntity blockEntity) {
+        if(!(level instanceof ServerLevel serverLevel)) return;
+
+        blockEntity.timer++;
+
+        if(!blockEntity.checkedAcherune) {
+            blockEntity.checkAcherune(level, pos);
+        }
+        if(!blockEntity.checkedDreaming || (!blockEntity.wasDreaming && blockEntity.timer % 100 == 0)) {
+            blockEntity.checkDreaming(level, pos, state);
+        }
+
+        if(blockEntity.timer % 100 == 0) {
+            if(state.hasProperty(SlumbersocketBlock.DREAMING)) {
+                ItemStack heldItem = blockEntity.getHeldItem();
+                if(!blockEntity.wasDreaming) {
+                    if((heldItem.is(Items.ENDER_EYE) || (heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE)) && !SlumberingEyeItem.eyeHasDestination(heldItem))) {
+                        if(level.getBlockState(pos.below()).isAir()) {
+                            attemptEat(serverLevel, pos, state, blockEntity);
                         }
                     }
                 }
+
+                if(heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE) && heldItem.has(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL) && !heldItem.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
+                    attemptLinkToDreamtwirlSpawn(serverLevel, pos, state, blockEntity, heldItem);
+                }
             }
         }
+    }
+
+    public void checkAcherune(Level level, BlockPos pos) {
+        ItemStack eye = this.getHeldItem();
+        if(eye.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
+            LinkedAcheruneComponent lac = eye.get(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE);
+            this.linkedAcherune = lac.getAcherune(level.getServer());
+        } else {
+            this.linkedAcherune = null;
+        }
+        this.checkedAcherune = true;
+    }
+
+    public void checkDreaming(Level level, BlockPos pos, BlockState state) {
+        boolean dreaming = this.isDreaming(level, pos);
+
+        if(!dreaming) {
+            this.tryBindToAcherune(level, pos);
+            dreaming = this.isDreaming(level, pos);
+        }
+
+        if (dreaming != this.wasDreaming && state.hasProperty(SlumbersocketBlock.DREAMING)) {
+            this.wasDreaming = dreaming;
+            level.setBlock(pos, state.setValue(SlumbersocketBlock.DREAMING, dreaming), 3);
+        }
+
+        this.checkedDreaming = true;
+    }
+
+    public void tryBindToAcherune(Level level, BlockPos pos) {
+        if(this.linkedAcherune != null) {
+            DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
+            if (stage != null) {
+                if (level instanceof ServerLevel serverLevel) {
+                    this.linkedAcherune.validateLinkedPos(serverLevel.getServer(), stage.getStageAcherunes());
+                }
+
+                if (this.linkedAcherune.getLinkedPos() == null) {
+                    this.linkedAcherune.setLinkedPos(BlockPosDimensional.fromPosAndLevel(pos, level));
+                    stage.getStageAcherunes().setDirty();
+                }
+            }
+        }
+    }
+
+    public boolean isDreaming(Level level, BlockPos pos) {
+        if(this.canDream()) {
+            BlockState below = level.getBlockState(pos.below());
+            return below.is(MirthdewEncoreBlocks.SLUMBERVEIL) || below.isAir();
+        } else {
+            return false;
+        }
+    }
+
+    public boolean canDream() {
+        ItemStack eye = this.getHeldItem();
+        if(eye.has(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
+            return true;
+        }
+
+        if(eye.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
+            if(this.linkedAcherune != null && this.linkedAcherune.isLinkedTo(this.getBlockPos(), this.getLevel())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static void attemptLinkToDreamtwirlSpawn(ServerLevel level, BlockPos pos, BlockState state, SlumbersocketBlockEntity blockEntity, ItemStack heldItem) {
@@ -200,19 +285,6 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         stage.generate(level.random.nextLong(), level);
 
         RandomSource random = level.getRandom();
-        RegionPos regionPos = stage.getRegionPos();
-
-        // spawn platform
-        /*
-        BlockPos targetPos = new BlockPos(
-                regionPos.getCenterX() + random.nextInt(256) - 128,
-                64,
-                regionPos.getCenterZ() + random.nextInt(256) - 128
-        );
-        if(stage.getLevel() instanceof ServerLevel serverLevel) {
-            EndPlatformFeature.createEndPlatform(serverLevel, targetPos, true);
-        }
-        */
 
         // eat seed
         level.setBlockAndUpdate(seedBlockPos, Blocks.SOUL_FIRE.defaultBlockState());
@@ -221,11 +293,9 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         ItemStack itemStack = blockEntity.getHeldItem();
         ItemStack newStack = MirthdewEncoreItems.SLUMBERING_EYE.getDefaultInstance();
         newStack.applyComponentsAndValidate(itemStack.getComponentsPatch());
-        //newStack.set(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT, LocationComponent.fromPosAndLevel(targetPos.getBottomCenter(), stage.getLevel()));
         newStack.set(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL, LinkedDreamtwirlComponent.fromStage(stage));
         blockEntity.setHeldItem(newStack);
-
-        level.setBlockAndUpdate(socketPos, socketState.setValue(SlumbersocketBlock.DREAMING, true));
+        blockEntity.markForUpdate(level);
 
         // particle and sounds
         Vec3 socketPosV3 = socketPos.getCenter();
@@ -267,9 +337,5 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         }
 
         return dreamtwirlStageManager.createNewStage();
-    }
-
-    public static boolean isDreaming(BlockState state) {
-        return state.hasProperty(SlumbersocketBlock.DREAMING) ? state.getValue(SlumbersocketBlock.DREAMING) : false;
     }
 }
