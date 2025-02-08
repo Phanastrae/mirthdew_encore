@@ -25,7 +25,8 @@ import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 
 public class SlumbersocketBlockEntityRenderer implements BlockEntityRenderer<SlumbersocketBlockEntity> {
     private static final ResourceLocation TEXTURE = MirthdewEncore.id("textures/entity/slumbersocket/eye.png");
-    private static final ResourceLocation TEXTURE_DREAMING = MirthdewEncore.id("textures/entity/slumbersocket/eye_dreaming.png");
+    private static final ResourceLocation TEXTURE_SLEEPY = MirthdewEncore.id("textures/entity/slumbersocket/eye_sleepy.png");
+    private static final ResourceLocation TEXTURE_SLUMBERING = MirthdewEncore.id("textures/entity/slumbersocket/eye_slumbering.png");
 
     private final ModelPart eye;
 
@@ -60,7 +61,9 @@ public class SlumbersocketBlockEntityRenderer implements BlockEntityRenderer<Slu
         if(heldItem.isEmpty()) {
             return null;
         } else if(heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE)) {
-            return TEXTURE_DREAMING;
+            return TEXTURE_SLUMBERING;
+        } else if(heldItem.is(MirthdewEncoreItems.SLEEPY_EYE)) {
+            return TEXTURE_SLEEPY;
         } else if(heldItem.is(Items.ENDER_EYE)) {
             return TEXTURE;
         } else {

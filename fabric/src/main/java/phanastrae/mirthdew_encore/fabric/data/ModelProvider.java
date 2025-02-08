@@ -112,6 +112,7 @@ public class ModelProvider extends FabricModelProvider {
     @Override
     public void generateItemModels(ItemModelGenerators IMG) {
         generateFlat(IMG,
+                MirthdewEncoreItems.SLEEPY_EYE,
                 MirthdewEncoreItems.SLUMBERING_EYE,
 
                 MirthdewEncoreItems.BACCHENITE_SHARD,

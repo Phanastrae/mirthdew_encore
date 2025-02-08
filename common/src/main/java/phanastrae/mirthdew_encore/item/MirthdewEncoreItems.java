@@ -215,6 +215,7 @@ public class MirthdewEncoreItems {
     public static final Item MIRTHDEW_VIAL = new MirthdewVialItem(
             settings().food(MirthdewVialItem.FOOD_COMPONENT).component(MirthdewEncoreDataComponentTypes.MIRTHDEW_VIAL_AMPLIFIER, 0).rarity(Rarity.UNCOMMON));
 
+    public static final Item SLEEPY_EYE = new SlumberingEyeItem(settings().stacksTo(1));
     public static final Item SLUMBERING_EYE = new SlumberingEyeItem(settings().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     public static final FoodProperties SPECTRAL_CANDY_FOOD_COMPONENT = new FoodProperties.Builder().nutrition(1).saturationModifier(4F).alwaysEdible().build();
@@ -429,6 +430,7 @@ public class MirthdewEncoreItems {
 
 
         r.accept(id("mirthdew_vial"), MIRTHDEW_VIAL);
+        rwig.accept(id("sleepy_eye"), SLEEPY_EYE);
         rwig.accept(id("slumbering_eye"), SLUMBERING_EYE);
         rwig.accept(id("spectral_candy"), SPECTRAL_CANDY);
         r.accept(id("spell_card"), SPELL_CARD);

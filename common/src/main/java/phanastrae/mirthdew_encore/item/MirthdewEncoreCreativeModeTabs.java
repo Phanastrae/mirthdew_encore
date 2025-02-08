@@ -292,6 +292,7 @@ public class MirthdewEncoreCreativeModeTabs {
         helper.add(FUNCTIONAL_BLOCKS,
                 DREAMSEED,
                 SLUMBERSOCKET,
+                SLEEPY_EYE,
                 SLUMBERING_EYE,
 
                 GREATER_ACHERUNE,
@@ -305,6 +306,7 @@ public class MirthdewEncoreCreativeModeTabs {
 
         // tools and utilities
         helper.addAfter(ENDER_EYE, TOOLS_AND_UTILITIES,
+                SLEEPY_EYE,
                 SLUMBERING_EYE
         );
         helper.addAfter(MILK_BUCKET, TOOLS_AND_UTILITIES,

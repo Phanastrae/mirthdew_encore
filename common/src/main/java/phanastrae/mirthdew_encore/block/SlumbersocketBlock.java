@@ -120,7 +120,7 @@ public class SlumbersocketBlock extends BaseEntityBlock {
         if (blockEntity instanceof SlumbersocketBlockEntity slumberSocketBlockEntity) {
             if(!slumberSocketBlockEntity.isHoldingItem()) {
                 ItemStack itemStack = player.getItemInHand(hand);
-                if(itemStack.is(Items.ENDER_EYE) || (itemStack.is(MirthdewEncoreItems.SLUMBERING_EYE) && (SlumberingEyeItem.eyeHasDestination(itemStack)))) {
+                if(itemStack.is(Items.ENDER_EYE) || ((itemStack.is(MirthdewEncoreItems.SLEEPY_EYE) || itemStack.is(MirthdewEncoreItems.SLUMBERING_EYE)) && (SlumberingEyeItem.eyeHasDestination(itemStack)))) {
                     if (!level.isClientSide) {
                         player.level().playSound(null, player, SoundEvents.END_PORTAL_FRAME_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
                         player.gameEvent(GameEvent.BLOCK_PLACE, player);

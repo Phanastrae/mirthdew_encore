@@ -15,6 +15,7 @@ import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.entity.SlumbersocketBlockEntity;
 import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.component.type.LinkedAcheruneComponent;
+import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 import phanastrae.mirthdew_encore.util.BlockPosDimensional;
 
 public class Acherune {
@@ -112,7 +113,7 @@ public class Acherune {
         BlockPos linkedBlockPos = linkedPos.getPos();
         if(level.getBlockEntity(linkedBlockPos) instanceof SlumbersocketBlockEntity blockEntity) {
             ItemStack eye = blockEntity.getHeldItem();
-            if(eye.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
+            if(eye.is(MirthdewEncoreItems.SLUMBERING_EYE) && eye.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
                 LinkedAcheruneComponent lac = eye.get(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE);
 
                 if(this.getId().equals(lac.getAcheruneId())) {

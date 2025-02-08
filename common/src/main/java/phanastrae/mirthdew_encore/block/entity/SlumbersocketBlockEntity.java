@@ -38,7 +38,6 @@ import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
-import phanastrae.mirthdew_encore.item.SlumberingEyeItem;
 import phanastrae.mirthdew_encore.util.BlockPosDimensional;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
@@ -142,7 +141,16 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         blockEntity.prevYaw = blockEntity.yaw;
         blockEntity.prevPitch = blockEntity.pitch;
 
-        float turnSpeed = blockEntity.getHeldItem().is(MirthdewEncoreItems.SLUMBERING_EYE) ? 0.015f : 0.07f;
+        ItemStack heldItem = blockEntity.getHeldItem();
+        float turnSpeed = 0.0f;
+        if(heldItem.is(Items.ENDER_EYE)) {
+            turnSpeed = 0.07f;
+        } else if(heldItem.is(MirthdewEncoreItems.SLEEPY_EYE)) {
+            turnSpeed = 0.03f;
+        } else if(heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE)) {
+            turnSpeed = 0.015f;
+        }
+
         blockEntity.yaw = Mth.rotLerp(turnSpeed, blockEntity.yaw, blockEntity.targetYaw);
         blockEntity.pitch = Mth.lerp(turnSpeed, blockEntity.pitch, blockEntity.targetPitch);
     }
@@ -163,14 +171,14 @@ public class SlumbersocketBlockEntity extends BlockEntity {
             if(state.hasProperty(SlumbersocketBlock.DREAMING)) {
                 ItemStack heldItem = blockEntity.getHeldItem();
                 if(!blockEntity.wasDreaming) {
-                    if((heldItem.is(Items.ENDER_EYE) || (heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE)) && !SlumberingEyeItem.eyeHasDestination(heldItem))) {
+                    if((heldItem.is(Items.ENDER_EYE))) {
                         if(level.getBlockState(pos.below()).isAir()) {
                             attemptEat(serverLevel, pos, state, blockEntity);
                         }
                     }
                 }
 
-                if(heldItem.is(MirthdewEncoreItems.SLUMBERING_EYE) && heldItem.has(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL) && !heldItem.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
+                if(heldItem.has(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL) && !heldItem.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
                     attemptLinkToDreamtwirlSpawn(serverLevel, pos, state, blockEntity, heldItem);
                 }
             }
@@ -206,15 +214,18 @@ public class SlumbersocketBlockEntity extends BlockEntity {
 
     public void tryBindToAcherune(Level level, BlockPos pos) {
         if(this.linkedAcherune != null) {
-            DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
-            if (stage != null) {
-                if (level instanceof ServerLevel serverLevel) {
-                    this.linkedAcherune.validateLinkedPos(serverLevel.getServer(), stage.getStageAcherunes());
-                }
+            ItemStack eye = this.getHeldItem();
+            if(eye.is(MirthdewEncoreItems.SLUMBERING_EYE) && eye.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
+                DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
+                if (stage != null) {
+                    if (level instanceof ServerLevel serverLevel) {
+                        this.linkedAcherune.validateLinkedPos(serverLevel.getServer(), stage.getStageAcherunes());
+                    }
 
-                if (this.linkedAcherune.getLinkedPos() == null) {
-                    this.linkedAcherune.setLinkedPos(BlockPosDimensional.fromPosAndLevel(pos, level));
-                    stage.getStageAcherunes().setDirty();
+                    if (this.linkedAcherune.getLinkedPos() == null) {
+                        this.linkedAcherune.setLinkedPos(BlockPosDimensional.fromPosAndLevel(pos, level));
+                        stage.getStageAcherunes().setDirty();
+                    }
                 }
             }
         }
@@ -231,6 +242,10 @@ public class SlumbersocketBlockEntity extends BlockEntity {
 
     public boolean canDream() {
         ItemStack eye = this.getHeldItem();
+        if(!eye.is(MirthdewEncoreItems.SLUMBERING_EYE)) {
+            return false;
+        }
+
         if(eye.has(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT)) {
             return true;
         }
