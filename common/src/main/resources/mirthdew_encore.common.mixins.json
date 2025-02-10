@@ -12,17 +12,19 @@
     "FoodPropertiesPossibleEffectAccessor",
     "LevelMixin",
     "ListPoolElementAccessor",
+    "LivingEntityAccessor",
     "LivingEntityMixin",
     "PlayerMixin",
+    "PointedDripstoneBlockMixin",
     "ProjectileAccessor",
     "SculkBlockMixin",
+    "ServerEntityMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerLevelAccessor",
     "ServerLevelMixin",
     "ServerPlayerMixin",
     "SimpleParticleTypeAccessor",
-    "SinglePoolElementAccesor",
-    "client.PointedDripstoneBlockMixin"
+    "SinglePoolElementAccesor"
   ],
   "client": [
     "client.BlockEntityRenderersAccessor",
@@ -36,10 +38,12 @@
     "client.GuiMixin",
     "client.LevelRendererMixin",
     "client.LightTextureMixin",
+    "client.LivingEntityRendererMixin",
     "client.LocalPlayerMixin",
-    "client.MinecraftMixin"
+    "client.MinecraftMixin",
+    "client.PlayerRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-	}
+  }
 }

@@ -87,14 +87,14 @@ public class AcherunePoweredBlock extends Block {
             for(Direction direction : Direction.Plane.HORIZONTAL) {
                 BlockPos adjPos = pos.relative(direction);
                 BlockState adjState = level.getBlockState(adjPos);
-                power = Math.max(power, this.getPower(adjState));
+                power = Math.max(power, getPower(adjState));
             }
 
             return Math.max(0, power - 1);
         }
     }
 
-    private int getPower(BlockState state) {
+    public static int getPower(BlockState state) {
         if(state.hasProperty(ACHERUNE_POWER)) {
             return state.getValue(ACHERUNE_POWER);
         } else if(state.is(MirthdewEncoreBlocks.GREATER_ACHERUNE)) {

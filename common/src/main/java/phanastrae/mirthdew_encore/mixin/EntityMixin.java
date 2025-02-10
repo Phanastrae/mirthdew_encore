@@ -48,6 +48,26 @@ public abstract class EntityMixin implements EntityDuckInterface {
         this.mirthdew_encore$entityAttachment = new MirthdewEncoreEntityAttachment((Entity)(Object)this);
     }
 
+    @Inject(method = "saveWithoutId", at = @At("RETURN"))
+    private void mirthdew_encore$writeNbt(CompoundTag nbt, CallbackInfoReturnable<CompoundTag> cir) {
+        if(nbt.contains("MirthdewEncore", Tag.TAG_COMPOUND)) {
+            CompoundTag nbtCompound = nbt.getCompound("MirthdewEncore");
+            this.mirthdew_encore$entityAttachment.writeNbt(nbtCompound);
+        } else {
+            CompoundTag nbtCompound = new CompoundTag();
+            this.mirthdew_encore$entityAttachment.writeNbt(nbtCompound);
+            nbt.put("MirthdewEncore", nbtCompound);
+        }
+    }
+
+    @Inject(method = "load", at = @At("RETURN"))
+    private void mirthdew_encore$readNbt(CompoundTag nbt, CallbackInfo ci) {
+        if(nbt.contains("MirthdewEncore", Tag.TAG_COMPOUND)) {
+            CompoundTag nbtCompound = nbt.getCompound("MirthdewEncore");
+            this.mirthdew_encore$entityAttachment.readNbt(nbtCompound);
+        }
+    }
+
     @Inject(method = "baseTick", at = @At("RETURN"))
     private void mirthdew_encore$tick(CallbackInfo ci) {
         this.mirthdew_encore$entityAttachment.tick();
@@ -78,23 +98,10 @@ public abstract class EntityMixin implements EntityDuckInterface {
         return value;
     }
 
-    @Inject(method = "save", at = @At("RETURN"))
-    private void mirthdew_encore$writeNbt(CompoundTag nbt, CallbackInfoReturnable<CompoundTag> cir) {
-        if(nbt.contains("MirthdewEncore", Tag.TAG_COMPOUND)) {
-            CompoundTag nbtCompound = nbt.getCompound("MirthdewEncore");
-            this.mirthdew_encore$entityAttachment.writeNbt(nbtCompound);
-        } else {
-            CompoundTag nbtCompound = new CompoundTag();
-            this.mirthdew_encore$entityAttachment.writeNbt(nbtCompound);
-            nbt.put("MirthdewEncore", nbtCompound);
-        }
-    }
-
-    @Inject(method = "load", at = @At("RETURN"))
-    private void mirthdew_encore$readNbt(CompoundTag nbt, CallbackInfo ci) {
-        if(nbt.contains("MirthdewEncore", Tag.TAG_COMPOUND)) {
-            CompoundTag nbtCompound = nbt.getCompound("MirthdewEncore");
-            this.mirthdew_encore$entityAttachment.readNbt(nbtCompound);
+    @Inject(method = "getGravity", at = @At("HEAD"), cancellable = true)
+    private void mirthdew_encore$cancelGravity(CallbackInfoReturnable<Double> cir) {
+        if(this.mirthdew_encore$entityAttachment.shouldCancelGravity()) {
+            cir.setReturnValue(0.0);
         }
     }
 

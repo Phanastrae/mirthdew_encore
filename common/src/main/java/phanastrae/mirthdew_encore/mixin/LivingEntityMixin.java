@@ -151,4 +151,9 @@ public abstract class LivingEntityMixin extends Entity implements Attackable {
             }
         }
     }
+
+    @Inject(method = "jumpFromGround", at = @At("HEAD"))
+    private void mirthdewEncore$onJump(CallbackInfo ci) {
+        MirthdewEncoreEntityAttachment.fromEntity(this).onJump();
+    }
 }

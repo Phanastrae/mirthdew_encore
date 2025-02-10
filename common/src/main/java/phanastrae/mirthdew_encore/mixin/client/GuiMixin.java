@@ -3,14 +3,21 @@ package phanastrae.mirthdew_encore.mixin.client;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import phanastrae.mirthdew_encore.client.render.entity.WarpRendering;
+import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.entity.PlayerEntityHungerData;
 
 import static phanastrae.mirthdew_encore.entity.effect.DreamyDietStatusEffect.*;
@@ -18,6 +25,8 @@ import static phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffec
 
 @Mixin(Gui.class)
 public abstract class GuiMixin {
+
+    @Shadow @Final private Minecraft minecraft;
 
     @Inject(method = "renderFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/food/FoodData;getSaturationLevel()F"))
     private void mirthdew_encore$dreamyDietSwapOutTextures(GuiGraphics context, Player player, int top, int right, CallbackInfo ci,
@@ -48,6 +57,15 @@ public abstract class GuiMixin {
                                                            @Local(ordinal = 4) LocalIntRef topOffsetRef) {
         if(player.hasEffect(DREAMY_DIET_ENTRY)) {
             topOffsetRef.set(top);
+        }
+    }
+
+    @Inject(method = "renderCameraOverlays", at = @At("RETURN"))
+    private void mirthdewEncore$renderWarpingEffect(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        LocalPlayer player = this.minecraft.player;
+        MirthdewEncoreEntityAttachment meea = MirthdewEncoreEntityAttachment.fromEntity(player);
+        if(meea.isWarping()) {
+            WarpRendering.renderWarpScreenEffect(guiGraphics, player, deltaTracker.getGameTimeDeltaPartialTick(false));
         }
     }
 }

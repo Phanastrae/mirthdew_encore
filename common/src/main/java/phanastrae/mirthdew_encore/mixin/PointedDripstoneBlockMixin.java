@@ -1,4 +1,5 @@
-package phanastrae.mirthdew_encore.mixin.client;
+package phanastrae.mirthdew_encore.mixin;
+
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
