@@ -13,6 +13,7 @@ public interface RoomTypeStructureIds {
     ResourceLocation LARGE_PATH = id("test/large_path");
     ResourceLocation TUFF_SPIRAL = id("test/tuff_spiral");
 
+    ResourceLocation DECIDRHEUM_ACHERUNE_ENTRANCE = id("test/decidrheum_acherune_entrance");
     ResourceLocation DECIDRHEUM_RING = id("test/decidrheum_ring");
     ResourceLocation DECIDRHEUM_FOURWAY = id("test/decidrheum_fourway");
     ResourceLocation DECIDRHEUM_CORNER = id("test/decidrheum_corner");

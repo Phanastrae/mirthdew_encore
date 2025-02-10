@@ -9,7 +9,7 @@ public interface VistaTypes {
 
     private static VistaType createDecidrheumForest() {
         return new VistaType.Builder()
-                .addRoomType(new RoomType(RoomTypeStructureIds.ENTRANCE, RoomType.Category.ENTRANCE))
+                .addRoomType(new RoomType(RoomTypeStructureIds.DECIDRHEUM_ACHERUNE_ENTRANCE, RoomType.Category.ENTRANCE))
 
                 .addRoomType(new RoomType(RoomTypeStructureIds.DECIDRHEUM_FOURWAY, RoomType.Category.PATH))
                 .addRoomType(new RoomType(RoomTypeStructureIds.DECIDRHEUM_CORNER, RoomType.Category.PATH))
