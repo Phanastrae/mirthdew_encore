@@ -347,4 +347,9 @@ public class SlumberveilBlock extends Block implements Portal {
 
         return Optional.empty();
     }
+
+    @Override
+    protected boolean skipRendering(BlockState state, BlockState adjacentState, Direction direction) {
+        return adjacentState.is(this) || super.skipRendering(state, adjacentState, direction);
+    }
 }
