@@ -106,7 +106,11 @@ public class ModelProvider extends FabricModelProvider {
         BMG.createNonTemplateModelBlock(VESPERBILE);
 
         // door marker
-        createJigsawEsque(BMG, DOOR_MARKER);
+        forMultiple(BMG, this::createJigsawEsque,
+                LYCHSEAL,
+                DOOR_MARKER,
+                LYCHSEAL_MARKER
+        );
     }
 
     @Override

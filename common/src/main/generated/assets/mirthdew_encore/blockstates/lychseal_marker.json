@@ -1,0 +1,57 @@
+{
+  "variants": {
+    "orientation=down_east": {
+      "model": "mirthdew_encore:block/lychseal_marker",
+      "x": 90,
+      "y": 90
+    },
+    "orientation=down_north": {
+      "model": "mirthdew_encore:block/lychseal_marker",
+      "x": 90
+    },
+    "orientation=down_south": {
+      "model": "mirthdew_encore:block/lychseal_marker",
+      "x": 90,
+      "y": 180
+    },
+    "orientation=down_west": {
+      "model": "mirthdew_encore:block/lychseal_marker",
+      "x": 90,
+      "y": 270
+    },
+    "orientation=east_up": {
+      "model": "mirthdew_encore:block/lychseal_marker",
+      "y": 90
+    },
+    "orientation=north_up": {
+      "model": "mirthdew_encore:block/lychseal_marker"
+    },
+    "orientation=south_up": {
+      "model": "mirthdew_encore:block/lychseal_marker",
+      "y": 180
+    },
+    "orientation=up_east": {
+      "model": "mirthdew_encore:block/lychseal_marker",
+      "x": 270,
+      "y": 270
+    },
+    "orientation=up_north": {
+      "model": "mirthdew_encore:block/lychseal_marker",
+      "x": 270,
+      "y": 180
+    },
+    "orientation=up_south": {
+      "model": "mirthdew_encore:block/lychseal_marker",
+      "x": 270
+    },
+    "orientation=up_west": {
+      "model": "mirthdew_encore:block/lychseal_marker",
+      "x": 270,
+      "y": 90
+    },
+    "orientation=west_up": {
+      "model": "mirthdew_encore:block/lychseal_marker",
+      "y": 270
+    }
+  }
+}

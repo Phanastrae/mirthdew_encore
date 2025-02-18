@@ -8,6 +8,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
@@ -110,6 +112,19 @@ public class RoomPlacer {
             List<StructureTemplate.StructureBlockInfo> greaterAcheruneInfos = RoomSource.getGreaterAcheruneMarkerInfos(poolElement, structureTemplateManager, structurePiece.getPosition(), structurePiece.getRotation(), random);
             for(StructureTemplate.StructureBlockInfo runeInfo : greaterAcheruneInfos) {
                 world.setBlockAndUpdate(runeInfo.pos(), MirthdewEncoreBlocks.GREATER_ACHERUNE.defaultBlockState());
+            }
+
+            List<StructureTemplate.StructureBlockInfo> lychsealInfos = RoomSource.getLychsealMarkerInfos(poolElement, structureTemplateManager, structurePiece.getPosition(), structurePiece.getRotation(), random);
+            for(StructureTemplate.StructureBlockInfo sealInfo : lychsealInfos) {
+                BlockState oldState = sealInfo.state();
+                BlockState newState = MirthdewEncoreBlocks.LYCHSEAL.defaultBlockState();
+
+                if(oldState.hasProperty(BlockStateProperties.ORIENTATION)) {
+                    newState = newState.setValue(BlockStateProperties.ORIENTATION, oldState.getValue(BlockStateProperties.ORIENTATION));
+                }
+
+                // TODO do nbt linking stuff
+                world.setBlockAndUpdate(sealInfo.pos(), newState);
             }
         }
     }

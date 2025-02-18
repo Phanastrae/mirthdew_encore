@@ -20,16 +20,24 @@ public class MirthdewEncoreBlockEntityTypes {
     public static final BlockEntityType<GreaterAcheruneBlockEntity> GREATER_ACHERUNE = create(
             "greater_acherune", GreaterAcheruneBlockEntity::new, MirthdewEncoreBlocks.GREATER_ACHERUNE);
 
+    public static final BlockEntityType<LychsealBlockEntity> LYCHSEAL = create(
+            "lychseal", LychsealBlockEntity::new, MirthdewEncoreBlocks.LYCHSEAL);
+
     public static final BlockEntityType<DoorMarkerBlockEntity> DOOR_MARKER = create(
             "door_marker", DoorMarkerBlockEntity::new, MirthdewEncoreBlocks.DOOR_MARKER);
 
     public static final BlockEntityType<GreaterAcheruneMarkerBlockEntity> GREATER_ACHERUNE_MARKER = create(
             "greater_acherune_marker", GreaterAcheruneMarkerBlockEntity::new, MirthdewEncoreBlocks.GREATER_ACHERUNE_MARKER);
 
+    public static final BlockEntityType<LychsealMarkerBlockEntity> LYCHSEAL_MARKER = create(
+            "lychseal_marker", LychsealMarkerBlockEntity::new, MirthdewEncoreBlocks.LYCHSEAL_MARKER);
+
     public static void init(BiConsumer<ResourceLocation, BlockEntityType<?>> r) {
         r.accept(id("veric_dreamsnare"), VERIC_DREAMSNARE);
         r.accept(id("slumbersocket"), SLUMBERSOCKET);
         r.accept(id("greater_acherune"), GREATER_ACHERUNE);
+        r.accept(id("lychseal"), LYCHSEAL);
+        r.accept(id("lychseal_marker"), LYCHSEAL_MARKER);
         r.accept(id("door_marker"), DOOR_MARKER);
         r.accept(id("greater_acherune_marker"), GREATER_ACHERUNE_MARKER);
     }

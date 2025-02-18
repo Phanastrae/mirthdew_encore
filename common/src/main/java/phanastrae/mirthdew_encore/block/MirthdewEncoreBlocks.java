@@ -101,6 +101,13 @@ public class MirthdewEncoreBlocks {
     public static final Block BACCHENITE_TILE_SLAB = slabOf(BACCHENITE_TILES);
     public static final Block BACCHENITE_TILE_WALL = wallOf(BACCHENITE_TILES);
 
+    public static final Block LYCHSEAL = new LychsealBlock(createSettings()
+            .mapColor(MapColor.COLOR_GRAY)
+            .strength(-1.0F, 3600000.0F)
+            .noLootTable()
+            .isValidSpawn(MirthdewEncoreBlocks::never)
+    );
+
     public static final Block UNGUISHALE = new Block(createSettings()
             .mapColor(MapColor.COLOR_LIGHT_GRAY)
             .instrument(NoteBlockInstrument.SNARE)
@@ -587,18 +594,23 @@ public class MirthdewEncoreBlocks {
                     .noOcclusion()
     );
 
-    public static final Block DOOR_MARKER = new DoorMarkerBlock(
-            createSettings()
-                    .mapColor(MapColor.COLOR_LIGHT_GRAY)
-                    .requiresCorrectToolForDrops()
-                    .strength(-1.0F, 3600000.0F)
-                    .noLootTable()
+    public static final Block DOOR_MARKER = new DoorMarkerBlock(createSettings()
+            .mapColor(MapColor.COLOR_BLUE)
+            .strength(-1.0F, 3600000.0F)
+            .noLootTable()
+            .isValidSpawn(MirthdewEncoreBlocks::never)
     );
 
     public static final Block GREATER_ACHERUNE_MARKER = new GreaterAcheruneMarkerBlock(createSettings()
-            .mapColor(MapColor.COLOR_MAGENTA)
+            .mapColor(MapColor.COLOR_BLUE)
             .strength(-1.0F, 3600000.0F)
-            .sound(SoundType.AMETHYST)
+            .noLootTable()
+            .isValidSpawn(MirthdewEncoreBlocks::never)
+    );
+
+    public static final Block LYCHSEAL_MARKER = new LychsealMarkerBlock(createSettings()
+            .mapColor(MapColor.COLOR_BLUE)
+            .strength(-1.0F, 3600000.0F)
             .noLootTable()
             .isValidSpawn(MirthdewEncoreBlocks::never)
     );
@@ -647,6 +659,8 @@ public class MirthdewEncoreBlocks {
         r.accept(id("bacchenite_tile_stairs"), BACCHENITE_TILE_STAIRS);
         r.accept(id("bacchenite_tile_slab"), BACCHENITE_TILE_SLAB);
         r.accept(id("bacchenite_tile_wall"), BACCHENITE_TILE_WALL);
+
+        r.accept(id("lychseal"), LYCHSEAL);
 
         r.accept(id("unguishale"), UNGUISHALE);
         r.accept(id("unguishale_stairs"), UNGUISHALE_STAIRS);
@@ -817,6 +831,7 @@ public class MirthdewEncoreBlocks {
 
         r.accept(id("door_marker"), DOOR_MARKER);
         r.accept(id("greater_acherune_marker"), GREATER_ACHERUNE_MARKER);
+        r.accept(id("lychseal_marker"), LYCHSEAL_MARKER);
 
         r.accept(id("dreamtwirl_barrier"), DREAMTWIRL_BARRIER);
 

@@ -55,15 +55,15 @@ public class DoorMarkerBlock extends Block implements EntityBlock, GameMasterBlo
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        Direction direction = context.getClickedFace();
-        Direction direction1;
-        if (direction.getAxis() == Direction.Axis.Y) {
-            direction1 = context.getHorizontalDirection().getOpposite();
+        Direction frontDirection = context.getClickedFace();
+        Direction topDirection;
+        if (frontDirection.getAxis() == Direction.Axis.Y) {
+            topDirection = context.getHorizontalDirection().getOpposite();
         } else {
-            direction1 = Direction.UP;
+            topDirection = Direction.UP;
         }
 
-        return this.defaultBlockState().setValue(ORIENTATION, FrontAndTop.fromFrontAndTop(direction, direction1));
+        return this.defaultBlockState().setValue(ORIENTATION, FrontAndTop.fromFrontAndTop(frontDirection, topDirection));
     }
 
     @Override

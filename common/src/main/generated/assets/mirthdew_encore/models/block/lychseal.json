@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube_directional",
+  "textures": {
+    "down": "mirthdew_encore:block/lychseal_side",
+    "east": "mirthdew_encore:block/lychseal_side",
+    "north": "mirthdew_encore:block/lychseal_top",
+    "particle": "mirthdew_encore:block/lychseal_top",
+    "south": "mirthdew_encore:block/lychseal_bottom",
+    "up": "mirthdew_encore:block/lychseal_lock",
+    "west": "mirthdew_encore:block/lychseal_side"
+  }
+}

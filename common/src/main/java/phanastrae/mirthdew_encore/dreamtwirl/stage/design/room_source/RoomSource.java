@@ -131,6 +131,10 @@ public class RoomSource {
         return getMarkerInfos(MirthdewEncoreBlocks.GREATER_ACHERUNE_MARKER, poolElement, structureTemplateManager, pos, rotation, random);
     }
 
+    public static List<StructureTemplate.StructureBlockInfo> getLychsealMarkerInfos(StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos pos, Rotation rotation, RandomSource random) {
+        return getMarkerInfos(MirthdewEncoreBlocks.LYCHSEAL_MARKER, poolElement, structureTemplateManager, pos, rotation, random);
+    }
+
     public static List<StructureTemplate.StructureBlockInfo> getMarkerInfos(Block targetBlock, StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos pos, Rotation rotation, RandomSource random) {
         if(poolElement instanceof SinglePoolElement singlePoolElement) {
             StructureTemplate structureTemplate = ((SinglePoolElementAccesor)singlePoolElement).invokeGetTemplate(structureTemplateManager);

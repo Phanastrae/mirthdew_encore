@@ -227,17 +227,25 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(BlockTags.DRAGON_IMMUNE)
                 .add(
                         GREATER_ACHERUNE,
+                        LYCHSEAL,
+
                         DREAMTWIRL_BARRIER,
+
                         DOOR_MARKER,
-                        GREATER_ACHERUNE_MARKER
+                        GREATER_ACHERUNE_MARKER,
+                        LYCHSEAL_MARKER
                 );
 
         getOrCreateTagBuilder(BlockTags.WITHER_IMMUNE)
                 .add(
                         GREATER_ACHERUNE,
+                        LYCHSEAL,
+
                         DREAMTWIRL_BARRIER,
+
                         DOOR_MARKER,
-                        GREATER_ACHERUNE_MARKER
+                        GREATER_ACHERUNE_MARKER,
+                        LYCHSEAL_MARKER
                 );
 
         getOrCreateTagBuilder(BlockTags.SNAPS_GOAT_HORN)
@@ -302,7 +310,8 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
         getOrCreateTagBuilder(ConventionalBlockTags.RELOCATION_NOT_SUPPORTED)
                 .add(
-                        GREATER_ACHERUNE
+                        GREATER_ACHERUNE,
+                        LYCHSEAL
                 );
 
         // custom

@@ -296,7 +296,8 @@ public class MirthdewEncoreCreativeModeTabs {
                 SLUMBERING_EYE,
 
                 GREATER_ACHERUNE,
-                ACHERUNE_HOLLOW
+                ACHERUNE_HOLLOW,
+                LYCHSEAL
         );
 
         // redstone blocks
@@ -358,7 +359,8 @@ public class MirthdewEncoreCreativeModeTabs {
         if(helper.operatorTabEnabled()) {
             helper.add(OP_BLOCKS,
                     DOOR_MARKER,
-                    GREATER_ACHERUNE_MARKER
+                    GREATER_ACHERUNE_MARKER,
+                    LYCHSEAL_MARKER
             );
         }
     }

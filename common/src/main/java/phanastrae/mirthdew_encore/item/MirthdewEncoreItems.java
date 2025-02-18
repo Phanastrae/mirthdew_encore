@@ -24,8 +24,8 @@ public class MirthdewEncoreItems {
 
     public static final Item OCULAR_SOPORSTEW = new Item(settings().food(MirthdewEncoreFoodComponents.OCULAR_SOPORSTEW));
 
-    public static final Item GREATER_ACHERUNE = blockOf(MirthdewEncoreBlocks.GREATER_ACHERUNE);
-    public static final Item ACHERUNE_HOLLOW = blockOf(MirthdewEncoreBlocks.ACHERUNE_HOLLOW);
+    public static final Item GREATER_ACHERUNE = blockOf(MirthdewEncoreBlocks.GREATER_ACHERUNE, settings().rarity(Rarity.EPIC));
+    public static final Item ACHERUNE_HOLLOW = blockOf(MirthdewEncoreBlocks.ACHERUNE_HOLLOW, settings().rarity(Rarity.EPIC));
 
     public static final Item BACCHENITE_BLOCK = blockOf(MirthdewEncoreBlocks.BACCHENITE_BLOCK);
 
@@ -38,6 +38,8 @@ public class MirthdewEncoreItems {
     public static final Item BACCHENITE_TILE_STAIRS = blockOf(MirthdewEncoreBlocks.BACCHENITE_TILE_STAIRS);
     public static final Item BACCHENITE_TILE_SLAB = blockOf(MirthdewEncoreBlocks.BACCHENITE_TILE_SLAB);
     public static final Item BACCHENITE_TILE_WALL = blockOf(MirthdewEncoreBlocks.BACCHENITE_TILE_WALL);
+
+    public static final Item LYCHSEAL = blockOf(MirthdewEncoreBlocks.LYCHSEAL, settings().rarity(Rarity.EPIC));
 
     public static final Item UNGUISHALE = blockOf(MirthdewEncoreBlocks.UNGUISHALE);
     public static final Item UNGUISHALE_STAIRS = blockOf(MirthdewEncoreBlocks.UNGUISHALE_STAIRS);
@@ -222,6 +224,7 @@ public class MirthdewEncoreItems {
 
     public static final Item DOOR_MARKER = blockOf(MirthdewEncoreBlocks.DOOR_MARKER, settings().rarity(Rarity.EPIC));
     public static final Item GREATER_ACHERUNE_MARKER = blockOf(MirthdewEncoreBlocks.GREATER_ACHERUNE_MARKER, settings().rarity(Rarity.EPIC));
+    public static final Item LYCHSEAL_MARKER = blockOf(MirthdewEncoreBlocks.LYCHSEAL_MARKER, settings().rarity(Rarity.EPIC));
 
     public static void init(BiConsumer<ResourceLocation, Item> r) {
         BiConsumer<ResourceLocation, Item> rwig = (rl, i) -> { // register with item group
@@ -254,6 +257,8 @@ public class MirthdewEncoreItems {
         rwig.accept(id("bacchenite_tile_stairs"), BACCHENITE_TILE_STAIRS);
         rwig.accept(id("bacchenite_tile_slab"), BACCHENITE_TILE_SLAB);
         rwig.accept(id("bacchenite_tile_wall"), BACCHENITE_TILE_WALL);
+
+        rwig.accept(id("lychseal"), LYCHSEAL);
 
         rwig.accept(id("unguishale"), UNGUISHALE);
         rwig.accept(id("unguishale_stairs"), UNGUISHALE_STAIRS);
@@ -428,6 +433,7 @@ public class MirthdewEncoreItems {
 
         rwig.accept(id("door_marker"), DOOR_MARKER);
         rwig.accept(id("greater_acherune_marker"), GREATER_ACHERUNE_MARKER);
+        rwig.accept(id("lychseal_marker"), LYCHSEAL_MARKER);
     }
 
     private static ResourceLocation id(String path) {
