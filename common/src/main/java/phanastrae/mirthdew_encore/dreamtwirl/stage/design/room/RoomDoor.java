@@ -9,7 +9,7 @@ import net.minecraft.util.StringRepresentable;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static phanastrae.mirthdew_encore.block.entity.DoorMarkerBlockEntity.DOOR_TYPE;
+import static phanastrae.mirthdew_encore.block.entity.DoorMarkerBlockEntity.KEY_DOOR_TYPE;
 
 public class RoomDoor {
 
@@ -24,7 +24,7 @@ public class RoomDoor {
         this.orientation = orientation;
 
         // TODO handle any custom nbt
-        this.doorType = RoomDoor.DoorType.byName(nbt.getString(DOOR_TYPE))
+        this.doorType = RoomDoor.DoorType.byName(nbt.getString(KEY_DOOR_TYPE))
                 .orElse(
                         RoomDoor.DoorType.TWOWAY
                 );

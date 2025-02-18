@@ -22,6 +22,7 @@ public class MirthdewEncorePayloads {
 
 
         helper.registerC2S(SetDoorMarkerBlockPayload.PACKET_ID, SetDoorMarkerBlockPayload.PACKET_CODEC, MirthdewEncoreServerPacketHandler::handleSetDoorMarkerBlock);
+        helper.registerC2S(SetLychsealMarkerBlockPayload.PACKET_ID, SetLychsealMarkerBlockPayload.PACKET_CODEC, MirthdewEncoreServerPacketHandler::handleSetLychsealMarkerBlock);
     }
 
     public interface Helper {

@@ -4,6 +4,8 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.FrontAndTop;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
@@ -14,8 +16,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.block.entity.LychsealMarkerBlockEntity;
+import phanastrae.mirthdew_encore.duck.PlayerDuckInterface;
 
 public class LychsealMarkerBlock extends BaseEntityBlock {
     public static final MapCodec<LychsealMarkerBlock> CODEC = simpleCodec(LychsealMarkerBlock::new);
@@ -76,5 +80,16 @@ public class LychsealMarkerBlock extends BaseEntityBlock {
     @Override
     protected BlockState mirror(BlockState state, Mirror mirror) {
         return state.setValue(ORIENTATION, mirror.rotation().rotate(state.getValue(ORIENTATION)));
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        if (blockentity instanceof LychsealMarkerBlockEntity lychsealMarkerBlockEntity && player.canUseGameMasterBlocks()) {
+            ((PlayerDuckInterface)player).mirthdew_encore$openLychsealMarkerBlock(lychsealMarkerBlockEntity);
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        } else {
+            return InteractionResult.PASS;
+        }
     }
 }

@@ -9,9 +9,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
 
 public class DoorMarkerBlockEntity extends BlockEntity {
-    public static final String DOOR_TYPE = "door_type";
+    public static final String KEY_DOOR_TYPE = "door_type";
+    public static final String KEY_TARGET_LYCHSEAL = "target_lychseal";
 
-    private RoomDoor.DoorType doorType = RoomDoor.DoorType.TWOWAY; // TODO serialize etc
+    private String targetLychsealName = "";
+    private RoomDoor.DoorType doorType = RoomDoor.DoorType.TWOWAY;
 
     public DoorMarkerBlockEntity(BlockPos pos, BlockState blockState) {
         super(MirthdewEncoreBlockEntityTypes.DOOR_MARKER, pos, blockState);
@@ -20,16 +22,25 @@ public class DoorMarkerBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        tag.putString(DOOR_TYPE, this.doorType.getSerializedName());
+
+        tag.putString(KEY_DOOR_TYPE, this.doorType.getSerializedName());
+        tag.putString(KEY_TARGET_LYCHSEAL, this.targetLychsealName);
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
-        this.doorType = RoomDoor.DoorType.byName(tag.getString(DOOR_TYPE))
-                .orElse(
-                        RoomDoor.DoorType.TWOWAY
-                );
+
+        if(tag.contains(KEY_DOOR_TYPE, CompoundTag.TAG_STRING)) {
+            this.doorType = RoomDoor.DoorType.byName(tag.getString(KEY_DOOR_TYPE))
+                    .orElse(
+                            RoomDoor.DoorType.TWOWAY
+                    );
+        }
+
+        if(tag.contains(KEY_TARGET_LYCHSEAL, CompoundTag.TAG_STRING)) {
+            this.targetLychsealName = tag.getString(KEY_TARGET_LYCHSEAL);
+        }
     }
 
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
@@ -47,5 +58,13 @@ public class DoorMarkerBlockEntity extends BlockEntity {
 
     public RoomDoor.DoorType getDoorType() {
         return this.doorType;
+    }
+
+    public void setTargetLychsealName(String targetLychsealName) {
+        this.targetLychsealName = targetLychsealName;
+    }
+
+    public String getLychsealTargetName() {
+        return this.targetLychsealName;
     }
 }

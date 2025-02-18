@@ -71,8 +71,4 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerDuckInte
     public MirthdewEncorePlayerEntityAttachment mirthdew_encore$getAttachment() {
         return mirthdew_encore$playerEntityAttachment;
     }
-
-    @Override
-    public void mirthdew_encore$openDoorMarkerBlock(DoorMarkerBlockEntity doorMarkerBlockEntity) {
-    }
 }

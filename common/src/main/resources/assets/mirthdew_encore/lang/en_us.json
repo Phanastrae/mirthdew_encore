@@ -240,5 +240,7 @@
   "mirthdew_encore.door_type.both": "Two-way",
 
   "tag.fluid.mirthdew_encore.vesperbile": "Vesperbile",
-  "tag.item.mirthdew_encore.decidrheum_logs": "Decidrheum Logs"
+  "tag.item.mirthdew_encore.decidrheum_logs": "Decidrheum Logs",
+  "mirthdew_encore.door_marker.lychseal_target_name_label": "Target Lychseal Name",
+  "mirthdew_encore.door_marker.lychseal_name_label": "Lychseal Name"
 }

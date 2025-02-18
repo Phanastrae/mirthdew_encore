@@ -13,7 +13,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import phanastrae.mirthdew_encore.block.entity.DoorMarkerBlockEntity;
+import phanastrae.mirthdew_encore.block.entity.LychsealMarkerBlockEntity;
 import phanastrae.mirthdew_encore.client.gui.screens.inventory.DoorMarkerEditScreen;
+import phanastrae.mirthdew_encore.client.gui.screens.inventory.LychsealMarkerEditScreen;
 import phanastrae.mirthdew_encore.duck.PlayerDuckInterface;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreFluidTags;
 
@@ -38,5 +40,10 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer implements P
     @Override
     public void mirthdew_encore$openDoorMarkerBlock(DoorMarkerBlockEntity doorMarkerBlockEntity) {
         this.minecraft.setScreen(new DoorMarkerEditScreen(doorMarkerBlockEntity));
+    }
+
+    @Override
+    public void mirthdew_encore$openLychsealMarkerBlock(LychsealMarkerBlockEntity lychsealMarkerBlockEntity) {
+        this.minecraft.setScreen(new LychsealMarkerEditScreen(lychsealMarkerBlockEntity));
     }
 }
