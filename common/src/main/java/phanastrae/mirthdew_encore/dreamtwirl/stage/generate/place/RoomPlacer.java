@@ -8,6 +8,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -21,10 +22,13 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSetting
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
+import phanastrae.mirthdew_encore.block.entity.LychsealBlockEntity;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomLychseal;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSource;
 
 import java.util.List;
+import java.util.Optional;
 
 public class RoomPlacer {
 
@@ -41,7 +45,7 @@ public class RoomPlacer {
                 0.15);
     }
 
-    public static boolean placeStructure(Room room, ServerLevel serverLevel, BoundingBox areaBox, boolean forceLoadChunks) {
+    public static boolean placeStructure(Room room, ServerLevel serverLevel, BoundingBox areaBox, boolean forceLoadChunks, int roomId) {
         Structure structure = room.getRoomSource().getStructure();
         PiecesContainer piecesContainer = room.getPiecesContainer();
         List<StructurePiece> list = piecesContainer.pieces();
@@ -91,40 +95,82 @@ public class RoomPlacer {
                             structure.afterPlace(serverLevel, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, piecesContainer);
                         }
                 );
+        for(StructurePiece structurePiece : list) {
+            if (structurePiece instanceof PoolElementStructurePiece poolStructurePiece) {
+                placeRoomObjects(poolStructurePiece, serverLevel.getStructureManager(), serverLevel, random, room, roomId);
+            }
+        }
         return true;
     }
 
     public static void generate(PoolElementStructurePiece structurePiece, StructureTemplateManager structureTemplateManager, ServerLevel world, StructureManager structureAccessor, ChunkGenerator chunkGenerator, RandomSource random, BoundingBox chunkBox, BlockPos pivot) {
         StructurePoolElement poolElement = structurePiece.getElement();
-        if(poolElement.place(structureTemplateManager, world, structureAccessor, chunkGenerator, structurePiece.getPosition(), pivot, structurePiece.getRotation(), chunkBox, random, LiquidSettings.IGNORE_WATERLOGGING, false)) {
-            poolElement.getShuffledJigsawBlocks(structureTemplateManager, structurePiece.getPosition(), structurePiece.getRotation(), random);
-            // TODO get gates from the room directly?
-            // TODO is calling getGates in two places needed?
-            // i think this is here because in the event the room changes (ie datapack changes after world reload once i add serialization), the door positions could change
-            // and thus it would make sense to do the block state setting separately to avoid having any new gates not getting set
+        poolElement.place(structureTemplateManager, world, structureAccessor, chunkGenerator, structurePiece.getPosition(), pivot, structurePiece.getRotation(), chunkBox, random, LiquidSettings.IGNORE_WATERLOGGING, false);
+    }
 
-            List<StructureTemplate.StructureBlockInfo> doorInfos = RoomSource.getDoorMarkerInfos(poolElement, structureTemplateManager, structurePiece.getPosition(), structurePiece.getRotation(), random);
-            for(StructureTemplate.StructureBlockInfo doorInfo : doorInfos) {
-                // TODO handle properly (ie add a custom replace state etc)
-                world.setBlockAndUpdate(doorInfo.pos(), Blocks.AIR.defaultBlockState());
+    public static void placeRoomObjects(PoolElementStructurePiece structurePiece, StructureTemplateManager structureTemplateManager, ServerLevel level, RandomSource random, Room room, int roomId) {
+        StructurePoolElement poolElement = structurePiece.getElement();
+        BlockPos pos = structurePiece.getPosition();
+        Rotation rotation = structurePiece.getRotation();
+
+        convertDoorMarkers(level, poolElement, structureTemplateManager, pos, rotation, random);
+        convertAcheruneMarkers(level, poolElement, structureTemplateManager, pos, rotation, random);
+        convertLychsealMarkers(level, poolElement, structureTemplateManager, pos, rotation, random, room, roomId);
+    }
+
+    public static void convertDoorMarkers(ServerLevel level, StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos piecePos, Rotation pieceRotation, RandomSource random) {
+        // replace all door markers with normal blocks
+        // we should already have this info available, but get it again to ensure the blocks are always set even if the structure piece has since been modified in the datapack
+        List<StructureTemplate.StructureBlockInfo> doorInfos = RoomSource.getDoorMarkerInfos(poolElement, structureTemplateManager, piecePos, pieceRotation, random);
+        for(StructureTemplate.StructureBlockInfo doorInfo : doorInfos) {
+            BlockPos pos = doorInfo.pos();
+
+            // TODO add custom replace state
+            if(level.getBlockState(pos).is(MirthdewEncoreBlocks.DOOR_MARKER)) {
+                level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+            }
+        }
+    }
+
+    public static void convertAcheruneMarkers(ServerLevel level, StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos piecePos, Rotation pieceRotation, RandomSource random) {
+        // replace all greater acherune markers with actual acherunes
+        List<StructureTemplate.StructureBlockInfo> greaterAcheruneInfos = RoomSource.getGreaterAcheruneMarkerInfos(poolElement, structureTemplateManager, piecePos, pieceRotation, random);
+        for(StructureTemplate.StructureBlockInfo runeInfo : greaterAcheruneInfos) {
+            BlockPos pos = runeInfo.pos();
+
+            if(level.getBlockState(pos).is(MirthdewEncoreBlocks.GREATER_ACHERUNE_MARKER)) {
+                level.setBlockAndUpdate(pos, MirthdewEncoreBlocks.GREATER_ACHERUNE.defaultBlockState());
+            }
+        }
+    }
+
+    public static void convertLychsealMarkers(ServerLevel level, StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos piecePos, Rotation pieceRotation, RandomSource random, Room room, int roomId) {
+        // replace all lychseal markers with actual lychseals
+        List<StructureTemplate.StructureBlockInfo> lychsealInfos = RoomSource.getLychsealMarkerInfos(poolElement, structureTemplateManager, piecePos, pieceRotation, random);
+        for(StructureTemplate.StructureBlockInfo sealInfo : lychsealInfos) {
+            BlockPos pos = sealInfo.pos();
+
+            BlockState oldState = sealInfo.state();
+            BlockState newState = MirthdewEncoreBlocks.LYCHSEAL.defaultBlockState();
+
+            if(oldState.hasProperty(BlockStateProperties.ORIENTATION)) {
+                newState = newState.setValue(BlockStateProperties.ORIENTATION, oldState.getValue(BlockStateProperties.ORIENTATION));
             }
 
-            List<StructureTemplate.StructureBlockInfo> greaterAcheruneInfos = RoomSource.getGreaterAcheruneMarkerInfos(poolElement, structureTemplateManager, structurePiece.getPosition(), structurePiece.getRotation(), random);
-            for(StructureTemplate.StructureBlockInfo runeInfo : greaterAcheruneInfos) {
-                world.setBlockAndUpdate(runeInfo.pos(), MirthdewEncoreBlocks.GREATER_ACHERUNE.defaultBlockState());
-            }
+            if(level.getBlockState(pos).is(MirthdewEncoreBlocks.LYCHSEAL_MARKER)) {
+                level.setBlockAndUpdate(pos, newState);
 
-            List<StructureTemplate.StructureBlockInfo> lychsealInfos = RoomSource.getLychsealMarkerInfos(poolElement, structureTemplateManager, structurePiece.getPosition(), structurePiece.getRotation(), random);
-            for(StructureTemplate.StructureBlockInfo sealInfo : lychsealInfos) {
-                BlockState oldState = sealInfo.state();
-                BlockState newState = MirthdewEncoreBlocks.LYCHSEAL.defaultBlockState();
+                Optional<RoomLychseal> lychsealOptional = room.getUnplacedLychseal(pos);
 
-                if(oldState.hasProperty(BlockStateProperties.ORIENTATION)) {
-                    newState = newState.setValue(BlockStateProperties.ORIENTATION, oldState.getValue(BlockStateProperties.ORIENTATION));
+                if(lychsealOptional.isPresent()) {
+                    RoomLychseal lychseal = lychsealOptional.get();
+                    if (level.getBlockEntity(pos) instanceof LychsealBlockEntity lychsealBlockEntity) {
+                        lychsealBlockEntity.setRoomId(roomId);
+                        lychsealBlockEntity.setLychsealName(lychseal.getLychsealName());
+                    }
+                } else {
+                    level.destroyBlock(pos, false);
                 }
-
-                // TODO do nbt linking stuff
-                world.setBlockAndUpdate(sealInfo.pos(), newState);
             }
         }
     }

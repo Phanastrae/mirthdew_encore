@@ -1,6 +1,7 @@
 package phanastrae.mirthdew_encore.dreamtwirl;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -215,5 +216,15 @@ public class DreamtwirlStageManager extends SavedData {
             return dsm.getDreamtwirlIfPresent(regionPos);
         }
         return null;
+    }
+
+    @Nullable
+    public static DreamtwirlStage getStage(Level level, BlockPos pos) {
+        return getStage(level, RegionPos.fromBlockPos(pos));
+    }
+
+    @Nullable
+    public static DreamtwirlStage getStage(Level level, long stageId) {
+        return getStage(level, new RegionPos(stageId));
     }
 }

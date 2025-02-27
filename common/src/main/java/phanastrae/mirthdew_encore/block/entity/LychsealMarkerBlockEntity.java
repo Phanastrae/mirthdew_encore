@@ -43,6 +43,7 @@ public class LychsealMarkerBlockEntity extends BlockEntity {
 
     public void setLychsealName(String lychsealName) {
         this.lychsealName = lychsealName;
+        this.setChanged();
     }
 
     public String getLychsealName() {

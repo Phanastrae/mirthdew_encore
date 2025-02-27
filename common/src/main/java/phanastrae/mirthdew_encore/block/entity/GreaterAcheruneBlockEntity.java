@@ -7,14 +7,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.GreaterAcheruneBlock;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.StageAcherunes;
 import phanastrae.mirthdew_encore.util.BlockPosDimensional;
-import phanastrae.mirthdew_encore.util.RegionPos;
 
 public class GreaterAcheruneBlockEntity extends BlockEntity {
 
@@ -32,7 +30,7 @@ public class GreaterAcheruneBlockEntity extends BlockEntity {
 
     public void createIfNeeded(BlockState state, Level level, BlockPos pos) {
         if(this.acherune == null) {
-            DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
+            DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, pos);
             if (stage != null) {
                 StageAcherunes stageAcherunes = stage.getStageAcherunes();
 
@@ -50,7 +48,7 @@ public class GreaterAcheruneBlockEntity extends BlockEntity {
     }
 
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState) {
-        DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
+        DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, pos);
         if(stage != null) {
             StageAcherunes stageAcherunes = stage.getStageAcherunes();
 

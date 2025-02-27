@@ -27,6 +27,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomLychseal;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
 import phanastrae.mirthdew_encore.mixin.ListPoolElementAccessor;
 import phanastrae.mirthdew_encore.mixin.SinglePoolElementAccesor;
@@ -105,22 +106,28 @@ public class RoomSource {
         return structure.findValidGenerationPoint(context);
     }
 
-    public static List<RoomDoor> collectDoors(PiecesContainer piecesContainer, StructureTemplateManager structureTemplateManager, RandomSource random) {
+    public static Room.RoomObjects collectDoors(PiecesContainer piecesContainer, StructureTemplateManager structureTemplateManager, RandomSource random) {
         List<RoomDoor> doors = new ObjectArrayList<>();
+        List<RoomLychseal> seals = new ObjectArrayList<>();
 
         for(StructurePiece piece : piecesContainer.pieces()) {
             if(piece instanceof PoolElementStructurePiece poolStructurePiece) {
                 StructurePoolElement poolElement = poolStructurePiece.getElement();
 
-                List<StructureTemplate.StructureBlockInfo> list = getDoorMarkerInfos(poolElement, structureTemplateManager, poolStructurePiece.getPosition(), piece.getRotation(), random);
+                List<StructureTemplate.StructureBlockInfo> doorList = getDoorMarkerInfos(poolElement, structureTemplateManager, poolStructurePiece.getPosition(), piece.getRotation(), random);
 
-                for(StructureTemplate.StructureBlockInfo info : list) {
+                for(StructureTemplate.StructureBlockInfo info : doorList) {
                     getDoorFromInfo(info).ifPresent(doors::add);
+                }
+
+                List<StructureTemplate.StructureBlockInfo> sealList = getLychsealMarkerInfos(poolElement, structureTemplateManager, poolStructurePiece.getPosition(), piece.getRotation(), random);
+                for(StructureTemplate.StructureBlockInfo info : sealList) {
+                    getLychsealFromInfo(info).ifPresent(seals::add);
                 }
             }
         }
 
-        return doors;
+        return new Room.RoomObjects(doors, seals);
     }
 
     public static List<StructureTemplate.StructureBlockInfo> getDoorMarkerInfos(StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos pos, Rotation rotation, RandomSource random) {
@@ -160,6 +167,19 @@ public class RoomSource {
 
             RoomDoor door = new RoomDoor(info.pos(), orientation, info.nbt());
             return Optional.of(door);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private static Optional<RoomLychseal> getLychsealFromInfo(StructureTemplate.StructureBlockInfo info) {
+        BlockState state = info.state();
+        EnumProperty<FrontAndTop> property = BlockStateProperties.ORIENTATION;
+        if(state.hasProperty(property)) {
+            FrontAndTop orientation = state.getValue(property);
+
+            RoomLychseal seal = new RoomLychseal(info.pos(), orientation, info.nbt());
+            return Optional.of(seal);
         } else {
             return Optional.empty();
         }

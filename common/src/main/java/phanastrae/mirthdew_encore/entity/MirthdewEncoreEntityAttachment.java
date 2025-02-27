@@ -1,7 +1,6 @@
 package phanastrae.mirthdew_encore.entity;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -14,8 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.FastColor;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -36,7 +33,6 @@ import phanastrae.mirthdew_encore.duck.EntityDuckInterface;
 import phanastrae.mirthdew_encore.network.packet.EntityAcheruneWarpingPayload;
 import phanastrae.mirthdew_encore.services.XPlatInterface;
 import phanastrae.mirthdew_encore.util.BlockPosDimensional;
-import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.List;
 import java.util.Optional;
@@ -214,7 +210,7 @@ public class MirthdewEncoreEntityAttachment {
         if(candidatePosOptional.isEmpty()) return;
         BlockPos candidatePos = candidatePosOptional.get();
 
-        DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(candidatePos));
+        DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, candidatePos);
         if(stage == null) return;
 
         Acherune ac = stage.getStageAcherunes().getAcherune(candidatePos);

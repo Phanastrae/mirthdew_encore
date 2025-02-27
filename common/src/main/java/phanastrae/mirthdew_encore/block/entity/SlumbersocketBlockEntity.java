@@ -41,7 +41,6 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 import phanastrae.mirthdew_encore.item.SlumberingEyeItem;
 import phanastrae.mirthdew_encore.util.BlockPosDimensional;
-import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.Optional;
 
@@ -222,7 +221,7 @@ public class SlumbersocketBlockEntity extends BlockEntity {
 
                 Level acLevel = lac.getLevel(serverLevel.getServer());
                 if(acLevel != null) {
-                    DreamtwirlStage stage = DreamtwirlStageManager.getStage(acLevel, new RegionPos(lac.regionId()));
+                    DreamtwirlStage stage = DreamtwirlStageManager.getStage(acLevel, lac.regionId());
                     if (stage != null) {
                         if (acLevel instanceof ServerLevel acServerLevel) {
                             this.linkedAcherune.validateLinkedPos(acServerLevel.getServer(), stage.getStageAcherunes());

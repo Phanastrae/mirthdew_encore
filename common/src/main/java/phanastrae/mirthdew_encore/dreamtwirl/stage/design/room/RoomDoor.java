@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static phanastrae.mirthdew_encore.block.entity.DoorMarkerBlockEntity.KEY_DOOR_TYPE;
+import static phanastrae.mirthdew_encore.block.entity.DoorMarkerBlockEntity.KEY_TARGET_LYCHSEAL;
 
 public class RoomDoor {
 
@@ -17,17 +18,27 @@ public class RoomDoor {
     private FrontAndTop orientation;
     private boolean connected = false;
 
-    private DoorType doorType;
+    private final DoorType doorType;
+    private final String targetLychseal;
 
     public RoomDoor(BlockPos pos, FrontAndTop orientation, CompoundTag nbt) {
         this.pos = pos;
         this.orientation = orientation;
 
-        // TODO handle any custom nbt
-        this.doorType = RoomDoor.DoorType.byName(nbt.getString(KEY_DOOR_TYPE))
-                .orElse(
-                        RoomDoor.DoorType.TWOWAY
-                );
+        if(nbt.contains(KEY_DOOR_TYPE)) {
+            this.doorType = DoorType.byName(nbt.getString(KEY_DOOR_TYPE))
+                    .orElse(
+                            DoorType.TWOWAY
+                    );
+        } else {
+            this.doorType = DoorType.TWOWAY;
+        }
+
+        if(nbt.contains(KEY_TARGET_LYCHSEAL)) {
+            this.targetLychseal = nbt.getString(KEY_TARGET_LYCHSEAL);
+        } else {
+            this.targetLychseal = "";
+        }
     }
 
     public void translate(int x, int y, int z) {
@@ -52,6 +63,14 @@ public class RoomDoor {
 
     public DoorType getDoorType() {
         return doorType;
+    }
+
+    public String getTargetLychseal() {
+        return targetLychseal;
+    }
+
+    public boolean hasTargetLychseal() {
+        return !this.targetLychseal.isEmpty();
     }
 
     public enum DoorType implements StringRepresentable {

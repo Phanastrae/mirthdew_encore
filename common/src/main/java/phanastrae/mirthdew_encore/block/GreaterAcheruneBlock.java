@@ -28,7 +28,6 @@ import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
-import phanastrae.mirthdew_encore.util.RegionPos;
 
 import static phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE;
 
@@ -95,7 +94,7 @@ public class GreaterAcheruneBlock extends BaseEntityBlock {
             if (level.isClientSide) {
                 return ItemInteractionResult.SUCCESS;
             } else {
-                DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
+                DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, pos);
                 if (stage != null) {
                     Acherune acherune = stage.getStageAcherunes().getAcherune(pos);
                     if (acherune != null) {

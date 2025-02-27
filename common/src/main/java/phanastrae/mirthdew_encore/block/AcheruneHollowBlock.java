@@ -34,7 +34,7 @@ public class AcheruneHollowBlock extends Block {
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
-            DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, RegionPos.fromBlockPos(pos));
+            DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, pos);
             if(stage != null) {
                 StageAcherunes stageAcherunes = stage.getStageAcherunes();
                 Acherune nearestAcherune = stageAcherunes.getNearestAcheruneToPos(pos, level.getRandom());

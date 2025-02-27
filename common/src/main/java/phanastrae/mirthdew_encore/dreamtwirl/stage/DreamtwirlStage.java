@@ -23,6 +23,7 @@ import phanastrae.mirthdew_encore.services.XPlatInterface;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.List;
+import java.util.Optional;
 
 public class DreamtwirlStage extends SavedData {
     public static final String KEY_ACHERUNE_DATA = "acherune_data";
@@ -102,10 +103,13 @@ public class DreamtwirlStage extends SavedData {
         this.stageDesignGenerator = new StageDesignGenerator(this, serverLevel, stageSeed, roomSources);
     }
 
-    public static void sendRoomsToStorage(PlaceReadyRoomStorage prrs, StageDesignData designData) {
-        prrs.addRooms(designData.getRoomList());
-        prrs.addConnections(designData.getRoomGraph());
-        prrs.enableEntranceSpawning();
+    public void openLychseal(int roomId, String lychsealName) {
+        Optional<PlaceReadyRoom> roomOptional = this.roomStorage.getRoom(roomId);
+        if(roomOptional.isPresent()) {
+            PlaceReadyRoom room = roomOptional.get();
+
+            room.openLychseal(lychsealName);
+        }
     }
 
     public void tick(ServerLevel level) {
@@ -145,22 +149,14 @@ public class DreamtwirlStage extends SavedData {
             }
 
             if(room.place(level, this.stageAreaData.getInBoundsBoundingBox())) {
-                if(room.isEntrance()) {
-                    // TODO add some sort of entrance block/marker
-                    //this.entrancePos = room.getPrefab().getBoundingBox().getCenter().getCenter();
-                }
                 placedRoom = true;
 
-                RoomPlacer.spawnParticles(level, room.getPrefab());
-                room.setNeighborsCanSpawn();
+                RoomPlacer.spawnParticles(level, room.getRoom());
+                room.openLychseal("");
 
                 // TODO serialization
                 this.setDirty();
             }
-        }
-
-        if(placedRoom) {
-            this.roomStorage.getRooms().removeIf(PlaceReadyRoom::isPlaced);
         }
     }
 
@@ -202,5 +198,11 @@ public class DreamtwirlStage extends SavedData {
 
     public static String nameFor(RegionPos regionPos) {
         return "mirthdew_dreamtwirl_stage." + regionPos.regionX + "." + regionPos.regionZ;
+    }
+
+    public static void sendRoomsToStorage(PlaceReadyRoomStorage prrs, StageDesignData designData) {
+        prrs.addRooms(designData.getRoomList());
+        prrs.addConnections(designData.getRoomGraph());
+        prrs.enableEntranceSpawning();
     }
 }

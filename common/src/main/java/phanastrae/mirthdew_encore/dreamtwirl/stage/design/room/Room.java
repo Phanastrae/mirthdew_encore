@@ -17,15 +17,15 @@ import java.util.function.Predicate;
 public class Room {
     private final RoomSource prefabSet;
     private final PiecesContainer piecesContainer;
-    private final List<RoomDoor> doors;
+    private final RoomObjects roomObjects;
 
     private BoundingBox boundingBox;
     private boolean bbNeedsRecalc = false;
 
-    public Room(RoomSource prefabSet, PiecesContainer piecesContainer, List<RoomDoor> doors) {
+    public Room(RoomSource prefabSet, PiecesContainer piecesContainer, RoomObjects roomObjects) {
         this.prefabSet = prefabSet;
         this.piecesContainer = piecesContainer;
-        this.doors = doors;
+        this.roomObjects = roomObjects;
 
         this.boundingBox = this.piecesContainer.calculateBoundingBox();
     }
@@ -75,7 +75,7 @@ public class Room {
 
     public void translate(int x, int y, int z) {
         this.getPiecesContainer().pieces().forEach(structurePiece -> structurePiece.move(x, y, z));
-        this.doors.forEach(door -> door.translate(x, y, z));
+        this.roomObjects.translate(x, y, z);
 
         // TODO is the recalc the best way to do this? is it cheaper to just calc here?
         //this.bbNeedsRecalc = true;
@@ -99,6 +99,50 @@ public class Room {
     }
 
     public List<RoomDoor> getDoors() {
-        return doors;
+        return this.roomObjects.doors;
+    }
+
+    public List<RoomLychseal> getLychseals() {
+        return this.roomObjects.seals;
+    }
+
+    public Optional<RoomLychseal> getUnplacedLychseal(BlockPos pos) {
+        return this.roomObjects.getUnplacedLychseal(pos);
+    }
+
+    public static class RoomObjects {
+
+        private final List<RoomDoor> doors;
+        private final List<RoomLychseal> seals;
+
+        public RoomObjects(List<RoomDoor> doors, List<RoomLychseal> seals) {
+            this.doors = doors;
+            this.seals = seals;
+        }
+
+        public void translate(int x, int y, int z) {
+            this.getDoors().forEach(door -> door.translate(x, y, z));
+            this.getLychseals().forEach(door -> door.translate(x, y, z));
+        }
+
+        public List<RoomDoor> getDoors() {
+            return doors;
+        }
+
+        public List<RoomLychseal> getLychseals() {
+            return seals;
+        }
+
+        public Optional<RoomLychseal> getUnplacedLychseal(BlockPos pos) {
+            for(RoomLychseal lychseal : this.seals) {
+                if(!lychseal.isPlaced()) {
+                    if (lychseal.getPos().equals(pos)) {
+                        lychseal.setPlaced(true);
+                        return Optional.of(lychseal);
+                    }
+                }
+            }
+            return Optional.empty();
+        }
     }
 }

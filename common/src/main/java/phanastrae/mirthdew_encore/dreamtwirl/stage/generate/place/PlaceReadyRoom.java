@@ -1,5 +1,6 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place;
 
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -13,15 +14,17 @@ public class PlaceReadyRoom {
     private final Room prefab;
     private boolean isPlaced = false;
     private boolean canPlace = false;
-    private List<PlaceReadyRoom> placeAfter = new ObjectArrayList<>();
+    private List<Pair<String, PlaceReadyRoom>> placeAfter = new ObjectArrayList<>();
+    private final int roomId;
 
-    public PlaceReadyRoom(Room prefab) {
+    public PlaceReadyRoom(Room prefab, int roomId) {
         this.prefab = prefab;
+        this.roomId = roomId;
     }
 
     public boolean place(ServerLevel level, BoundingBox stageBB) {
         if(!this.isPlaced) {
-            if(RoomPlacer.placeStructure(this.prefab, level, stageBB, this.isEntrance)) {
+            if(RoomPlacer.placeStructure(this.prefab, level, stageBB, this.isEntrance, this.roomId)) {
                 this.isPlaced = true;
                 return true;
             } else {
@@ -29,6 +32,18 @@ public class PlaceReadyRoom {
             }
         } else {
             return true;
+        }
+    }
+
+    public void setEmptySealNeighborsCanSpawn() {
+        this.openLychseal("");
+    }
+
+    public void openLychseal(String lychsealName) {
+        for(Pair<String, PlaceReadyRoom> pairs : placeAfter) {
+            if(pairs.left().equals(lychsealName)) {
+                pairs.right().setCanPlace(true);
+            }
         }
     }
 
@@ -40,15 +55,11 @@ public class PlaceReadyRoom {
         return isEntrance;
     }
 
-    public void setNeighborsCanSpawn() {
-        this.placeAfter.forEach(prr -> prr.setCanPlace(true));
+    public void addToPlaceAfter(String lychseal, PlaceReadyRoom room) {
+        this.placeAfter.add(Pair.of(lychseal, room));
     }
 
-    public void addToPlaceAfter(PlaceReadyRoom room) {
-        this.placeAfter.add(room);
-    }
-
-    public Room getPrefab() {
+    public Room getRoom() {
         return prefab;
     }
 
@@ -62,5 +73,9 @@ public class PlaceReadyRoom {
 
     public void setCanPlace(boolean canPlace) {
         this.canPlace = canPlace;
+    }
+
+    public int getRoomId() {
+        return roomId;
     }
 }
