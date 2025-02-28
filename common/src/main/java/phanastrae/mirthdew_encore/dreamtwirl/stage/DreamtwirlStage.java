@@ -16,7 +16,6 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignGenerator;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSourceCollection;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceReadyRoom;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceReadyRoomStorage;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.RoomPlacer;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista.VistaTypes;
 import phanastrae.mirthdew_encore.network.packet.DreamtwirlDebugPayload;
 import phanastrae.mirthdew_encore.services.XPlatInterface;
@@ -138,25 +137,12 @@ public class DreamtwirlStage extends SavedData {
             this.setDirty();
         }
 
-        boolean placedRoom = false;
         for(PlaceReadyRoom room : this.roomStorage.getRooms()) {
             if(room.isPlaced() || !room.canPlace()) {
                 continue;
             }
 
-            if(random.nextInt(45) != 0) {
-                continue;
-            }
-
-            if(room.place(level, this.stageAreaData.getInBoundsBoundingBox())) {
-                placedRoom = true;
-
-                RoomPlacer.spawnParticles(level, room.getRoom());
-                room.openLychseal("");
-
-                // TODO serialization
-                this.setDirty();
-            }
+            room.tick(level, this.stageAreaData.getInBoundsBoundingBox(), this);
         }
     }
 
