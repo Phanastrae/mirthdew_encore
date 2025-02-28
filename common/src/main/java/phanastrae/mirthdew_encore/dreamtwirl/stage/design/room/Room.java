@@ -28,10 +28,20 @@ public class Room {
         this.roomObjects = roomObjects;
 
         this.boundingBox = this.piecesContainer.calculateBoundingBox();
+
+        this.setObjectParents();
+    }
+
+    public void setObjectParents() {
+        this.roomObjects.doors.forEach(door -> door.setParentRoom(this));
     }
 
     public Optional<RoomDoor> getRandomEmptyDoor(RandomSource random) {
         return getRandomDoorMatching(random, door -> !door.isConnected());
+    }
+
+    public Optional<RoomDoor> getRandomEmptyExit(RandomSource random) {
+        return getRandomDoorMatching(random, door -> !door.isConnected() && door.getDoorType().isExit);
     }
 
     public Optional<RoomDoor> getRandomEmptyEntranceMatching(RandomSource random, FrontAndTop orientation) {

@@ -32,9 +32,14 @@ public class RoomType {
         return this.category == Category.ROOM;
     }
 
+    public boolean isGate() {
+        return this.category == Category.GATE;
+    }
+
     public enum Category {
         ENTRANCE,
         PATH,
-        ROOM
+        ROOM,
+        GATE
     }
 }

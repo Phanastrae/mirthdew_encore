@@ -11,10 +11,11 @@ public interface VistaTypes {
         return new VistaType.Builder()
                 .addRoomType(new RoomType(RoomTypeStructureIds.DECIDRHEUM_ACHERUNE_ENTRANCE, RoomType.Category.ENTRANCE))
 
-                // TODO custom room type for gate?
                 // TODO weighted probabilities
-                .addRoomType(new RoomType(RoomTypeStructureIds.LYCHSEAL_GATE, RoomType.Category.PATH))
-                .addRoomType(new RoomType(RoomTypeStructureIds.LYCHSEAL_GATE, RoomType.Category.PATH))
+                .addRoomType(new RoomType(RoomTypeStructureIds.LYCHSEAL_GATE, RoomType.Category.GATE))
+                .addRoomType(new RoomType(RoomTypeStructureIds.LYCHSEAL_GATE, RoomType.Category.GATE))
+                .addRoomType(new RoomType(RoomTypeStructureIds.LYCHSEAL_GATE, RoomType.Category.GATE))
+                .addRoomType(new RoomType(RoomTypeStructureIds.LYCHSEAL_GATE, RoomType.Category.GATE))
 
                 .addRoomType(new RoomType(RoomTypeStructureIds.DECIDRHEUM_FOURWAY, RoomType.Category.PATH))
                 .addRoomType(new RoomType(RoomTypeStructureIds.DECIDRHEUM_CORNER, RoomType.Category.PATH))

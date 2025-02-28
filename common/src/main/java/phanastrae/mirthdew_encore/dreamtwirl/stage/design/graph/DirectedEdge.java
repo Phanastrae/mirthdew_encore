@@ -17,6 +17,8 @@ public class DirectedEdge {
             this.start.addEdgeOut(this);
             this.end.addEdgeIn(this);
             this.attached = true;
+
+            this.updateEndpoints();
         }
     }
 
@@ -25,7 +27,14 @@ public class DirectedEdge {
             this.start.removeEdgeOut(this);
             this.end.removeEdgeIn(this);
             this.attached = false;
+
+            this.updateEndpoints();
         }
+    }
+
+    public void updateEndpoints() {
+        this.getStart().update();
+        this.getEnd().update();
     }
 
     public DoorNode getStart() {
@@ -34,5 +43,9 @@ public class DirectedEdge {
 
     public DoorNode getEnd() {
         return end;
+    }
+
+    public boolean isAttached() {
+        return attached;
     }
 }

@@ -67,7 +67,7 @@ public class RoomSource {
     public Optional<Room> tryGenerateRoom(long stageSeed, ChunkPos stageCenterPos, RandomSource random, ServerLevel serverLevel) {
         Optional<PiecesContainer> piecesContainerOptional = tryMakePiecesContainer(this.structure, stageSeed, random, stageCenterPos, serverLevel);
         return piecesContainerOptional
-                .map(piecesContainer -> new Room(this, piecesContainer, collectDoors(piecesContainer, serverLevel.getStructureManager(), random)));
+                .map(piecesContainer -> new Room(this, piecesContainer, collectRoomObjects(piecesContainer, serverLevel.getStructureManager(), random)));
     }
 
     public void acceptDiscardedRoom(Room discardedRoom) {
@@ -106,7 +106,7 @@ public class RoomSource {
         return structure.findValidGenerationPoint(context);
     }
 
-    public static Room.RoomObjects collectDoors(PiecesContainer piecesContainer, StructureTemplateManager structureTemplateManager, RandomSource random) {
+    public static Room.RoomObjects collectRoomObjects(PiecesContainer piecesContainer, StructureTemplateManager structureTemplateManager, RandomSource random) {
         List<RoomDoor> doors = new ObjectArrayList<>();
         List<RoomLychseal> seals = new ObjectArrayList<>();
 

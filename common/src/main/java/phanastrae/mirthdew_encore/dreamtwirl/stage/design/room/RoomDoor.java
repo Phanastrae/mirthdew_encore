@@ -5,6 +5,7 @@ import net.minecraft.core.FrontAndTop;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -17,6 +18,9 @@ public class RoomDoor {
     private BlockPos pos;
     private FrontAndTop orientation;
     private boolean connected = false;
+
+    @Nullable
+    private Room parentRoom;
 
     private final DoorType doorType;
     private final String targetLychseal;
@@ -71,6 +75,14 @@ public class RoomDoor {
 
     public boolean hasTargetLychseal() {
         return !this.targetLychseal.isEmpty();
+    }
+
+    public void setParentRoom(@Nullable Room parentRoom) {
+        this.parentRoom = parentRoom;
+    }
+
+    public @Nullable Room getParentRoom() {
+        return this.parentRoom;
     }
 
     public enum DoorType implements StringRepresentable {

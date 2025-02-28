@@ -8,8 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista.VistaType;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista.VistaType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +24,14 @@ public class RoomSourceCollection {
         this.roomTypes = roomTypes;
     }
 
-    public Optional<RoomSource> getRandomPrefabSet(RandomSource random) {
-        if(random.nextInt(4) == 0) {
+    public Optional<RoomSource> getRandomRoomSource(RandomSource random) {
+        int i = random.nextInt(3);
+        if(i == 0) {
             return getRoom(random);
-        } else {
+        } else if(i == 1) {
             return getPath(random);
+        } else {
+            return getGate(random);
         }
     }
 
@@ -38,6 +41,10 @@ public class RoomSourceCollection {
 
     public Optional<RoomSource> getRoom(RandomSource random) {
         return getRandomMatching(random, prefabSet -> prefabSet.getRoomType().isRoom());
+    }
+
+    public Optional<RoomSource> getGate(RandomSource random) {
+        return getRandomMatching(random, prefabSet -> prefabSet.getRoomType().isGate());
     }
 
     public Optional<RoomSource> getEntrance(RandomSource random) {

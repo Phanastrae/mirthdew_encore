@@ -37,11 +37,32 @@ public class RoomGraph {
         }
     }
 
+    public void removeRoom(Room room) {
+        for(RoomDoor door : room.getDoors()) {
+            if(this.doorMap.containsKey(door)) {
+                this.doorMap.get(door).setRemoved(true);
+                this.doorMap.remove(door);
+            }
+        }
+
+        // TODO optimise, this is not great
+        this.doorNodes.removeIf(DoorNode::isRemoved);
+
+        this.directedEdges.forEach(edge -> {
+            if(edge.getStart().isRemoved() || edge.getEnd().isRemoved()) {
+                edge.detachFromNodes();
+            }
+        });
+        this.directedEdges.removeIf(edge -> !edge.isAttached());
+    }
+
     public DoorNode addNode(RoomDoor door) {
         if(!this.doorMap.containsKey(door)) {
             DoorNode node = new DoorNode(door);
             this.doorNodes.add(node);
             this.doorMap.put(door, node);
+
+            node.update();
 
             return node;
         } else {

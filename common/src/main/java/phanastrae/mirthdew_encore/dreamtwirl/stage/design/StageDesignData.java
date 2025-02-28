@@ -35,6 +35,12 @@ public class StageDesignData {
         this.roomGraph.addRoomToGraph(room);
     }
 
+    public void removeRoom(Room room) {
+        this.roomList.remove(room);
+        this.collisionMap.removeRoom(room);
+        this.roomGraph.removeRoom(room);
+    }
+
     public Optional<Room> getRandomRoom(RandomSource random) {
         if(this.roomList.isEmpty()) {
             return Optional.empty();
