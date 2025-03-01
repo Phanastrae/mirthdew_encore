@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import org.jetbrains.annotations.Nullable;
+import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
@@ -163,7 +164,7 @@ public class PlaceReadyRoom {
                                     } else {
                                         // place foam
                                         if(!targetState.isAir() || !oldState.isAir()) {
-                                            BlockState newState = Blocks.LIGHT_BLUE_STAINED_GLASS.defaultBlockState();
+                                            BlockState newState = MirthdewEncoreBlocks.MEMORY_FOAM.defaultBlockState();
                                             RoomActivePlacement.setBlock(level, mutableBlockPos, newState, true);
                                         }
                                     }

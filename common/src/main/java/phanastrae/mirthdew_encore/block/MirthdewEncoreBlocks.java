@@ -624,6 +624,20 @@ public class MirthdewEncoreBlocks {
             .pushReaction(PushReaction.BLOCK)
     );
 
+    public static final Block MEMORY_FOAM = new MemoryFoamBlock(createSettings()
+            .mapColor(MapColor.COLOR_CYAN)
+            .instrument(NoteBlockInstrument.CHIME)
+            .strength(4F, 55555F)
+            .sound(SoundType.SLIME_BLOCK)
+            .emissiveRendering((state, blockGetter, blockPos) -> true)
+            .lightLevel((blockState) -> 11)
+            .isValidSpawn(MirthdewEncoreBlocks::never)
+            .isRedstoneConductor(MirthdewEncoreBlocks::never)
+            .isSuffocating(MirthdewEncoreBlocks::never)
+            .isViewBlocking(MirthdewEncoreBlocks::never)
+            .noOcclusion()
+    );
+
     public static final Block VESPERBILE = new VesperbileLiquidBlock(
             MirthdewEncoreFluids.VESPERBILE,
             BlockBehaviour.Properties.of()
@@ -834,6 +848,7 @@ public class MirthdewEncoreBlocks {
         r.accept(id("lychseal_marker"), LYCHSEAL_MARKER);
 
         r.accept(id("dreamtwirl_barrier"), DREAMTWIRL_BARRIER);
+        r.accept(id("memory_foam"), MEMORY_FOAM);
 
         r.accept(id("vesperbile"), VESPERBILE);
     }

@@ -53,7 +53,9 @@ public class ModelProvider extends FabricModelProvider {
                 SUNSLAKED_PSYRITE_ORE,
                 RAW_PSYRITE_BLOCK,
 
-                GREATER_ACHERUNE_MARKER
+                GREATER_ACHERUNE_MARKER,
+
+                MEMORY_FOAM
         );
 
         forMultiple(BMG, BlockModelGenerators::createRotatedVariantBlock,

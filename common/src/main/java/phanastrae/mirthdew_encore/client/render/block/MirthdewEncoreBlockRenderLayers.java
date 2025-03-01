@@ -55,7 +55,8 @@ public class MirthdewEncoreBlockRenderLayers {
         );
 
         putBlocks(RenderType.translucent(),
-                SLUMBERVEIL
+                SLUMBERVEIL,
+                MEMORY_FOAM
         );
 
         putFluids(RenderType.translucent(),
