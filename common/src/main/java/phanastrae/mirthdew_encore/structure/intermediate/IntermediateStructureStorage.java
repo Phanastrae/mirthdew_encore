@@ -117,7 +117,7 @@ public class IntermediateStructureStorage {
             this.blockEntities.remove(pos);
             BlockEntity blockEntity = entityBlock.newBlockEntity(pos, state);
             if(blockEntity != null) {
-                this.blockEntities.put(pos, blockEntity);
+                this.blockEntities.put(pos.immutable(), blockEntity);
             }
         }
         return true;

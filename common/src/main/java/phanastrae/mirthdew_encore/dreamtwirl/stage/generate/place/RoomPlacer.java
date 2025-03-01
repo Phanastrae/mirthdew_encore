@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
@@ -45,7 +46,7 @@ public class RoomPlacer {
                 0.15);
     }
 
-    public static boolean placeStructure(Room room, ServerLevel serverLevel, BoundingBox areaBox, boolean forceLoadChunks, int roomId) {
+    public static boolean placeStructure(Room room, ServerLevel serverLevel, WorldGenLevel worldGenLevel, BoundingBox areaBox, boolean forceLoadChunks, int roomId) {
         Structure structure = room.getRoomSource().getStructure();
         PiecesContainer piecesContainer = room.getPiecesContainer();
         List<StructurePiece> list = piecesContainer.pieces();
@@ -81,34 +82,62 @@ public class RoomPlacer {
                                 return;
                             }
 
-                            BoundingBox chunkBox = new BoundingBox(chunkPos.getMinBlockX(), serverLevel.getMinBuildHeight(), chunkPos.getMinBlockZ(), chunkPos.getMaxBlockX(), serverLevel.getMaxBuildHeight(), chunkPos.getMaxBlockZ());
+                            BoundingBox chunkBox = new BoundingBox(
+                                    chunkPos.getMinBlockX(), serverLevel.getMinBuildHeight(), chunkPos.getMinBlockZ(),
+                                    chunkPos.getMaxBlockX(), serverLevel.getMaxBuildHeight(), chunkPos.getMaxBlockZ()
+                            );
                             for(StructurePiece structurePiece : list) {
                                 if (structurePiece.getBoundingBox().intersects(chunkBox)) {
                                     if(structurePiece instanceof PoolElementStructurePiece poolStructurePiece) {
-                                        generate(poolStructurePiece, serverLevel.getStructureManager(), serverLevel, structureAccessor, chunkGenerator, random, chunkBox, firstPieceBasePosition);
+                                        generate(
+                                                poolStructurePiece,
+                                                serverLevel.getStructureManager(),
+                                                worldGenLevel,
+                                                structureAccessor,
+                                                chunkGenerator,
+                                                random,
+                                                chunkBox,
+                                                firstPieceBasePosition
+                                        );
                                     } else {
-                                        structurePiece.postProcess(serverLevel, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, firstPieceBasePosition);
+                                        structurePiece.postProcess(
+                                                worldGenLevel,
+                                                structureAccessor,
+                                                chunkGenerator,
+                                                random,
+                                                chunkBox,
+                                                chunkPos,
+                                                firstPieceBasePosition
+                                        );
                                     }
                                 }
                             }
 
-                            structure.afterPlace(serverLevel, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, piecesContainer);
+                            structure.afterPlace(
+                                    worldGenLevel,
+                                    structureAccessor,
+                                    chunkGenerator,
+                                    random,
+                                    chunkBox,
+                                    chunkPos,
+                                    piecesContainer
+                            );
                         }
                 );
         for(StructurePiece structurePiece : list) {
             if (structurePiece instanceof PoolElementStructurePiece poolStructurePiece) {
-                placeRoomObjects(poolStructurePiece, serverLevel.getStructureManager(), serverLevel, random, room, roomId);
+                placeRoomObjects(poolStructurePiece, serverLevel.getStructureManager(), worldGenLevel, random, room, roomId);
             }
         }
         return true;
     }
 
-    public static void generate(PoolElementStructurePiece structurePiece, StructureTemplateManager structureTemplateManager, ServerLevel world, StructureManager structureAccessor, ChunkGenerator chunkGenerator, RandomSource random, BoundingBox chunkBox, BlockPos pivot) {
+    public static void generate(PoolElementStructurePiece structurePiece, StructureTemplateManager structureTemplateManager, WorldGenLevel worldGenLevel, StructureManager structureAccessor, ChunkGenerator chunkGenerator, RandomSource random, BoundingBox chunkBox, BlockPos pivot) {
         StructurePoolElement poolElement = structurePiece.getElement();
-        poolElement.place(structureTemplateManager, world, structureAccessor, chunkGenerator, structurePiece.getPosition(), pivot, structurePiece.getRotation(), chunkBox, random, LiquidSettings.IGNORE_WATERLOGGING, false);
+        poolElement.place(structureTemplateManager, worldGenLevel, structureAccessor, chunkGenerator, structurePiece.getPosition(), pivot, structurePiece.getRotation(), chunkBox, random, LiquidSettings.IGNORE_WATERLOGGING, false);
     }
 
-    public static void placeRoomObjects(PoolElementStructurePiece structurePiece, StructureTemplateManager structureTemplateManager, ServerLevel level, RandomSource random, Room room, int roomId) {
+    public static void placeRoomObjects(PoolElementStructurePiece structurePiece, StructureTemplateManager structureTemplateManager, WorldGenLevel level, RandomSource random, Room room, int roomId) {
         StructurePoolElement poolElement = structurePiece.getElement();
         BlockPos pos = structurePiece.getPosition();
         Rotation rotation = structurePiece.getRotation();
@@ -118,7 +147,7 @@ public class RoomPlacer {
         convertLychsealMarkers(level, poolElement, structureTemplateManager, pos, rotation, random, room, roomId);
     }
 
-    public static void convertDoorMarkers(ServerLevel level, StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos piecePos, Rotation pieceRotation, RandomSource random) {
+    public static void convertDoorMarkers(WorldGenLevel level, StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos piecePos, Rotation pieceRotation, RandomSource random) {
         // replace all door markers with normal blocks
         // we should already have this info available, but get it again to ensure the blocks are always set even if the structure piece has since been modified in the datapack
         List<StructureTemplate.StructureBlockInfo> doorInfos = RoomSource.getDoorMarkerInfos(poolElement, structureTemplateManager, piecePos, pieceRotation, random);
@@ -127,24 +156,24 @@ public class RoomPlacer {
 
             // TODO add custom replace state
             if(level.getBlockState(pos).is(MirthdewEncoreBlocks.DOOR_MARKER)) {
-                level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
             }
         }
     }
 
-    public static void convertAcheruneMarkers(ServerLevel level, StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos piecePos, Rotation pieceRotation, RandomSource random) {
+    public static void convertAcheruneMarkers(WorldGenLevel level, StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos piecePos, Rotation pieceRotation, RandomSource random) {
         // replace all greater acherune markers with actual acherunes
         List<StructureTemplate.StructureBlockInfo> greaterAcheruneInfos = RoomSource.getGreaterAcheruneMarkerInfos(poolElement, structureTemplateManager, piecePos, pieceRotation, random);
         for(StructureTemplate.StructureBlockInfo runeInfo : greaterAcheruneInfos) {
             BlockPos pos = runeInfo.pos();
 
             if(level.getBlockState(pos).is(MirthdewEncoreBlocks.GREATER_ACHERUNE_MARKER)) {
-                level.setBlockAndUpdate(pos, MirthdewEncoreBlocks.GREATER_ACHERUNE.defaultBlockState());
+                level.setBlock(pos, MirthdewEncoreBlocks.GREATER_ACHERUNE.defaultBlockState(), 3);
             }
         }
     }
 
-    public static void convertLychsealMarkers(ServerLevel level, StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos piecePos, Rotation pieceRotation, RandomSource random, Room room, int roomId) {
+    public static void convertLychsealMarkers(WorldGenLevel level, StructurePoolElement poolElement, StructureTemplateManager structureTemplateManager, BlockPos piecePos, Rotation pieceRotation, RandomSource random, Room room, int roomId) {
         // replace all lychseal markers with actual lychseals
         List<StructureTemplate.StructureBlockInfo> lychsealInfos = RoomSource.getLychsealMarkerInfos(poolElement, structureTemplateManager, piecePos, pieceRotation, random);
         for(StructureTemplate.StructureBlockInfo sealInfo : lychsealInfos) {
@@ -158,7 +187,7 @@ public class RoomPlacer {
             }
 
             if(level.getBlockState(pos).is(MirthdewEncoreBlocks.LYCHSEAL_MARKER)) {
-                level.setBlockAndUpdate(pos, newState);
+                level.setBlock(pos, newState, 3);
 
                 Optional<RoomLychseal> lychsealOptional = room.getUnplacedLychseal(pos);
 

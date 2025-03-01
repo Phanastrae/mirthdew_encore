@@ -32,7 +32,7 @@ public class Acherune {
     private @Nullable BlockPosDimensional linkedPos = null;
 
     public Acherune(BlockPos pos, AcheruneId id) {
-        this.pos = pos;
+        this.pos = pos.immutable(); // need to make sure the stored pos is not a BlockPos.Mutable
         this.id = id;
     }
 
