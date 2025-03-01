@@ -1,18 +1,16 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place;
 
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
+import phanastrae.mirthdew_encore.structure.intermediate.BoxedContainer;
 import phanastrae.mirthdew_encore.structure.intermediate.IntermediateGenLevel;
 import phanastrae.mirthdew_encore.structure.intermediate.IntermediateStructureStorage;
 
@@ -22,13 +20,18 @@ public class PlaceReadyRoom {
 
     private boolean isEntrance = false;
     private final Room room;
-    private boolean isPlaced = false;
-    private boolean canPlace = false;
-    private List<Pair<String, PlaceReadyRoom>> placeAfter = new ObjectArrayList<>();
     private final int roomId;
 
+    private List<LychsealDoorEntry> placeAfter = new ObjectArrayList<>();
+
+    private boolean isPlaced = false;
+    private boolean canPlace = false;
+
+    @Nullable
+    private BlockPos placementOrigin;
     private int spawnTime = 0;
-    private final int maxSpawnTime;
+    private int maxSpawnTime = 0;
+    private boolean spawnInstantly = false;
 
     @Nullable
     private IntermediateStructureStorage intermediateStructureStorage;
@@ -37,8 +40,22 @@ public class PlaceReadyRoom {
     public PlaceReadyRoom(Room prefab, int roomId) {
         this.room = prefab;
         this.roomId = roomId;
+    }
 
-        this.maxSpawnTime = 30; // TODO make this be based on the room type?
+    public void beginPlacementImmediately() {
+        this.spawnInstantly = true;
+        this.beginPlacement(this.room.getBoundingBox().getCenter());
+    }
+
+    public void beginPlacementFromDoor(RoomDoor startDoor) {
+        this.beginPlacement(startDoor.getPos().immutable());
+    }
+
+    public void beginPlacement(BlockPos startPos) {
+        if(!this.canPlace) {
+            this.canPlace = true;
+            this.placementOrigin = startPos;
+        }
     }
 
     public void createStructure(ServerLevel level, BoundingBox stageBB) {
@@ -46,8 +63,26 @@ public class PlaceReadyRoom {
             this.intermediateStructureStorage = new IntermediateStructureStorage();
         }
         IntermediateGenLevel igl = new IntermediateGenLevel(this.intermediateStructureStorage, level);
-        if(RoomPlacer.placeStructure(this.room, level, igl, stageBB, this.isEntrance, this.roomId)) {
+        if(RoomPrePlacement.placeStructure(this.room, level, igl, stageBB, this.isEntrance, this.roomId)) {
             this.storageFilled = true;
+
+            BoundingBox storageBox = intermediateStructureStorage.calculateBoundingBox();
+            if(storageBox == null || this.placementOrigin == null) {
+                this.maxSpawnTime = 0;
+            } else {
+                this.maxSpawnTime = 0;
+                for(int i = 0; i < 8; i++) {
+                    int x = ((i & 0x1) == 0) ? storageBox.minX() : storageBox.maxX();
+                    int y = ((i & 0x2) == 0) ? storageBox.minY() : storageBox.maxY();
+                    int z = ((i & 0x4) == 0) ? storageBox.minZ() : storageBox.maxZ();
+                    BlockPos pos = new BlockPos(x, y, z);
+
+                    int candidateMaxSpawnTime = RoomActivePlacement.getTimeToReachPos(this.placementOrigin, pos, true, RoomActivePlacement.MAX_NOISE_DELAY_TICKS);
+                    if(candidateMaxSpawnTime > this.maxSpawnTime) {
+                        this.maxSpawnTime = candidateMaxSpawnTime;
+                    }
+                }
+            }
         }
     }
 
@@ -57,13 +92,16 @@ public class PlaceReadyRoom {
                 this.createStructure(level, stageBB);
             }
 
-            if(this.spawnTime < this.maxSpawnTime) {
-                this.spawnTime++;
-            }
+            if(this.spawnTime <= this.maxSpawnTime) {
+                if(this.placeForTime(level, this.spawnTime)) {
+                    this.spawnTime++;
+                }
+            } else {
+                if(this.place(level)) {
+                    this.intermediateStructureStorage = null;
+                    this.storageFilled = false;
 
-            if(this.spawnTime >= this.maxSpawnTime) {
-                if(this.place(level, stageBB)) {
-                    RoomPlacer.spawnParticles(level, this.getRoom());
+                    RoomPrePlacement.spawnParticles(level, this.getRoom());
                     this.openLychseal("");
 
                     // TODO serialization
@@ -73,7 +111,7 @@ public class PlaceReadyRoom {
         }
     }
 
-    public boolean place(ServerLevel level, BoundingBox stageBB) {
+    public boolean placeForTime(ServerLevel level, int time) {
         if(!this.storageFilled || this.intermediateStructureStorage == null) {
             return false;
         } else {
@@ -81,6 +119,81 @@ public class PlaceReadyRoom {
 
             // place blocks
             this.intermediateStructureStorage.forEachContainer((sectionPos, boxedContainer) -> {
+                BoundingBox box = boxedContainer.getBox();
+                if(box == null) return;
+
+                BoxedContainer fragile = this.intermediateStructureStorage.getFragileContainer(sectionPos);
+                if(fragile == null) {
+                    fragile = new BoxedContainer();
+                    this.intermediateStructureStorage.addFragileContainer(sectionPos, fragile);
+                }
+
+                int mx = sectionPos.minBlockX();
+                int my = sectionPos.minBlockY();
+                int mz = sectionPos.minBlockZ();
+
+                BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+                for(int x = box.minX(); x <= box.maxX(); x++) {
+                    for(int y = box.minY(); y <= box.maxY(); y++) {
+                        for(int z = box.minZ(); z <= box.maxZ(); z++) {
+                            BlockState state = boxedContainer.get(x, y, z);
+
+                            if(!state.is(Blocks.STRUCTURE_VOID)) {
+                                mutableBlockPos.set(mx + x, my + y, mz + z);
+
+                                int targetTimeFoam = RoomActivePlacement.getTimeToReachPos(this.placementOrigin, mutableBlockPos, false, mx + x, mz + z);
+                                int targetTimeBlock = RoomActivePlacement.getTimeToReachPos(this.placementOrigin, mutableBlockPos, true, mx + x, mz + z);
+                                // TODO optimise
+                                if(time == targetTimeBlock || time == targetTimeFoam) {
+                                    BlockState targetState = boxedContainer.get(x, y, z);
+                                    if(targetState.is(Blocks.STRUCTURE_VOID)) {
+                                        continue;
+                                    }
+                                    BlockState oldState = level.getBlockState(mutableBlockPos);
+
+                                    if(time == targetTimeBlock) {
+                                        // place block
+                                        if(!targetState.isAir() || !oldState.isAir()) {
+                                            if(RoomActivePlacement.isStateFragile(targetState, level, mutableBlockPos)) {
+                                                fragile.set(x, y, z, targetState);
+                                            } else {
+                                                RoomActivePlacement.setBlock(level, mutableBlockPos, targetState, true);
+                                            }
+                                        }
+                                    } else {
+                                        // place foam
+                                        if(!targetState.isAir() || !oldState.isAir()) {
+                                            BlockState newState = Blocks.LIGHT_BLUE_STAINED_GLASS.defaultBlockState();
+                                            RoomActivePlacement.setBlock(level, mutableBlockPos, newState, true);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            for(LychsealDoorEntry entry : this.placeAfter) {
+                BlockPos doorPos = entry.startDoor.getPos();
+                if(RoomActivePlacement.getTimeToReachPos(this.placementOrigin, doorPos, false, doorPos.getX(), doorPos.getZ()) == time) {
+                    if(!entry.startDoor.hasTargetLychseal()) {
+                        entry.targetRoom.beginPlacementFromDoor(entry.targetDoor);
+                    }
+                }
+            }
+
+            return true;
+        }
+    }
+
+    public boolean place(ServerLevel level) {
+        if(!this.storageFilled || this.intermediateStructureStorage == null) {
+            return false;
+        } else {
+            // TODO limit to loaded chunks
+
+            // place blocks
+            this.intermediateStructureStorage.forEachFragileContainer((sectionPos, boxedContainer) -> {
                 BoundingBox box = boxedContainer.getBox();
                 if(box == null) return;
 
@@ -97,7 +210,7 @@ public class PlaceReadyRoom {
                             if(!state.is(Blocks.STRUCTURE_VOID)) {
                                 mutableBlockPos.set(mx + x, my + y, mz + z);
 
-                                setBlock(level, mutableBlockPos, state, false);
+                                RoomActivePlacement.setBlock(level, mutableBlockPos, state, false);
                             }
                         }
                     }
@@ -133,7 +246,7 @@ public class PlaceReadyRoom {
                                 if (state.hasAnalogOutputSignal()) {
                                     level.updateNeighbourForOutputSignal(mutableBlockPos, state.getBlock());
                                 }
-                                tryUpdateSelf(level, mutableBlockPos, state);
+                                RoomActivePlacement.tryUpdateSelf(level, mutableBlockPos, state);
                             }
                         }
                     }
@@ -146,41 +259,6 @@ public class PlaceReadyRoom {
             this.isPlaced = true;
             return true;
         }
-
-
-
-
-        /*
-        if(!this.isPlaced) {
-            if(RoomPlacer.placeStructure(this.room, level, stageBB, this.isEntrance, this.roomId)) {
-                this.isPlaced = true;
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
-        */
-    }
-
-    public static void setBlock(ServerLevel level, BlockPos pos, BlockState state, boolean updateNeighbors) {
-        level.setBlock(pos, state, updateNeighbors ? 3 : 2, 512);
-    }
-
-    public static void tryUpdateSelf(ServerLevel level, BlockPos pos, BlockState state) {
-        FluidState fluidState = state.getFluidState();
-        if (!fluidState.isEmpty()) {
-            fluidState.tick(level, pos);
-        }
-
-        Block block = state.getBlock();
-        if (!(block instanceof LiquidBlock)) {
-            BlockState newState = Block.updateFromNeighbourShapes(state, level, pos);
-            if (!newState.equals(state)) {
-                level.setBlock(pos, newState, 20);
-            }
-        }
     }
 
     public void setEmptySealNeighborsCanSpawn() {
@@ -188,9 +266,9 @@ public class PlaceReadyRoom {
     }
 
     public void openLychseal(String lychsealName) {
-        for(Pair<String, PlaceReadyRoom> pairs : placeAfter) {
-            if(pairs.left().equals(lychsealName)) {
-                pairs.right().setCanPlace(true);
+        for(LychsealDoorEntry entry : this.placeAfter) {
+            if(entry.lychsealName.equals(lychsealName)) {
+                entry.targetRoom.beginPlacementFromDoor(entry.targetDoor);
             }
         }
     }
@@ -203,20 +281,12 @@ public class PlaceReadyRoom {
         return isEntrance;
     }
 
-    public void addToPlaceAfter(String lychseal, PlaceReadyRoom room) {
-        this.placeAfter.add(Pair.of(lychseal, room));
+    public void addToPlaceAfter(String lychseal, RoomDoor startDoor, RoomDoor targetDoor, PlaceReadyRoom room) {
+        this.placeAfter.add(new LychsealDoorEntry(lychseal, startDoor, targetDoor, room));
     }
 
     public Room getRoom() {
         return room;
-    }
-
-    public boolean isPlaced() {
-        return isPlaced;
-    }
-
-    public boolean canPlace() {
-        return canPlace;
     }
 
     public void setCanPlace(boolean canPlace) {
@@ -225,5 +295,12 @@ public class PlaceReadyRoom {
 
     public int getRoomId() {
         return roomId;
+    }
+
+    public boolean shouldTick() {
+        return this.canPlace && !this.isPlaced;
+    }
+
+    public record LychsealDoorEntry(String lychsealName, RoomDoor startDoor, RoomDoor targetDoor, PlaceReadyRoom targetRoom) {
     }
 }

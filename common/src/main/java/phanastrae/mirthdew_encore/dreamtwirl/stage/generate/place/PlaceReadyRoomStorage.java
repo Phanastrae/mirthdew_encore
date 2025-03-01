@@ -37,7 +37,9 @@ public class PlaceReadyRoomStorage {
         map.forEach((doorNode, room) -> doorNode.getEdgesOut().forEach(edge -> {
             DoorNode end = edge.getEnd();
             if (map.containsKey(end)) {
-                room.addToPlaceAfter(doorNode.getDoor().getTargetLychseal(), map.get(end));
+                PlaceReadyRoom targetRoom = map.get(end);
+                DoorNode start = edge.getStart();
+                room.addToPlaceAfter(doorNode.getDoor().getTargetLychseal(), start.getDoor(), end.getDoor(), targetRoom);
             }
         }));
     }
@@ -45,8 +47,8 @@ public class PlaceReadyRoomStorage {
     public void enableEntranceSpawning() {
         for(PlaceReadyRoom room : this.rooms) {
             if(room.getRoom().getRoomSource().getRoomType().isEntrance()) {
-                room.setCanPlace(true);
                 room.setIsEntrance(true);
+                room.beginPlacementImmediately();
             }
         }
     }

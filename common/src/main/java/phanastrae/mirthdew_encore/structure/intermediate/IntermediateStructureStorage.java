@@ -8,11 +8,13 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -148,5 +150,48 @@ public class IntermediateStructureStorage {
 
     public void addEntity(Entity entity) {
         this.entities.add(entity);
+    }
+
+    public @Nullable BoundingBox calculateBoundingBox() {
+        if(this.blockContainers.isEmpty()) {
+            return null;
+        }
+
+        AtomicInteger aMinX = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicInteger aMinY = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicInteger aMinZ = new AtomicInteger(Integer.MAX_VALUE);
+
+        AtomicInteger aMaxX = new AtomicInteger(Integer.MIN_VALUE);
+        AtomicInteger aMaxY = new AtomicInteger(Integer.MIN_VALUE);
+        AtomicInteger aMaxZ = new AtomicInteger(Integer.MIN_VALUE);
+
+        this.blockContainers.forEach(((sectionPos, boxedContainer) -> {
+            BoundingBox box = boxedContainer.getBox();
+            if(box == null) return;
+            int minX = sectionPos.minBlockX() + box.minX();
+            int minY = sectionPos.minBlockY() + box.minY();
+            int minZ = sectionPos.minBlockZ() + box.minZ();
+
+            int maxX = sectionPos.minBlockX() + box.maxX();
+            int maxY = sectionPos.minBlockY() + box.maxY();
+            int maxZ = sectionPos.minBlockZ() + box.maxZ();
+
+            aMinX.set(Math.min(aMinX.get(), minX));
+            aMinY.set(Math.min(aMinY.get(), minY));
+            aMinZ.set(Math.min(aMinZ.get(), minZ));
+
+            aMaxX.set(Math.max(aMaxX.get(), maxX));
+            aMaxY.set(Math.max(aMaxY.get(), maxY));
+            aMaxZ.set(Math.max(aMaxZ.get(), maxZ));
+        }));
+
+        if(aMinX.get() == Integer.MAX_VALUE) {
+            return null;
+        } else {
+            return new BoundingBox(
+                    aMinX.get(), aMinY.get(), aMinZ.get(),
+                    aMaxX.get(), aMaxY.get(), aMaxZ.get()
+            );
+        }
     }
 }

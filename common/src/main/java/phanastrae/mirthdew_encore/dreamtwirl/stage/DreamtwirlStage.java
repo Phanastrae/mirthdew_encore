@@ -113,8 +113,6 @@ public class DreamtwirlStage extends SavedData {
 
     public void tick(ServerLevel level) {
         // TODO tweak, optimise, etc.
-        RandomSource random = level.getRandom();
-
         if(this.stageDesignGenerator != null) {
             boolean done = this.stageDesignGenerator.tick();
             if(done) {
@@ -138,9 +136,7 @@ public class DreamtwirlStage extends SavedData {
         }
 
         for(PlaceReadyRoom room : this.roomStorage.getRooms()) {
-            if(room.isPlaced() || !room.canPlace()) {
-                continue;
-            }
+            if(!room.shouldTick()) continue;
 
             room.tick(level, this.stageAreaData.getInBoundsBoundingBox(), this);
         }

@@ -31,7 +31,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSource
 import java.util.List;
 import java.util.Optional;
 
-public class RoomPlacer {
+public class RoomPrePlacement {
 
     public static void spawnParticles(ServerLevel level, Room room) {
         BoundingBox box = room.getBoundingBox();
