@@ -1,8 +1,12 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
@@ -47,6 +51,48 @@ public class RoomActivePlacement {
 
     public static void setBlock(ServerLevel level, BlockPos pos, BlockState state, boolean updateNeighbors) {
         level.setBlock(pos, state, updateNeighbors ? 3 : 2, 512);
+    }
+
+    public static void playBlockPlaceEffects(ServerLevel level, RandomSource random, BlockPos pos) {
+        if(blockExposed(level, pos) || random.nextInt(8) == 0) {
+            if (random.nextInt(15) == 0) {
+                level.playSound(null,
+                        pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.9F, 0.4F + 0.2F * random.nextFloat());
+            }
+            if (random.nextInt(4) == 0) {
+                level.sendParticles(ParticleTypes.TRIAL_SPAWNER_DETECTED_PLAYER_OMINOUS,
+                        pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        14, 0.5, 0.5, 0.5, 0.1);
+            }
+        }
+    }
+
+    public static void playFoamPlaceEffects(ServerLevel level, RandomSource random, BlockPos pos) {
+        if(blockExposed(level, pos) || random.nextInt(8) == 0) {
+            if (random.nextInt(15) == 0) {
+                level.playSound(null,
+                        pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        SoundEvents.CHORUS_FRUIT_TELEPORT, SoundSource.BLOCKS, 0.5F, 0.4F + 0.2F * random.nextFloat());
+            }
+            if (random.nextInt(4) == 0) {
+                level.sendParticles(ParticleTypes.TRIAL_SPAWNER_DETECTED_PLAYER_OMINOUS,
+                        pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                        14, 0.5, 0.5, 0.5, 0.1);
+            }
+        }
+    }
+
+    public static boolean blockExposed(LevelReader level, BlockPos pos) {
+        BlockPos.MutableBlockPos adjPos = pos.mutable();
+        for(Direction direction : Direction.values()) {
+            adjPos.setWithOffset(pos, direction);
+            BlockState adjState = level.getBlockState(adjPos);
+            if(!adjState.isFaceSturdy(level, adjPos, direction.getOpposite())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void tryUpdateSelf(ServerLevel level, BlockPos pos, BlockState state) {

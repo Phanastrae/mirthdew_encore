@@ -2,7 +2,6 @@ package phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
@@ -32,19 +31,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class RoomPrePlacement {
-
-    public static void spawnParticles(ServerLevel level, Room room) {
-        BoundingBox box = room.getBoundingBox();
-        level.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,
-                0.5 * (box.minX() + box.maxX()),
-                0.5 * (box.minY() + box.maxY()),
-                0.5 * (box.minZ() + box.maxZ()),
-                600,
-                0.5 * (box.maxX() - box.minX()),
-                0.5 * (box.maxY() - box.minY()),
-                0.5 * (box.maxZ() - box.minZ()),
-                0.15);
-    }
 
     public static boolean placeStructure(Room room, ServerLevel serverLevel, WorldGenLevel worldGenLevel, BoundingBox areaBox, boolean forceLoadChunks, int roomId) {
         Structure structure = room.getRoomSource().getStructure();

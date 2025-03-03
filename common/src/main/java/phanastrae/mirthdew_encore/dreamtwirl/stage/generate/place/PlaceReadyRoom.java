@@ -3,6 +3,7 @@ package phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -102,7 +103,7 @@ public class PlaceReadyRoom {
                     this.intermediateStructureStorage = null;
                     this.storageFilled = false;
 
-                    RoomPrePlacement.spawnParticles(level, this.getRoom());
+                    // empty lychseals should already all be open, but do it again just in case
                     this.openLychseal("");
 
                     // TODO serialization
@@ -117,6 +118,8 @@ public class PlaceReadyRoom {
             return false;
         } else {
             // TODO limit to loaded chunks
+
+            RandomSource random = level.getRandom();
 
             // place blocks
             this.intermediateStructureStorage.forEachContainer((sectionPos, boxedContainer) -> {
@@ -159,6 +162,7 @@ public class PlaceReadyRoom {
                                                 fragile.set(x, y, z, targetState);
                                             } else {
                                                 RoomActivePlacement.setBlock(level, mutableBlockPos, targetState, true);
+                                                RoomActivePlacement.playBlockPlaceEffects(level, random, mutableBlockPos);
                                             }
                                         }
                                     } else {
@@ -166,6 +170,7 @@ public class PlaceReadyRoom {
                                         if(!targetState.isAir() || !oldState.isAir()) {
                                             BlockState newState = MirthdewEncoreBlocks.MEMORY_FOAM.defaultBlockState();
                                             RoomActivePlacement.setBlock(level, mutableBlockPos, newState, true);
+                                            RoomActivePlacement.playFoamPlaceEffects(level, random, mutableBlockPos);
                                         }
                                     }
                                 }
@@ -193,6 +198,8 @@ public class PlaceReadyRoom {
         } else {
             // TODO limit to loaded chunks
 
+            RandomSource random = level.getRandom();
+
             // place blocks
             this.intermediateStructureStorage.forEachFragileContainer((sectionPos, boxedContainer) -> {
                 BoundingBox box = boxedContainer.getBox();
@@ -212,6 +219,7 @@ public class PlaceReadyRoom {
                                 mutableBlockPos.set(mx + x, my + y, mz + z);
 
                                 RoomActivePlacement.setBlock(level, mutableBlockPos, state, false);
+                                RoomActivePlacement.playBlockPlaceEffects(level, random, mutableBlockPos);
                             }
                         }
                     }
