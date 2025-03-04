@@ -22,11 +22,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class Room {
+    public static final String KEY_ID = "id";
     public static final String KEY_STRUCTURE = "structure";
     public static final String KEY_ROOM_TYPE = "room_type";
     public static final String KEY_STRUCTURE_PIECES = "structure_pieces";
     public static final String KEY_ROOM_OBJECTS = "room_objects";
 
+    private final long roomId;
     private final Structure structure;
     private final RoomType roomType;
 
@@ -36,11 +38,12 @@ public class Room {
     private BoundingBox boundingBox;
     private boolean bbNeedsRecalc;
 
-    public Room(Structure structure, RoomType roomType, PiecesContainer piecesContainer, RoomObjects roomObjects) {
+    public Room(long roomId, Structure structure, RoomType roomType, PiecesContainer piecesContainer, RoomObjects roomObjects) {
         this.structure = structure;
         this.roomType = roomType;
         this.piecesContainer = piecesContainer;
         this.roomObjects = roomObjects;
+        this.roomId = roomId;
 
         this.boundingBox = this.piecesContainer.calculateBoundingBox();
         this.bbNeedsRecalc = false;
@@ -48,6 +51,8 @@ public class Room {
 
     public CompoundTag writeNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext) {
         RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
+
+        nbt.putLong(KEY_ID, this.roomId);
 
         Structure.DIRECT_CODEC
                 .encodeStart(registryops, this.structure)
@@ -71,6 +76,11 @@ public class Room {
 
     public static @Nullable Room fromNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext) {
         RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
+
+        if(!nbt.contains(KEY_ID, Tag.TAG_LONG)) {
+            return null;
+        }
+        long id = nbt.getLong(KEY_ID);
 
         if(!nbt.contains(KEY_STRUCTURE, Tag.TAG_COMPOUND)) {
             return null;
@@ -111,7 +121,7 @@ public class Room {
         }
         RoomObjects roomObjects = roomObjectsOptional.get();
 
-        return new Room(structure, roomType, pieces, roomObjects);
+        return new Room(id, structure, roomType, pieces, roomObjects);
     }
 
     public void translateToMatchDoor(RoomDoor thisDoor, RoomDoor targetDoor, StageDesignData designData) {
@@ -178,6 +188,14 @@ public class Room {
         return roomType;
     }
 
+    public long getRoomId() {
+        return roomId;
+    }
+
+    public @Nullable RoomDoor getDoor(int doorId) {
+        return this.roomObjects.getDoor(doorId);
+    }
+
     public static class RoomObjects {
         public static final Codec<RoomObjects> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
@@ -198,6 +216,15 @@ public class Room {
         public void translate(int x, int y, int z) {
             this.getDoors().forEach(door -> door.translate(x, y, z));
             this.getLychseals().forEach(door -> door.translate(x, y, z));
+        }
+
+        public @Nullable RoomDoor getDoor(int doorId) {
+            for(RoomDoor door : this.doors) {
+                if(door.getDoorId() == doorId) {
+                    return door;
+                }
+            }
+            return null;
         }
 
         public List<RoomDoor> getDoors() {

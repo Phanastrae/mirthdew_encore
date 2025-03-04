@@ -37,20 +37,21 @@ public class DreamtwirlDebug {
         private final long dreamtwirlId;
         private final DebugNode[] nodes;
         private final DebugEdge[] edges;
+        private final Map<Long, DebugNode> idToNodeMap = new Object2ObjectOpenHashMap<>();
 
         public DebugInfo(long dreamtwirlId, DebugNode[] nodes, DebugEdge[] edges) {
             this.dreamtwirlId = dreamtwirlId;
             this.nodes = nodes;
             this.edges = edges;
+
+            for(DebugNode node : nodes) {
+                this.idToNodeMap.put(node.id, node);
+            }
         }
 
         @Nullable
-        public DebugNode getNodeOfId(int id) {
-            if(0 <= id && id < nodes.length) {
-                return nodes[id];
-            } else {
-                return null;
-            }
+        public DebugNode getNodeOfId(long id) {
+            return this.idToNodeMap.getOrDefault(id, null);
         }
 
         public static DebugInfo read(FriendlyByteBuf buf) {
@@ -60,9 +61,7 @@ public class DreamtwirlDebug {
             DebugNode[] nodes = new DebugNode[nodeCount];
             for(int i = 0; i < nodeCount; i++) {
                 DebugNode node = DebugNode.read(buf);
-                if(0 <= node.id && node.id < nodeCount) {
-                    nodes[node.id] = node;
-                }
+                nodes[i] = node;
             }
 
             int edgeCount = buf.readInt();
@@ -101,28 +100,28 @@ public class DreamtwirlDebug {
         }
     }
 
-    public record DebugNode(int id, BlockPos pos, RoomDoor.DoorType doorType) {
+    public record DebugNode(long id, BlockPos pos, RoomDoor.DoorType doorType) {
 
         public static DebugNode read(FriendlyByteBuf buf) {
-            return new DebugNode(buf.readInt(), buf.readBlockPos(), buf.readEnum(RoomDoor.DoorType.class));
+            return new DebugNode(buf.readLong(), buf.readBlockPos(), buf.readEnum(RoomDoor.DoorType.class));
         }
 
         public void write(FriendlyByteBuf buf) {
-            buf.writeInt(this.id);
+            buf.writeLong(this.id);
             buf.writeBlockPos(this.pos);
             buf.writeEnum(this.doorType);
         }
     }
 
-    public record DebugEdge(int startId, int endId) {
+    public record DebugEdge(long startId, long endId) {
 
         public static DebugEdge read(FriendlyByteBuf buf) {
-            return new DebugEdge(buf.readInt(), buf.readInt());
+            return new DebugEdge(buf.readLong(), buf.readLong());
         }
 
         public void write(FriendlyByteBuf buf) {
-            buf.writeInt(this.startId);
-            buf.writeInt(this.endId);
+            buf.writeLong(this.startId);
+            buf.writeLong(this.endId);
         }
     }
 }

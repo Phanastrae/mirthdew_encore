@@ -20,6 +20,8 @@ public class RoomDoor {
 
     public static final Codec<RoomDoor> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
+                            Codec.INT.optionalFieldOf("door_id", 0).forGetter(RoomDoor::getDoorId),
+                            Codec.LONG.optionalFieldOf("room_id", 0L).forGetter(RoomDoor::getRoomId),
                             DOOR_TYPE_CODEC.optionalFieldOf("door_type", DoorType.TWOWAY).forGetter(RoomDoor::getDoorType),
                             Codec.STRING.optionalFieldOf("target_lychseal", "").forGetter(RoomDoor::getTargetLychseal),
                             BlockPos.CODEC.fieldOf("pos").forGetter(RoomDoor::getPos),
@@ -29,13 +31,17 @@ public class RoomDoor {
                     .apply(instance, RoomDoor::new)
     );
 
+    private final int doorId;
+    private final long roomId;
     private final DoorType doorType;
     private final String targetLychseal;
     private BlockPos pos;
     private FrontAndTop orientation;
     private boolean connected;
 
-    public RoomDoor(DoorType doorType, String targetLychseal, BlockPos pos, FrontAndTop orientation, boolean connected) {
+    public RoomDoor(int doorId, long roomId, DoorType doorType, String targetLychseal, BlockPos pos, FrontAndTop orientation, boolean connected) {
+        this.doorId = doorId;
+        this.roomId = roomId;
         this.doorType = doorType;
         this.targetLychseal = targetLychseal;
         this.pos = pos;
@@ -43,7 +49,7 @@ public class RoomDoor {
         this.connected = connected;
     }
 
-    public static RoomDoor fromNbt(CompoundTag nbt, BlockPos pos, FrontAndTop orientation, boolean connected) {
+    public static RoomDoor fromNbt(int doorId, long roomId, CompoundTag nbt, BlockPos pos, FrontAndTop orientation, boolean connected) {
         DoorType doorType;
         if(nbt.contains(KEY_DOOR_TYPE)) {
             doorType = DoorType.byName(nbt.getString(KEY_DOOR_TYPE))
@@ -61,7 +67,7 @@ public class RoomDoor {
             targetLychseal = "";
         }
 
-        return new RoomDoor(doorType, targetLychseal, pos, orientation, connected);
+        return new RoomDoor(doorId, roomId, doorType, targetLychseal, pos, orientation, connected);
     }
 
     public void translate(int x, int y, int z) {
@@ -92,8 +98,35 @@ public class RoomDoor {
         return targetLychseal;
     }
 
-    public boolean hasTargetLychseal() {
-        return !this.targetLychseal.isEmpty();
+    public int getDoorId() {
+        return doorId;
+    }
+
+    public long getRoomId() {
+        return roomId;
+    }
+
+    public RoomDoorId getRoomDoorId() {
+        return new RoomDoorId(this.doorId, this.roomId);
+    }
+
+    public record RoomDoorId(int doorId, long roomId) {
+
+        @Override
+        public boolean equals(Object o) {
+            if(o == this) {
+                return true;
+            } else if(o instanceof RoomDoorId ot) {
+                return this.doorId == ot.doorId && this.roomId == ot.roomId;
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return Long.hashCode(this.roomId ^ (((long)this.doorId << 3) * 137L));
+        }
     }
 
     public enum DoorType implements StringRepresentable {

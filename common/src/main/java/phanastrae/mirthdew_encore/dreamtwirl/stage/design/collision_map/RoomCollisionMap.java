@@ -3,7 +3,6 @@ package phanastrae.mirthdew_encore.dreamtwirl.stage.design.collision_map;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.SectionPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +15,7 @@ import java.util.Optional;
 
 public class RoomCollisionMap {
 
-    public final Vec3i basePos;
+    public final SectionPos basePos;
     public final int sizeX;
     public final int sizeY;
     public final int sizeZ;
@@ -24,7 +23,7 @@ public class RoomCollisionMap {
     public List<CollisionMapEntry>[][][] map;
     private final Map<Room, CollisionMapEntry> roomToEntryMap = new Object2ObjectOpenHashMap<>();
 
-    public RoomCollisionMap(Vec3i basePos, int sizeX, int sizeY, int sizeZ) {
+    public RoomCollisionMap(SectionPos basePos, int sizeX, int sizeY, int sizeZ) {
         this.basePos = basePos;
         this.sizeX = sizeX;
         this.sizeY = sizeY;
@@ -44,6 +43,17 @@ public class RoomCollisionMap {
                 }
             }
         }
+    }
+
+    public void clear() {
+        for(int x = 0; x < sizeX; x++) {
+            for(int y = 0; y < sizeY; y++) {
+                for(int z = 0; z < sizeZ; z++) {
+                    this.map[x][y][z].clear();
+                }
+            }
+        }
+        this.roomToEntryMap.clear();
     }
 
     public void addRoom(Room room) {

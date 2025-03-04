@@ -19,31 +19,31 @@ public class SourcedRoom {
         this.roomSource = roomSource;
     }
 
-    public Optional<SourcedRoomDoor> getRandomEmptyDoor(RandomSource random) {
+    public Optional<ParentedRoomDoor> getRandomEmptyDoor(RandomSource random) {
         return getRandomDoorMatching(random, door -> !door.isConnected());
     }
 
-    public Optional<SourcedRoomDoor> getRandomEmptyExit(RandomSource random) {
+    public Optional<ParentedRoomDoor> getRandomEmptyExit(RandomSource random) {
         return getRandomDoorMatching(random, door -> !door.isConnected() && door.getDoorType().isExit);
     }
 
-    public Optional<SourcedRoomDoor> getRandomEmptyEntranceMatching(RandomSource random, FrontAndTop orientation) {
+    public Optional<RoomDoor> getRandomEmptyEntranceMatching(RandomSource random, FrontAndTop orientation) {
         // TODO account for the multiple up and down orientations?
         Direction targetOrientation = orientation.front().getOpposite();
 
-        return getRandomDoorMatching(random, door -> !door.isConnected() && door.getDoorType().isEntrance && door.getOrientation().front().equals(targetOrientation));
+        return getRandomDoorMatching(random, door -> !door.isConnected() && door.getDoorType().isEntrance && door.getOrientation().front().equals(targetOrientation)).map(ParentedRoomDoor::getDoor);
     }
 
-    public Optional<SourcedRoomDoor> getRandomDoorMatching(RandomSource random, Predicate<RoomDoor> predicate) {
+    public Optional<ParentedRoomDoor> getRandomDoorMatching(RandomSource random, Predicate<RoomDoor> predicate) {
         List<RoomDoor> valid = this.getRoom().getDoors().stream().filter(predicate).toList();
         return getRandomDoorFrom(valid, random);
     }
 
-    public Optional<SourcedRoomDoor> getRandomDoorFrom(List<RoomDoor> doors, RandomSource random) {
+    public Optional<ParentedRoomDoor> getRandomDoorFrom(List<RoomDoor> doors, RandomSource random) {
         if(doors.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of(new SourcedRoomDoor(doors.get(random.nextInt(doors.size())), this));
+            return Optional.of(new ParentedRoomDoor(doors.get(random.nextInt(doors.size())), this.getRoom()));
         }
     }
 

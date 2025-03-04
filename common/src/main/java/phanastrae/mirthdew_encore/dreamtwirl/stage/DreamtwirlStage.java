@@ -27,6 +27,7 @@ import java.util.Optional;
 
 public class DreamtwirlStage extends SavedData {
     public static final String KEY_PLACEABLE_ROOM_DATA = "placeable_room_data";
+    public static final String KEY_STAGE_DESIGN_GENERATOR = "stage_design_generator";
     public static final String KEY_ACHERUNE_DATA = "acherune_data";
 
     public static boolean SEND_DEBUG_INFO = true;
@@ -73,9 +74,12 @@ public class DreamtwirlStage extends SavedData {
             tag.put(KEY_PLACEABLE_ROOM_DATA, this.placeableRoomStorage.writeNbt(new CompoundTag(), registries, spsContext));
         }
 
+        if(this.stageDesignGenerator != null) {
+            tag.put(KEY_STAGE_DESIGN_GENERATOR, this.stageDesignGenerator.writeNbt(new CompoundTag(), registries));
+        }
+
         tag.put(KEY_ACHERUNE_DATA, this.stageAcherunes.writeNbt(new CompoundTag(), registries));
 
-        // TODO save stageDesignGenerator
         return tag;
     }
 
@@ -86,11 +90,17 @@ public class DreamtwirlStage extends SavedData {
             stage.getRoomStorage().readNbt(tag.getCompound(KEY_PLACEABLE_ROOM_DATA), registries, spsContext, level);
         }
 
+        if(tag.contains(KEY_STAGE_DESIGN_GENERATOR, Tag.TAG_COMPOUND) && level instanceof ServerLevel serverLevel) {
+            CompoundTag sdgTag = tag.getCompound(KEY_STAGE_DESIGN_GENERATOR);
+            stage.stageDesignGenerator = StageDesignGenerator.fromNbt(sdgTag, registries, stage.stageAreaData, serverLevel);
+        } else {
+            stage.stageDesignGenerator = null;
+        }
+
         if(tag.contains(KEY_ACHERUNE_DATA, Tag.TAG_COMPOUND)) {
             stage.getStageAcherunes().readNbt(tag.getCompound(KEY_ACHERUNE_DATA), registries);
         }
 
-        // TODO load stageDesignGenerator
         return stage;
     }
 
@@ -113,7 +123,7 @@ public class DreamtwirlStage extends SavedData {
 
     public void generate(long stageSeed, ServerLevel serverLevel) {
         RoomSourceCollection roomSources = RoomSourceCollection.create(serverLevel, VistaTypes.DECIDRHEUM_FOREST);
-        this.stageDesignGenerator = new StageDesignGenerator(this, serverLevel, stageSeed, roomSources);
+        this.stageDesignGenerator = new StageDesignGenerator(this.getStageAreaData(), serverLevel, stageSeed, roomSources);
 
         this.setDirty();
     }
@@ -136,10 +146,10 @@ public class DreamtwirlStage extends SavedData {
             if(done) {
                 sendRoomsToStorage(this.getRoomStorage(), stageDesignGenerator.getDesignData());
 
-                if(SEND_DEBUG_INFO) {
+                if(SEND_DEBUG_INFO) { // TODO do debug info properly
                     List<ServerPlayer> players = level.getPlayers(p -> true);
                     if(!players.isEmpty()) {
-                        DreamtwirlDebug.DebugInfo debugInfo = DreamtwirlDebugPayload.createDebugInfo(stageDesignGenerator.getDesignData(), this.id);
+                        DreamtwirlDebug.DebugInfo debugInfo = DreamtwirlDebugPayload.createDebugInfo(this.stageDesignGenerator.getDesignData(), this.id);
                         DreamtwirlDebugPayload payload = new DreamtwirlDebugPayload(debugInfo);
                         for(ServerPlayer player : players) {
                             XPlatInterface.INSTANCE.sendPayload(player, payload);
@@ -149,8 +159,7 @@ public class DreamtwirlStage extends SavedData {
                 this.stageDesignGenerator = null;
             }
 
-            this.setDirty();
-            // TODO serialise SDG
+            this.setDirty(); // TODO review setDirty()'s
         }
 
         for(PlaceableRoom room : this.placeableRoomStorage.getRooms()) {
@@ -201,8 +210,8 @@ public class DreamtwirlStage extends SavedData {
     }
 
     public static void sendRoomsToStorage(PlaceableRoomStorage prrs, StageDesignData designData) {
-        prrs.addRooms(designData.getRoomList());
-        prrs.addConnections(designData.getRoomGraph());
+        prrs.addRooms(designData.getIdToRoomMap().values().stream().toList());
+        prrs.addConnections(designData, designData.getRoomGraph());
         prrs.beginEntrancePlacement();
     }
 }

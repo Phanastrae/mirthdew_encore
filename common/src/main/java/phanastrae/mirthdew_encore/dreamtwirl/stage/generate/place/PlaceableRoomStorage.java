@@ -9,7 +9,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.design.graph.DoorNode;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.graph.RoomGraph;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
@@ -78,24 +78,30 @@ public class PlaceableRoomStorage {
         list.forEach(this::addRoom);
     }
 
-    public void addConnections(RoomGraph graph) {
-        Map<DoorNode, PlaceableRoom> map = new Object2ObjectOpenHashMap<>();
+    public void addConnections(StageDesignData designData, RoomGraph graph) {
+        Map<RoomDoor.RoomDoorId, PlaceableRoom> nodeToRoomMap = new Object2ObjectOpenHashMap<>();
         for (PlaceableRoom room : this.rooms) {
-            for (RoomDoor door : room.getRoom().getDoors()) {
-                graph.getNode(door)
-                        .ifPresent(node -> map.put(node, room));
+            for(RoomDoor startDoor : room.getRoom().getDoors()) {
+                graph.getNode(startDoor).ifPresent(node -> {
+                    nodeToRoomMap.put(node, room);
+                });
             }
         }
 
-        map.forEach((doorNode, room) -> doorNode.getEdgesOut().forEach(edge -> {
-            DoorNode end = edge.getEnd();
-            if (map.containsKey(end)) {
-                PlaceableRoom targetRoom = map.get(end);
-                RoomDoor startDoor = doorNode.getSourcedDoor().getDoor();
-                RoomDoor endDoor = end.getSourcedDoor().getDoor();
-                room.addLychsealDoorEntry(startDoor, endDoor, targetRoom);
+        for (PlaceableRoom room : this.rooms) {
+            for(RoomDoor startDoor : room.getRoom().getDoors()) {
+                graph.forEachConnectedEndpoint(startDoor.getRoomDoorId(), endNode -> {
+                    if(nodeToRoomMap.containsKey(endNode)) {
+                        PlaceableRoom targetRoom = nodeToRoomMap.get(endNode);
+
+                        RoomDoor endDoor = designData.getDoor(endNode);
+                        if(endDoor != null) {
+                            room.addLychsealDoorEntry(startDoor, endDoor, targetRoom);
+                        }
+                    }
+                });
             }
-        }));
+        }
     }
 
     public void beginEntrancePlacement() {
