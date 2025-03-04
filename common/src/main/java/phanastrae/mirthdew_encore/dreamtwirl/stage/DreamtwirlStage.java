@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
@@ -14,8 +15,8 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.StageAcherunes;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignGenerator;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSourceCollection;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceReadyRoom;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceReadyRoomStorage;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceableRoom;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceableRoomStorage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista.VistaTypes;
 import phanastrae.mirthdew_encore.network.packet.DreamtwirlDebugPayload;
 import phanastrae.mirthdew_encore.services.XPlatInterface;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class DreamtwirlStage extends SavedData {
+    public static final String KEY_PLACEABLE_ROOM_DATA = "placeable_room_data";
     public static final String KEY_ACHERUNE_DATA = "acherune_data";
 
     public static boolean SEND_DEBUG_INFO = true;
@@ -35,9 +37,9 @@ public class DreamtwirlStage extends SavedData {
     private final long id;
     private final RegionPos regionPos;
     private final long timestamp;
-
     private final StageAreaData stageAreaData;
-    private final PlaceReadyRoomStorage roomStorage;
+
+    private final PlaceableRoomStorage placeableRoomStorage;
     private final StageAcherunes stageAcherunes;
 
     @Nullable
@@ -50,14 +52,14 @@ public class DreamtwirlStage extends SavedData {
         this.id = basicStageData.getId();
         this.regionPos = basicStageData.getRegionPos();
         this.timestamp = basicStageData.getTimestamp();
-
         this.stageAreaData = new StageAreaData(
                 this.regionPos,
                 this.level.getMinBuildHeight(),
                 this.level.getHeight(),
                 this.level.getMaxBuildHeight()
         );
-        this.roomStorage = new PlaceReadyRoomStorage();
+
+        this.placeableRoomStorage = new PlaceableRoomStorage();
         this.stageAcherunes = new StageAcherunes(this);
 
         this.setDirty();
@@ -65,17 +67,33 @@ public class DreamtwirlStage extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        // TODO make sure everything is properly setDirty()-ed!
+
+        if(this.level instanceof ServerLevel serverLevel) {
+            StructurePieceSerializationContext spsContext = StructurePieceSerializationContext.fromLevel(serverLevel);
+
+            tag.put(KEY_PLACEABLE_ROOM_DATA, this.placeableRoomStorage.writeNbt(new CompoundTag(), registries, spsContext));
+        }
+
         tag.put(KEY_ACHERUNE_DATA, this.stageAcherunes.writeNbt(new CompoundTag(), registries));
+
+        // TODO save stageDesignGenerator
 
         return tag;
     }
 
-    public static DreamtwirlStage fromNbt(Level level, BasicStageData bsd, CompoundTag tag, HolderLookup.Provider registries) {
+    public static DreamtwirlStage fromNbt(Level level, BasicStageData bsd, CompoundTag tag, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext) {
         DreamtwirlStage stage = new DreamtwirlStage(level, bsd);
+
+        if(tag.contains(KEY_PLACEABLE_ROOM_DATA, Tag.TAG_COMPOUND)) {
+            stage.getRoomStorage().readNbt(tag.getCompound(KEY_PLACEABLE_ROOM_DATA), registries, spsContext);
+        }
 
         if(tag.contains(KEY_ACHERUNE_DATA, Tag.TAG_COMPOUND)) {
             stage.getStageAcherunes().readNbt(tag.getCompound(KEY_ACHERUNE_DATA), registries);
         }
+
+        // TODO load stageDesignGenerator
 
         return stage;
     }
@@ -103,11 +121,11 @@ public class DreamtwirlStage extends SavedData {
     }
 
     public void openLychseal(int roomId, String lychsealName) {
-        Optional<PlaceReadyRoom> roomOptional = this.roomStorage.getRoom(roomId);
+        Optional<PlaceableRoom> roomOptional = this.placeableRoomStorage.getRoom(roomId);
         if(roomOptional.isPresent()) {
-            PlaceReadyRoom room = roomOptional.get();
+            PlaceableRoom room = roomOptional.get();
 
-            room.openLychseal(lychsealName);
+            room.openLychseal(this.placeableRoomStorage, lychsealName);
         }
     }
 
@@ -135,10 +153,10 @@ public class DreamtwirlStage extends SavedData {
             this.setDirty();
         }
 
-        for(PlaceReadyRoom room : this.roomStorage.getRooms()) {
+        for(PlaceableRoom room : this.placeableRoomStorage.getRooms()) {
             if(!room.shouldTick()) continue;
 
-            room.tick(level, this.stageAreaData.getInBoundsBoundingBox(), this);
+            room.tick(level, this.placeableRoomStorage, this.stageAreaData.getInBoundsBoundingBox(), this);
         }
     }
 
@@ -162,18 +180,18 @@ public class DreamtwirlStage extends SavedData {
         return stageAreaData;
     }
 
-    public PlaceReadyRoomStorage getRoomStorage() {
-        return this.roomStorage;
+    public PlaceableRoomStorage getRoomStorage() {
+        return this.placeableRoomStorage;
     }
 
     public StageAcherunes getStageAcherunes() {
         return stageAcherunes;
     }
 
-    public static SavedData.Factory<DreamtwirlStage> getPersistentStateType(Level level, BasicStageData bsd) {
+    public static SavedData.Factory<DreamtwirlStage> getPersistentStateType(ServerLevel level, BasicStageData bsd) {
         return new SavedData.Factory<>(
                 () -> new DreamtwirlStage(level, bsd),
-                (nbt, registryLookup) -> fromNbt(level, bsd, nbt, registryLookup),
+                (nbt, registryLookup) -> fromNbt(level, bsd, nbt, registryLookup, StructurePieceSerializationContext.fromLevel(level)),
                 null
         );
     }
@@ -182,9 +200,9 @@ public class DreamtwirlStage extends SavedData {
         return "mirthdew_dreamtwirl_stage." + regionPos.regionX + "." + regionPos.regionZ;
     }
 
-    public static void sendRoomsToStorage(PlaceReadyRoomStorage prrs, StageDesignData designData) {
+    public static void sendRoomsToStorage(PlaceableRoomStorage prrs, StageDesignData designData) {
         prrs.addRooms(designData.getRoomList());
         prrs.addConnections(designData.getRoomGraph());
-        prrs.enableEntranceSpawning();
+        prrs.beginEntrancePlacement();
     }
 }

@@ -1,24 +1,20 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
 
-public class RoomType {
+public record RoomType(ResourceLocation resourceLocation, Category category) {
+    public static final StringRepresentable.StringRepresentableCodec<Category> CATEGORY_CODEC = StringRepresentable.fromEnum(Category::values);
 
-    private final ResourceLocation resourceLocation;
-    private final Category category;
-
-    public RoomType(ResourceLocation resourceLocation, Category category) {
-        this.resourceLocation = resourceLocation;
-        this.category = category;
-    }
-
-    public ResourceLocation getResourceLocation() {
-        return resourceLocation;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
+    public static final Codec<RoomType> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                            ResourceLocation.CODEC.fieldOf("location").forGetter(RoomType::resourceLocation),
+                            CATEGORY_CODEC.fieldOf("category").forGetter(RoomType::category)
+                    )
+                    .apply(instance, RoomType::new)
+    );
 
     public boolean isEntrance() {
         return this.category == Category.ENTRANCE;
@@ -36,10 +32,21 @@ public class RoomType {
         return this.category == Category.GATE;
     }
 
-    public enum Category {
-        ENTRANCE,
-        PATH,
-        ROOM,
-        GATE
+    public enum Category implements StringRepresentable {
+        ENTRANCE("entrance"),
+        PATH("path"),
+        ROOM("room"),
+        GATE("gate");
+
+        private String name;
+
+        Category(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return this.name;
+        }
     }
 }

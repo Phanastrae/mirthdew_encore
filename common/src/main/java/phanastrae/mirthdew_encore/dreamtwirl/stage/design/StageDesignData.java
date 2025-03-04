@@ -8,6 +8,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.StageAreaData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.collision_map.RoomCollisionMap;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.graph.RoomGraph;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.SourcedRoom;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,9 +30,9 @@ public class StageDesignData {
         return new RoomCollisionMap(new Vec3i(minCornerPos.x, stageAreaData.getMinBuildHeight() >> 4, minCornerPos.z), 30, stageAreaData.getHeight() >> 4, 30);
     }
 
-    public void addRoom(Room room) {
-        this.roomList.add(room);
-        this.collisionMap.addRoom(room);
+    public void addRoom(SourcedRoom room) {
+        this.roomList.add(room.getRoom());
+        this.collisionMap.addRoom(room.getRoom());
         this.roomGraph.addRoomToGraph(room);
     }
 

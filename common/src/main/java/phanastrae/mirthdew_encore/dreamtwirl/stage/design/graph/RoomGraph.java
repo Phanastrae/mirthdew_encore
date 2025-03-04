@@ -5,6 +5,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.RandomSource;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.SourcedRoom;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.SourcedRoomDoor;
 
 import java.util.List;
 import java.util.Map;
@@ -17,11 +19,11 @@ public class RoomGraph {
 
     private final Map<RoomDoor, DoorNode> doorMap = new Object2ObjectOpenHashMap<>();
 
-    public void addRoomToGraph(Room room) {
+    public void addRoomToGraph(SourcedRoom room) {
         // add nodes
         List<DoorNode> newNodes = new ObjectArrayList<>();
-        for(RoomDoor door : room.getDoors()) {
-            DoorNode doorNode = this.addNode(door);
+        for(RoomDoor door : room.getRoom().getDoors()) {
+            DoorNode doorNode = this.addNode(new SourcedRoomDoor(door, room));
             newNodes.add(doorNode);
         }
 
@@ -56,21 +58,21 @@ public class RoomGraph {
         this.directedEdges.removeIf(edge -> !edge.isAttached());
     }
 
-    public DoorNode addNode(RoomDoor door) {
-        if(!this.doorMap.containsKey(door)) {
+    public DoorNode addNode(SourcedRoomDoor door) {
+        if(!this.doorMap.containsKey(door.getDoor())) {
             DoorNode node = new DoorNode(door);
             this.doorNodes.add(node);
-            this.doorMap.put(door, node);
+            this.doorMap.put(door.getDoor(), node);
 
             node.update();
 
             return node;
         } else {
-            return this.doorMap.get(door);
+            return this.doorMap.get(door.getDoor());
         }
     }
 
-    public void addNodesWithEdge(RoomDoor start, RoomDoor end) {
+    public void addNodesWithEdge(SourcedRoomDoor start, SourcedRoomDoor end) {
         DoorNode startNode = this.addNode(start);
         DoorNode endNode = this.addNode(end);
         this.addEdge(startNode, endNode);
@@ -100,7 +102,10 @@ public class RoomGraph {
 
     public Optional<DoorNode> getRandomUnfilledExitDoorNode(RandomSource random) {
         // TODO optimise
-        List<DoorNode> emptyDoors = this.doorNodes.stream().filter(doorNode -> !doorNode.getDoor().isConnected() && doorNode.getDoor().getDoorType().isExit).toList();
+        List<DoorNode> emptyDoors = this.doorNodes.stream().filter(doorNode -> {
+            RoomDoor door = doorNode.getSourcedDoor().getDoor();
+            return !door.isConnected() && door.getDoorType().isExit;
+        }).toList();
         if(emptyDoors.isEmpty()) {
             return Optional.empty();
         } else {

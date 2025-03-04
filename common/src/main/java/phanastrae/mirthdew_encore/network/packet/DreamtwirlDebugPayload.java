@@ -39,7 +39,7 @@ public class DreamtwirlDebugPayload implements CustomPacketPayload {
 
         int id = 0;
         for(DoorNode node : nodes) {
-            RoomDoor door = node.getDoor();
+            RoomDoor door = node.getSourcedDoor().getDoor();
             DreamtwirlDebug.DebugNode debugNode = new DreamtwirlDebug.DebugNode(id, door.getPos(), door.getDoorType());
             nodeMap.put(node, debugNode);
             id++;

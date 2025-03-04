@@ -1,67 +1,117 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage.design.room;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.FrontAndTop;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
-import net.minecraft.util.RandomSource;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
+import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
+import org.jetbrains.annotations.Nullable;
+import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignData;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSource;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class Room {
-    private final RoomSource prefabSet;
+    public static final String KEY_STRUCTURE = "structure";
+    public static final String KEY_ROOM_TYPE = "room_type";
+    public static final String KEY_STRUCTURE_PIECES = "structure_pieces";
+    public static final String KEY_ROOM_OBJECTS = "room_objects";
+
+    private final Structure structure;
+    private final RoomType roomType;
+
     private final PiecesContainer piecesContainer;
     private final RoomObjects roomObjects;
 
     private BoundingBox boundingBox;
-    private boolean bbNeedsRecalc = false;
+    private boolean bbNeedsRecalc;
 
-    public Room(RoomSource prefabSet, PiecesContainer piecesContainer, RoomObjects roomObjects) {
-        this.prefabSet = prefabSet;
+    public Room(Structure structure, RoomType roomType, PiecesContainer piecesContainer, RoomObjects roomObjects) {
+        this.structure = structure;
+        this.roomType = roomType;
         this.piecesContainer = piecesContainer;
         this.roomObjects = roomObjects;
 
         this.boundingBox = this.piecesContainer.calculateBoundingBox();
-
-        this.setObjectParents();
+        this.bbNeedsRecalc = false;
     }
 
-    public void setObjectParents() {
-        this.roomObjects.doors.forEach(door -> door.setParentRoom(this));
+    public CompoundTag writeNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext) {
+        RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
+
+        Structure.DIRECT_CODEC
+                .encodeStart(registryops, this.structure)
+                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to encode structure for Room: '{}'", st))
+                .ifPresent(bpdTag -> nbt.put(KEY_STRUCTURE, bpdTag));
+
+        RoomType.CODEC
+                .encodeStart(registryops, this.roomType)
+                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to encode room type for Room: '{}'", st))
+                .ifPresent(bpdTag -> nbt.put(KEY_ROOM_TYPE, bpdTag));
+
+        nbt.put(KEY_STRUCTURE_PIECES, this.piecesContainer.save(spsContext));
+
+        RoomObjects.CODEC
+                .encodeStart(registryops, this.roomObjects)
+                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to encode room objects for Room: '{}'", st))
+                .ifPresent(bpdTag -> nbt.put(KEY_ROOM_OBJECTS, bpdTag));
+
+        return nbt;
     }
 
-    public Optional<RoomDoor> getRandomEmptyDoor(RandomSource random) {
-        return getRandomDoorMatching(random, door -> !door.isConnected());
-    }
+    public static @Nullable Room fromNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext) {
+        RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
 
-    public Optional<RoomDoor> getRandomEmptyExit(RandomSource random) {
-        return getRandomDoorMatching(random, door -> !door.isConnected() && door.getDoorType().isExit);
-    }
-
-    public Optional<RoomDoor> getRandomEmptyEntranceMatching(RandomSource random, FrontAndTop orientation) {
-        // TODO account for the multiple up and down orientations?
-        Direction targetOrientation = orientation.front().getOpposite();
-
-        return getRandomDoorMatching(random, door -> !door.isConnected() && door.getDoorType().isEntrance && door.getOrientation().front().equals(targetOrientation));
-    }
-
-    public Optional<RoomDoor> getRandomDoorMatching(RandomSource random, Predicate<RoomDoor> predicate) {
-        List<RoomDoor> valid = this.getDoors().stream().filter(predicate).toList();
-        return getRandomDoorFrom(valid, random);
-    }
-
-    public static Optional<RoomDoor> getRandomDoorFrom(List<RoomDoor> doors, RandomSource random) {
-        if(doors.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(doors.get(random.nextInt(doors.size())));
+        if(!nbt.contains(KEY_STRUCTURE, Tag.TAG_COMPOUND)) {
+            return null;
         }
+        Optional<Structure> structureOptional = Structure.DIRECT_CODEC
+                .parse(registryops, nbt.get(KEY_STRUCTURE))
+                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to parse structure for Room: '{}'", st));
+        if(structureOptional.isEmpty()) {
+            return null;
+        }
+        Structure structure = structureOptional.get();
+
+        if(!nbt.contains(KEY_ROOM_TYPE, Tag.TAG_COMPOUND)) {
+            return null;
+        }
+        Optional<RoomType> roomTypeOptional = RoomType.CODEC
+                .parse(registryops, nbt.get(KEY_ROOM_TYPE))
+                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to parse room type for Room: '{}'", st));
+        if(roomTypeOptional.isEmpty()) {
+            return null;
+        }
+        RoomType roomType = roomTypeOptional.get();
+
+        PiecesContainer pieces;
+        if(!nbt.contains(KEY_STRUCTURE_PIECES, Tag.TAG_LIST)) {
+            return null;
+        }
+        pieces = PiecesContainer.load(nbt.getList(KEY_STRUCTURE_PIECES, Tag.TAG_COMPOUND), spsContext);
+
+        if(!nbt.contains(KEY_ROOM_OBJECTS, Tag.TAG_COMPOUND)) {
+            return null;
+        }
+        Optional<RoomObjects> roomObjectsOptional = RoomObjects.CODEC
+                .parse(registryops, nbt.get(KEY_ROOM_OBJECTS))
+                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to parse room object for Room: '{}'", st));
+        if(roomObjectsOptional.isEmpty()) {
+            return null;
+        }
+        RoomObjects roomObjects = roomObjectsOptional.get();
+
+        return new Room(structure, roomType, pieces, roomObjects);
     }
 
     public void translateToMatchDoor(RoomDoor thisDoor, RoomDoor targetDoor, StageDesignData designData) {
@@ -92,10 +142,6 @@ public class Room {
         this.boundingBox = this.boundingBox.moved(x, y, z);
     }
 
-    public RoomSource getRoomSource() {
-        return prefabSet;
-    }
-
     public PiecesContainer getPiecesContainer() {
         return piecesContainer;
     }
@@ -120,7 +166,26 @@ public class Room {
         return this.roomObjects.getUnplacedLychseal(pos);
     }
 
+    public RoomObjects getRoomObjects() {
+        return roomObjects;
+    }
+
+    public Structure getStructure() {
+        return structure;
+    }
+
+    public RoomType getRoomType() {
+        return roomType;
+    }
+
     public static class RoomObjects {
+        public static final Codec<RoomObjects> CODEC = RecordCodecBuilder.create(
+                instance -> instance.group(
+                                RoomDoor.CODEC.listOf().fieldOf("doors").forGetter(RoomObjects::getDoors),
+                                RoomLychseal.CODEC.listOf().fieldOf("lychseals").forGetter(RoomObjects::getLychseals)
+                        )
+                        .apply(instance, RoomObjects::new)
+        );
 
         private final List<RoomDoor> doors;
         private final List<RoomLychseal> seals;

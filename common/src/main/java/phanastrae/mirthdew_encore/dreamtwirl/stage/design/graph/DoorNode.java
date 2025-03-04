@@ -1,10 +1,9 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage.design.graph;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSource;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.SourcedRoomDoor;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,26 +12,22 @@ import java.util.function.Function;
 
 public class DoorNode {
 
-    private final RoomDoor door;
+    private final SourcedRoomDoor door;
     private final List<DirectedEdge> edgesOut = new ObjectArrayList<>();
     private final List<DirectedEdge> edgesIn = new ObjectArrayList<>();
     private final DistanceInfo distanceInfo = new DistanceInfo(this);
     private boolean removed = false;
 
-    public DoorNode(RoomDoor door) {
+    public DoorNode(SourcedRoomDoor door) {
         this.door = door;
     }
 
-    public RoomDoor getDoor() {
+    public SourcedRoomDoor getSourcedDoor() {
         return door;
     }
 
-    public @Nullable Room getParentRoom() {
-        return this.door.getParentRoom();
-    }
-
     public RoomDoor.DoorType getDoorType() {
-        return this.door.getDoorType();
+        return this.door.getDoor().getDoorType();
     }
 
     public List<DirectedEdge> getEdgesOut() {
@@ -95,10 +90,9 @@ public class DoorNode {
 
             boolean removed = this.doorNode.isRemoved();
 
-            Room room = this.getParentRoom();
-            RoomSource source = room == null ? null : room.getRoomSource();
+            Room room = this.doorNode.getSourcedDoor().getSourcedRoom().getRoom();
 
-            boolean isDreamtwirlEntrance = source != null && source.getRoomType().isEntrance();
+            boolean isDreamtwirlEntrance = room.getRoomType().isEntrance();
             int distanceFromEntrance = removed ? -1 : calcDistanceFromEntrance(isDreamtwirlEntrance);
 
             if(this.distanceFromEntrance != distanceFromEntrance) {
@@ -140,10 +134,6 @@ public class DoorNode {
             } else {
                 return min + 1;
             }
-        }
-
-        public @Nullable Room getParentRoom() {
-            return this.doorNode.getDoor().getParentRoom();
         }
 
         public void updateNeighbours() {

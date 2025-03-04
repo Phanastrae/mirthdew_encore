@@ -14,6 +14,8 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.design.collision_map.Collisio
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.graph.DoorNode;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.SourcedRoom;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.SourcedRoomDoor;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSource;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSourceCollection;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
@@ -100,11 +102,11 @@ public class StageDesignGenerator {
         return designData;
     }
 
-    public Optional<Room> tryGetRoomFromSource(RoomSource roomSource) {
+    public Optional<SourcedRoom> tryGetRoomFromSource(RoomSource roomSource) {
         return roomSource.tryGetRoom(this.stageSeed, this.stageAreaData.getStageChunkCenter(), this.random, this.serverLevel);
     }
 
-    public Optional<Room> tryGetRandomRoom() {
+    public Optional<SourcedRoom> tryGetRandomRoom() {
         Optional<RoomSource> roomSourceOptional = this.roomSourceCollection.getRandomRoomSource(this.random);
         if(roomSourceOptional.isPresent()) {
             RoomSource roomSource = roomSourceOptional.get();
@@ -113,8 +115,8 @@ public class StageDesignGenerator {
         return Optional.empty();
     }
 
-    public Optional<Room> tryGetRandomRoomOfType(RoomType.Category category) {
-        Optional<RoomSource> roomSourceOptional = this.roomSourceCollection.getRandomMatching(this.random, source -> source.getRoomType().getCategory().equals(category));
+    public Optional<SourcedRoom> tryGetRandomRoomOfType(RoomType.Category category) {
+        Optional<RoomSource> roomSourceOptional = this.roomSourceCollection.getRandomMatching(this.random, source -> source.getRoomType().category().equals(category));
         if(roomSourceOptional.isPresent()) {
             RoomSource roomSource = roomSourceOptional.get();
             return this.tryGetRoomFromSource(roomSource);
@@ -123,19 +125,20 @@ public class StageDesignGenerator {
     }
 
     public boolean tryAddRoomCenteredAt(RoomSource roomSource, BlockPos roomCenter, boolean allowPositionAdjustment) {
-        Optional<Room> roomOptional = this.tryGetRoomFromSource(roomSource);
+        Optional<SourcedRoom> roomOptional = this.tryGetRoomFromSource(roomSource);
         if(roomOptional.isPresent()) {
-            Room room = roomOptional.get();
+            SourcedRoom sourcedRoom = roomOptional.get();
+            Room room = sourcedRoom.getRoom();
 
             room.centerAt(roomCenter, this.designData);
             if(allowPositionAdjustment) {
                 if(this.tryAdjustPositionUntilValid(room, null)) {
-                    this.designData.addRoom(room);
+                    this.designData.addRoom(sourcedRoom);
                     return true;
                 }
             } else {
                 if(this.isLocationValid(room)) {
-                    this.designData.addRoom(room);
+                    this.designData.addRoom(sourcedRoom);
                     return true;
                 }
             }
@@ -143,9 +146,9 @@ public class StageDesignGenerator {
         return false;
     }
 
-    public boolean tryAddRoomMatchingDoor(Room room, RoomDoor roomDoor, RoomDoor targetDoor) {
-        room.translateToMatchDoor(roomDoor, targetDoor, this.designData);
-        if(this.isLocationValid(room)) {
+    public boolean tryAddRoomMatchingDoor(SourcedRoom room, RoomDoor roomDoor, RoomDoor targetDoor) {
+        room.getRoom().translateToMatchDoor(roomDoor, targetDoor, this.designData);
+        if(this.isLocationValid(room.getRoom())) {
             this.designData.addRoom(room);
             return true;
         } else {
@@ -153,14 +156,14 @@ public class StageDesignGenerator {
         }
     }
 
-    public boolean tryAddRoomMatchingDoorAndConnect(Room room, RoomDoor roomDoor, RoomDoor targetDoor) {
-        if(roomDoor.isConnected() || targetDoor.isConnected()) {
+    public boolean tryAddRoomMatchingDoorAndConnect(SourcedRoom room, SourcedRoomDoor roomDoor, SourcedRoomDoor targetDoor) {
+        if(roomDoor.getDoor().isConnected() || targetDoor.getDoor().isConnected()) {
             return false;
         }
 
-        if(tryAddRoomMatchingDoor(room, roomDoor, targetDoor)) {
-            roomDoor.setConnected(true);
-            targetDoor.setConnected(true);
+        if(tryAddRoomMatchingDoor(room, roomDoor.getDoor(), targetDoor.getDoor())) {
+            roomDoor.getDoor().setConnected(true);
+            targetDoor.getDoor().setConnected(true);
             this.designData.getRoomGraph().addNodesWithEdge(roomDoor, targetDoor);
             this.designData.getRoomGraph().addNodesWithEdge(targetDoor, roomDoor);
             return true;
@@ -194,7 +197,7 @@ public class StageDesignGenerator {
     public static class Branch {
 
         private final DoorNode start;
-        private List<Room> rooms = new ObjectArrayList<>();
+        private List<SourcedRoom> rooms = new ObjectArrayList<>();
 
         public Branch(DoorNode start) {
             this.start = start;
@@ -202,19 +205,19 @@ public class StageDesignGenerator {
 
         public boolean tryAddRoom(int attempts, RoomType.Category category, StageDesignGenerator sdg) {
             for(int i = 0; i < attempts; i++) {
-                RoomDoor rootDoor;
+                SourcedRoomDoor rootDoor;
                 if(this.rooms.isEmpty()) {
-                    rootDoor = this.start.getDoor();
+                    rootDoor = this.start.getSourcedDoor();
                 } else {
-                    Room last = this.rooms.getLast();
-                    Optional<RoomDoor> doorOptional = last.getRandomEmptyExit(sdg.random);
+                    SourcedRoom last = this.rooms.getLast();
+                    Optional<SourcedRoomDoor> doorOptional = last.getRandomEmptyExit(sdg.random);
                     if(doorOptional.isEmpty()) continue;
                     rootDoor = doorOptional.get();
                 }
 
-                Optional<Room> newRoomOptional = sdg.tryGetRandomRoomOfType(category);
+                Optional<SourcedRoom> newRoomOptional = sdg.tryGetRandomRoomOfType(category);
                 if (newRoomOptional.isEmpty()) continue;
-                Room newRoom = newRoomOptional.get();
+                SourcedRoom newRoom = newRoomOptional.get();
 
                 if (sdg.tryAttachRoomToDoor(rootDoor, newRoom)) {
                     this.rooms.add(newRoom);
@@ -228,7 +231,7 @@ public class StageDesignGenerator {
         }
 
         public void destroyAllRooms(StageDesignGenerator sdg) {
-            this.rooms.forEach(room -> sdg.getDesignData().removeRoom(room));
+            this.rooms.forEach(room -> sdg.getDesignData().removeRoom(room.getRoom()));
             this.rooms.forEach(StageDesignGenerator::returnRoomToSource);
             this.rooms.clear();
         }
@@ -243,16 +246,16 @@ public class StageDesignGenerator {
         Optional<DoorNode> doorNodeOptional = this.designData.getRoomGraph().getRandomUnfilledExitDoorNode(this.random);
         if(doorNodeOptional.isEmpty()) return false;
         DoorNode doorNode = doorNodeOptional.get();
-        RoomDoor door = doorNode.getDoor();
+        SourcedRoomDoor door = doorNode.getSourcedDoor();
 
         int distanceFromEntrance = doorNode.getDistanceInfo().getDistanceFromEntrance();
         int d = distanceFromEntrance % 10;
         RoomType.Category target = d == 9 ? RoomType.Category.ROOM : (d == 1 ? RoomType.Category.GATE : RoomType.Category.PATH);
 
         // create a new room
-        Optional<Room> newRoomOptional = this.tryGetRandomRoomOfType(target);
+        Optional<SourcedRoom> newRoomOptional = this.tryGetRandomRoomOfType(target);
         if(newRoomOptional.isEmpty()) return false;
-        Room newRoom = newRoomOptional.get();
+        SourcedRoom newRoom = newRoomOptional.get();
 
         if(tryAttachRoomToDoor(door, newRoom)) {
             return true;
@@ -262,14 +265,14 @@ public class StageDesignGenerator {
         }
     }
 
-    public boolean tryAttachRoomToDoor(RoomDoor door, Room newRoom) {
+    public boolean tryAttachRoomToDoor(SourcedRoomDoor door, SourcedRoom newRoom) {
         // get the corresponding door for the new room
-        Optional<RoomDoor> newDoorOptional = newRoom.getRandomEmptyEntranceMatching(this.random, door.getOrientation());
+        Optional<SourcedRoomDoor> newDoorOptional = newRoom.getRandomEmptyEntranceMatching(this.random, door.getDoor().getOrientation());
         if(newDoorOptional.isEmpty()) {
             // if failed to add, return to roomsource
             return false;
         }
-        RoomDoor newDoor = newDoorOptional.get();
+        SourcedRoomDoor newDoor = newDoorOptional.get();
 
         // try to connect and add room
         if(tryAddRoomMatchingDoorAndConnect(newRoom, newDoor, door)) {
@@ -284,8 +287,8 @@ public class StageDesignGenerator {
         }
     }
 
-    public static void returnRoomToSource(Room room) {
-        room.getRoomSource().acceptDiscardedRoom(room);
+    public static void returnRoomToSource(SourcedRoom room) {
+        room.getRoomSource().acceptDiscardedRoom(room.getRoom());
     }
 
     public boolean isLocationValid(Room room) {

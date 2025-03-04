@@ -33,7 +33,7 @@ import java.util.Optional;
 public class RoomPrePlacement {
 
     public static boolean placeStructure(Room room, ServerLevel serverLevel, WorldGenLevel worldGenLevel, BoundingBox areaBox, boolean forceLoadChunks, int roomId) {
-        Structure structure = room.getRoomSource().getStructure();
+        Structure structure = room.getStructure();
         PiecesContainer piecesContainer = room.getPiecesContainer();
         List<StructurePiece> list = piecesContainer.pieces();
         BoundingBox blockBox = room.getBoundingBox();

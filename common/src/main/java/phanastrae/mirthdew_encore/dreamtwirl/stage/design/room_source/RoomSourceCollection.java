@@ -71,7 +71,7 @@ public class RoomSourceCollection {
     }
 
     public static Optional<RoomSource> getRoomType(RoomType settings, RegistryAccess registryAccess) {
-        Optional<Structure> structureOptional = getStructure(settings.getResourceLocation(), registryAccess);
+        Optional<Structure> structureOptional = getStructure(settings.resourceLocation(), registryAccess);
         return structureOptional.map(structure -> new RoomSource(settings, structure));
     }
 
