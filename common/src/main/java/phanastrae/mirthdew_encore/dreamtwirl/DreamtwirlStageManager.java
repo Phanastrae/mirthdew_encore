@@ -34,7 +34,6 @@ public class DreamtwirlStageManager extends SavedData {
 
     public DreamtwirlStageManager(ServerLevel level) {
         this.level = level;
-        this.setDirty();
     }
 
     public static Factory<DreamtwirlStageManager> getPersistentStateType(ServerLevel level) {

@@ -11,6 +11,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -26,12 +27,14 @@ import phanastrae.mirthdew_encore.structure.intermediate.IntermediateGenLevel;
 import phanastrae.mirthdew_encore.structure.intermediate.IntermediateStructureStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 public class PlaceableRoom {
     public static final String KEY_ROOM_DATA = "room_data";
     public static final String KEY_ROOM_ID = "room_id";
     public static final String KEY_ROOM_PLACED = "room_placed";
     public static final String KEY_LYCHSEAL_DOOR_ENTRIES = "lychseal_door_entries";
+    public static final String KEY_PLACEMENT_DATA = "placement_data";
 
     private final Room room;
     private final int roomId;
@@ -57,11 +60,13 @@ public class PlaceableRoom {
                 .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to encode lychseal-door entries for Placeable Room: '{}'", st))
                 .ifPresent(bpdTag -> nbt.put(KEY_LYCHSEAL_DOOR_ENTRIES, bpdTag));
 
-        // TODO save placement data
+        if(this.placementData != null) {
+            nbt.put(KEY_PLACEMENT_DATA, this.placementData.writeNbt(new CompoundTag(), registries));
+        }
         return nbt;
     }
 
-    public static @Nullable PlaceableRoom fromNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext) {
+    public static @Nullable PlaceableRoom fromNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext, Level level) {
         Room room;
         if(nbt.contains(KEY_ROOM_DATA, Tag.TAG_COMPOUND)) {
             room = Room.fromNbt(nbt.getCompound(KEY_ROOM_DATA), registries, spsContext);
@@ -91,7 +96,12 @@ public class PlaceableRoom {
                 .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to parse lychseal-door entries for Placeable Room: '{}'", st))
                 .ifPresent(placeableRoom::addEntries);
 
-        // TODO load placement data
+        if(nbt.contains(KEY_PLACEMENT_DATA, Tag.TAG_COMPOUND)) {
+            placeableRoom.placementData = PlacementData.fromNbt(nbt.getCompound(KEY_PLACEMENT_DATA), registries, level);
+        } else {
+            placeableRoom.placementData = null;
+        }
+
         return placeableRoom;
     }
 
@@ -111,11 +121,15 @@ public class PlaceableRoom {
         if(this.placementData != null) {
             if(!this.placementData.storageFilled) {
                 this.placementData.createStructure(this, level, stageBB);
+
+                stage.setDirty();
             }
 
             if(this.placementData.spawnTime <= this.placementData.maxSpawnTime) {
                 if(this.placementData.placeForTime(this, roomStorage, level, this.placementData.spawnTime)) {
                     this.placementData.spawnTime++;
+
+                    stage.setDirty();
                 }
             } else {
                 if(this.placementData.place(level)) {
@@ -126,7 +140,6 @@ public class PlaceableRoom {
                     // empty lychseals should already all be open, but do it again just in case
                     this.openEmptyLychseals(roomStorage);
 
-                    // TODO serialization
                     stage.setDirty();
                 }
             }
@@ -137,12 +150,15 @@ public class PlaceableRoom {
         return this.placementData != null && !this.roomPlaced;
     }
 
-    public void openLychseal(PlaceableRoomStorage roomStorage, String lychsealName) {
+    public boolean openLychseal(PlaceableRoomStorage roomStorage, String lychsealName) {
+        boolean opened = false;
         for(LychsealDoorEntry entry : this.lychsealDoorEntries) {
             if(entry.lychsealName.equals(lychsealName)) {
                 roomStorage.startSpawningRoom(entry.endRoomId, entry.endPos, false);
+                opened = true;
             }
         }
+        return opened;
     }
 
     public void openEmptyLychseals(PlaceableRoomStorage roomStorage) {
@@ -178,6 +194,12 @@ public class PlaceableRoom {
     }
 
     public static class PlacementData {
+        public static final String KEY_PLACEMENT_ORIGIN = "placement_origin";
+        public static final String KEY_SHOULD_FORCE_LOAD = "force_load_chunks";
+        public static final String KEY_SPAWN_TIME = "spawn_time";
+        public static final String KEY_MAX_SPAWN_TIME = "max_spawn_time";
+        public static final String KEY_STORAGE = "storage";
+        public static final String KEY_STORAGE_FILLED = "storage_filled";
 
         private final BlockPos placementOrigin;
         private final boolean shouldForceLoadChunks;
@@ -192,6 +214,67 @@ public class PlaceableRoom {
         public PlacementData(BlockPos placementOrigin, boolean shouldForceLoadChunks) {
             this.placementOrigin = placementOrigin;
             this.shouldForceLoadChunks = shouldForceLoadChunks;
+        }
+
+        public CompoundTag writeNbt(CompoundTag nbt, HolderLookup.Provider registries) {
+            RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
+
+            BlockPos.CODEC
+                    .encodeStart(registryops, this.placementOrigin)
+                    .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to encode placement origin entries for Placement Data: '{}'", st))
+                    .ifPresent(bpdTag -> nbt.put(KEY_PLACEMENT_ORIGIN, bpdTag));
+
+            nbt.putBoolean(KEY_SHOULD_FORCE_LOAD, this.shouldForceLoadChunks);
+
+            nbt.putInt(KEY_SPAWN_TIME, spawnTime);
+            nbt.putInt(KEY_MAX_SPAWN_TIME, maxSpawnTime);
+
+            nbt.putBoolean(KEY_STORAGE_FILLED, this.storageFilled);
+
+            if(this.intermediateStructureStorage != null) {
+                nbt.put(KEY_STORAGE, this.intermediateStructureStorage.writeNbt(new CompoundTag(), registries));
+            }
+            return nbt;
+        }
+
+        public static @Nullable PlacementData fromNbt(CompoundTag nbt, HolderLookup.Provider registries, Level level) {
+            RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
+
+            if(!nbt.contains(KEY_PLACEMENT_ORIGIN)) {
+                return null;
+            }
+            Optional<BlockPos> posOptional = BlockPos.CODEC
+                    .parse(registryops, nbt.get(KEY_PLACEMENT_ORIGIN))
+                    .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to parse placement origin entries for Placement Data: '{}'", st));
+            if(posOptional.isEmpty()) return null;
+            BlockPos pos = posOptional.get();
+
+            boolean shouldForceLoad = false;
+            if(nbt.contains(KEY_SHOULD_FORCE_LOAD, Tag.TAG_BYTE)) {
+                shouldForceLoad = nbt.getBoolean(KEY_SHOULD_FORCE_LOAD);
+            }
+
+            PlacementData data = new PlacementData(pos, shouldForceLoad);
+
+            if(nbt.contains(KEY_SPAWN_TIME, Tag.TAG_INT)) {
+                data.spawnTime = nbt.getInt(KEY_SPAWN_TIME);
+            }
+            if(nbt.contains(KEY_MAX_SPAWN_TIME, Tag.TAG_INT)) {
+                data.maxSpawnTime = nbt.getInt(KEY_MAX_SPAWN_TIME);
+            }
+
+            if(nbt.contains(KEY_STORAGE_FILLED, Tag.TAG_BYTE)) {
+                data.storageFilled = nbt.getBoolean(KEY_STORAGE_FILLED);
+            }
+
+            if(nbt.contains(KEY_STORAGE, Tag.TAG_COMPOUND)) {
+                data.intermediateStructureStorage = new IntermediateStructureStorage();
+                data.intermediateStructureStorage.readNbt(nbt.getCompound(KEY_STORAGE), registries, level);
+            } else {
+                data.intermediateStructureStorage = null;
+            }
+
+            return data;
         }
 
         public boolean placeForTime(PlaceableRoom room, PlaceableRoomStorage roomStorage, ServerLevel level, int time) {
@@ -377,6 +460,22 @@ public class PlaceableRoom {
                     }
                 }
             }
+        }
+
+        public BlockPos getPlacementOrigin() {
+            return placementOrigin;
+        }
+
+        public int getMaxSpawnTime() {
+            return maxSpawnTime;
+        }
+
+        public int getSpawnTime() {
+            return spawnTime;
+        }
+
+        public @Nullable IntermediateStructureStorage getIntermediateStructureStorage() {
+            return intermediateStructureStorage;
         }
     }
 }

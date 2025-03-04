@@ -7,6 +7,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.graph.DoorNode;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.graph.RoomGraph;
@@ -44,7 +45,7 @@ public class PlaceableRoomStorage {
         return nbt;
     }
 
-    public CompoundTag readNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext) {
+    public CompoundTag readNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext, Level level) {
         if(nbt.contains(KEY_NEXT_ROOM_ID, Tag.TAG_INT)) {
             this.nextRoomId = nbt.getInt(KEY_NEXT_ROOM_ID);
         }
@@ -55,7 +56,7 @@ public class PlaceableRoomStorage {
 
             for(int i = 0; i < listTag.size(); i++) {
                 CompoundTag roomTag = listTag.getCompound(i);
-                PlaceableRoom room = PlaceableRoom.fromNbt(roomTag, registries, spsContext);
+                PlaceableRoom room = PlaceableRoom.fromNbt(roomTag, registries, spsContext, level);
 
                 if(room != null) {
                     this.rooms.add(room);

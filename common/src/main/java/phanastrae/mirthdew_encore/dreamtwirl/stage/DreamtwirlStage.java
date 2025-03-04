@@ -61,8 +61,6 @@ public class DreamtwirlStage extends SavedData {
 
         this.placeableRoomStorage = new PlaceableRoomStorage();
         this.stageAcherunes = new StageAcherunes(this);
-
-        this.setDirty();
     }
 
     @Override
@@ -78,7 +76,6 @@ public class DreamtwirlStage extends SavedData {
         tag.put(KEY_ACHERUNE_DATA, this.stageAcherunes.writeNbt(new CompoundTag(), registries));
 
         // TODO save stageDesignGenerator
-
         return tag;
     }
 
@@ -86,7 +83,7 @@ public class DreamtwirlStage extends SavedData {
         DreamtwirlStage stage = new DreamtwirlStage(level, bsd);
 
         if(tag.contains(KEY_PLACEABLE_ROOM_DATA, Tag.TAG_COMPOUND)) {
-            stage.getRoomStorage().readNbt(tag.getCompound(KEY_PLACEABLE_ROOM_DATA), registries, spsContext);
+            stage.getRoomStorage().readNbt(tag.getCompound(KEY_PLACEABLE_ROOM_DATA), registries, spsContext, level);
         }
 
         if(tag.contains(KEY_ACHERUNE_DATA, Tag.TAG_COMPOUND)) {
@@ -94,7 +91,6 @@ public class DreamtwirlStage extends SavedData {
         }
 
         // TODO load stageDesignGenerator
-
         return stage;
     }
 
@@ -118,6 +114,8 @@ public class DreamtwirlStage extends SavedData {
     public void generate(long stageSeed, ServerLevel serverLevel) {
         RoomSourceCollection roomSources = RoomSourceCollection.create(serverLevel, VistaTypes.DECIDRHEUM_FOREST);
         this.stageDesignGenerator = new StageDesignGenerator(this, serverLevel, stageSeed, roomSources);
+
+        this.setDirty();
     }
 
     public void openLychseal(int roomId, String lychsealName) {
@@ -125,7 +123,9 @@ public class DreamtwirlStage extends SavedData {
         if(roomOptional.isPresent()) {
             PlaceableRoom room = roomOptional.get();
 
-            room.openLychseal(this.placeableRoomStorage, lychsealName);
+            if(room.openLychseal(this.placeableRoomStorage, lychsealName)) {
+                this.setDirty();
+            }
         }
     }
 
@@ -149,8 +149,8 @@ public class DreamtwirlStage extends SavedData {
                 this.stageDesignGenerator = null;
             }
 
-            // TODO serialization
             this.setDirty();
+            // TODO serialise SDG
         }
 
         for(PlaceableRoom room : this.placeableRoomStorage.getRooms()) {
