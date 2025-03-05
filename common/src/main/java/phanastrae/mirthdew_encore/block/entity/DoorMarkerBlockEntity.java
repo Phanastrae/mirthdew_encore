@@ -11,8 +11,10 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
 public class DoorMarkerBlockEntity extends BlockEntity {
     public static final String KEY_DOOR_TYPE = "door_type";
     public static final String KEY_TARGET_LYCHSEAL = "target_lychseal";
+    public static final String KEY_FINAL_STATE = "final_state";
 
     private String targetLychsealName = "";
+    private String finalState = "minecraft:air";
     private RoomDoor.DoorType doorType = RoomDoor.DoorType.TWOWAY;
 
     public DoorMarkerBlockEntity(BlockPos pos, BlockState blockState) {
@@ -23,23 +25,28 @@ public class DoorMarkerBlockEntity extends BlockEntity {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
 
-        tag.putString(KEY_DOOR_TYPE, this.doorType.getSerializedName());
         tag.putString(KEY_TARGET_LYCHSEAL, this.targetLychsealName);
+        tag.putString(KEY_FINAL_STATE, this.getFinalState());
+        tag.putString(KEY_DOOR_TYPE, this.doorType.getSerializedName());
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
 
+        if(tag.contains(KEY_FINAL_STATE, CompoundTag.TAG_STRING)) {
+            this.finalState = tag.getString(KEY_FINAL_STATE);
+        }
+
+        if(tag.contains(KEY_TARGET_LYCHSEAL, CompoundTag.TAG_STRING)) {
+            this.targetLychsealName = tag.getString(KEY_TARGET_LYCHSEAL);
+        }
+
         if(tag.contains(KEY_DOOR_TYPE, CompoundTag.TAG_STRING)) {
             this.doorType = RoomDoor.DoorType.byName(tag.getString(KEY_DOOR_TYPE))
                     .orElse(
                             RoomDoor.DoorType.TWOWAY
                     );
-        }
-
-        if(tag.contains(KEY_TARGET_LYCHSEAL, CompoundTag.TAG_STRING)) {
-            this.targetLychsealName = tag.getString(KEY_TARGET_LYCHSEAL);
         }
     }
 
@@ -66,5 +73,13 @@ public class DoorMarkerBlockEntity extends BlockEntity {
 
     public String getLychsealTargetName() {
         return this.targetLychsealName;
+    }
+
+    public void setFinalState(String finalState) {
+        this.finalState = finalState;
+    }
+
+    public String getFinalState() {
+        return finalState;
     }
 }

@@ -1,7 +1,11 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
@@ -21,7 +25,9 @@ import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
+import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
+import phanastrae.mirthdew_encore.block.entity.DoorMarkerBlockEntity;
 import phanastrae.mirthdew_encore.block.entity.LychsealBlockEntity;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomLychseal;
@@ -140,9 +146,21 @@ public class RoomPrePlacement {
         for(StructureTemplate.StructureBlockInfo doorInfo : doorInfos) {
             BlockPos pos = doorInfo.pos();
 
-            // TODO add custom replace state
             if(level.getBlockState(pos).is(MirthdewEncoreBlocks.DOOR_MARKER)) {
-                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+                CompoundTag nbt = doorInfo.nbt();
+
+                BlockState blockState = Blocks.AIR.defaultBlockState();
+                if(nbt != null && nbt.contains(DoorMarkerBlockEntity.KEY_FINAL_STATE)) {
+                    String finalState = nbt.getString(DoorMarkerBlockEntity.KEY_FINAL_STATE);
+
+                    try {
+                        blockState = BlockStateParser.parseForBlock(level.holderLookup(Registries.BLOCK), finalState, true).blockState();
+                    } catch (CommandSyntaxException var15) {
+                        MirthdewEncore.LOGGER.error("Error while parsing blockstate {} in door marker block @ {}", finalState, pos);
+                    }
+                }
+
+                level.setBlock(pos, blockState, 3);
             }
         }
     }

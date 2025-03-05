@@ -19,6 +19,7 @@ public class MirthdewEncoreServerPacketHandler {
             Level level = player.level();
             BlockState blockstate = level.getBlockState(blockpos);
             if (level.getBlockEntity(blockpos) instanceof DoorMarkerBlockEntity doorMarkerBlockEntity) {
+                doorMarkerBlockEntity.setFinalState(payload.finalState());
                 doorMarkerBlockEntity.setTargetLychsealName(payload.lychsealTarget());
                 doorMarkerBlockEntity.setDoorType(payload.doorType());
 
