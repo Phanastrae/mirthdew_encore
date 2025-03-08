@@ -19,6 +19,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSource
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceableRoom;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceableRoomStorage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista.VistaTypes;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.play.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.network.packet.DreamtwirlDebugPayload;
 import phanastrae.mirthdew_encore.services.XPlatInterface;
 import phanastrae.mirthdew_encore.util.RegionPos;
@@ -48,6 +49,8 @@ public class DreamtwirlStage extends SavedData {
     @Nullable
     private StageDesignGenerator stageDesignGenerator;
 
+    private final DreamtwirlBorder dreamtwirlBorder;
+
     public DreamtwirlStage(Level level, BasicStageData basicStageData) {
         this.level = level;
 
@@ -64,6 +67,8 @@ public class DreamtwirlStage extends SavedData {
 
         this.placeableRoomStorage = new PlaceableRoomStorage();
         this.stageAcherunes = new StageAcherunes(this);
+
+        this.dreamtwirlBorder = new DreamtwirlBorder(this.regionPos);
     }
 
     @Override
@@ -245,6 +250,10 @@ public class DreamtwirlStage extends SavedData {
 
     public StageAcherunes getStageAcherunes() {
         return stageAcherunes;
+    }
+
+    public DreamtwirlBorder getDreamtwirlBorder() {
+        return dreamtwirlBorder;
     }
 
     public long getAgeInTicks() {

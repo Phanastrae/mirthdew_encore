@@ -19,8 +19,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.MirthdewEncore;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.play.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.play.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.mixin.ProjectileAccessor;
@@ -57,7 +57,7 @@ public class EntityDreamtwirlData {
 
             if (!shouldIgnoreBorder()) {
                 DreamtwirlBorder dreamtwirlBorder = DTWA.getDreamtwirlBorder(this.dreamtwirlRegion);
-                boolean touchingBorder = dreamtwirlBorder.entityTouchingBorder(this.entity);
+                boolean touchingBorder = dreamtwirlBorder != null && dreamtwirlBorder.entityTouchingBorder(this.entity);
 
                 if (this.dreamtwirlRegion != entityRegion) {
                     DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getDreamtwirlStageManager(world);
@@ -197,12 +197,16 @@ public class EntityDreamtwirlData {
         }
         RegionPos regionPos = RegionPos.fromEntity(entity);
         DreamtwirlBorder dreamtwirlBorder = DTWA.getDreamtwirlBorder(regionPos);
-        VoxelShape newShape = dreamtwirlBorder.voxelShape;
-
-        if(original == null) {
-            return newShape;
+        if(dreamtwirlBorder == null) {
+            return original;
         } else {
-            return Shapes.joinUnoptimized(original, newShape, BooleanOp.OR);
+            VoxelShape newShape = dreamtwirlBorder.voxelShape;
+
+            if (original == null) {
+                return newShape;
+            } else {
+                return Shapes.joinUnoptimized(original, newShape, BooleanOp.OR);
+            }
         }
     }
 

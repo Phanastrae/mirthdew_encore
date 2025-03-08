@@ -7,6 +7,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.play.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.duck.LevelDuckInterface;
 import phanastrae.mirthdew_encore.util.RegionPos;
@@ -55,8 +56,20 @@ public class DreamtwirlLevelAttachment {
         );
     }
 
+    @Nullable
     public DreamtwirlBorder getDreamtwirlBorder(RegionPos regionPos) {
-        return new DreamtwirlBorder(regionPos);
+        if(this.level.isClientSide) {
+            // TODO cache this somewhere
+            return new DreamtwirlBorder(regionPos);
+        } else {
+            DreamtwirlStageManager dsm = this.getDreamtwirlStageManager();
+            if (dsm == null) return null;
+
+            DreamtwirlStage stage = dsm.getDreamtwirlIfPresent(regionPos);
+            if (stage == null) return null;
+
+            return stage.getDreamtwirlBorder();
+        }
     }
 
     @Nullable
@@ -73,7 +86,9 @@ public class DreamtwirlLevelAttachment {
 
         RegionPos regionPos = RegionPos.fromEntity(entity);
         DreamtwirlBorder border = DTWA.getDreamtwirlBorder(regionPos);
-        builder.add(border.voxelShape);
+        if(border != null) {
+            builder.add(border.voxelShape);
+        }
     }
 
     public static void tickLevel(Level level) {

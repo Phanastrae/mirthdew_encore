@@ -18,7 +18,11 @@ public class DreamtwirlWorldBorder extends WorldBorder {
             RegionPos regionPos = RegionPos.fromWorldCoordsDoubles(x, z);
             DreamtwirlBorder dreamtwirlBorder = this.dreamtwirlWorldAttachment.getDreamtwirlBorder(regionPos);
 
-            return dreamtwirlBorder.contains(x, z, margin);
+            if(dreamtwirlBorder != null) {
+                return dreamtwirlBorder.contains(x, z, margin);
+            } else {
+                return true;
+            }
         } else {
             return false;
         }
