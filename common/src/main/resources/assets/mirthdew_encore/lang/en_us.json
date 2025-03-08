@@ -173,6 +173,14 @@
   "commands.mirthdew_encore.dreamtwirl.leave.failed.single": "Couldn't free %s from the Dreamtwirl",
   "commands.mirthdew_encore.dreamtwirl.leave.success": "Freed %s from the Dreamtwirl",
 
+  "commands.mirthdew_encore.mirth.add.single": "Gave %s Mirth to %s",
+  "commands.mirthdew_encore.mirth.add.many": "Gave %s Mirth to %s Players",
+  "commands.mirthdew_encore.mirth.query": "%s has %s Mirth",
+  "commands.mirthdew_encore.mirth.remove.single": "Removed %s Mirth from %s",
+  "commands.mirthdew_encore.mirth.remove.many": "Removed %s Mirth from %s Players",
+  "commands.mirthdew_encore.mirth.set.single": "Set Mirth to %s for %s",
+  "commands.mirthdew_encore.mirth.set.many": "Set Mirth to %s for %s Players",
+
   "death.attack.mirthdew_encore.dreamsnare_tongue": "%1$s got snared within an Endless dream",
   "death.attack.mirthdew_encore.dreamsnare_tongue.player": "%1$s got snared within an Endless dream while trying to forget %2$s",
 

@@ -3,6 +3,7 @@ package phanastrae.mirthdew_encore.server.command;
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -10,12 +11,15 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import phanastrae.mirthdew_encore.MirthdewEncore;
+import phanastrae.mirthdew_encore.card_spell.PlayerEntityMirthData;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.EntityDreamtwirlData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.destroy.StageNuker;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
+import phanastrae.mirthdew_encore.entity.MirthdewEncorePlayerEntityAttachment;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.Collection;
@@ -123,6 +127,42 @@ public class MirthdewCommand {
                                                                         .executes(context -> clear(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ")))
                                                                 )
                                                         )
+                                                )
+                                        )
+                                )
+                        )
+                        .then(literal("mirth")
+                                .then(literal("add")
+                                        .then(argument("targets", EntityArgument.players())
+                                                .then(argument("amount", LongArgumentType.longArg(0))
+                                                        .executes(
+                                                                context -> addMirth(context.getSource(), EntityArgument.getPlayers(context, "targets"), LongArgumentType.getLong(context, "amount"))
+                                                        )
+                                                )
+                                        )
+                                )
+                                .then(literal("remove")
+                                        .then(argument("targets", EntityArgument.players())
+                                                .then(argument("amount", LongArgumentType.longArg(0))
+                                                        .executes(
+                                                                context -> removeMirth(context.getSource(), EntityArgument.getPlayers(context, "targets"), LongArgumentType.getLong(context, "amount"))
+                                                        )
+                                                )
+                                        )
+                                )
+                                .then(literal("set")
+                                        .then(argument("targets", EntityArgument.players())
+                                                .then(argument("value", LongArgumentType.longArg(0))
+                                                        .executes(
+                                                                context -> setMirth(context.getSource(), EntityArgument.getPlayers(context, "targets"), LongArgumentType.getLong(context, "value"))
+                                                        )
+                                                )
+                                        )
+                                )
+                                .then(literal("query")
+                                        .then(argument("target", EntityArgument.player())
+                                                .executes(
+                                                        context -> queryMirth(context.getSource(), EntityArgument.getPlayer(context, "target"))
                                                 )
                                         )
                                 )
@@ -295,5 +335,88 @@ public class MirthdewCommand {
         }
 
         return successCount;
+    }
+
+    private static int addMirth(CommandSourceStack source, Collection<? extends Player> targets, long amount) {
+        for(Player target : targets) {
+            PlayerEntityMirthData pemd = MirthdewEncorePlayerEntityAttachment.fromPlayer(target).getMirthData();
+
+            pemd.addMirth(amount, Long.MAX_VALUE);
+        }
+
+        if (targets.size() == 1) {
+            source.sendSuccess(
+                    () -> Component.translatable(
+                            "commands.mirthdew_encore.mirth.add.single", amount, targets.iterator().next().getDisplayName()
+                    ),
+                    true
+            );
+        } else {
+            source.sendSuccess(
+                    () -> Component.translatable("commands.mirthdew_encore.mirth.add.many", amount, targets.size()),
+                    true
+            );
+        }
+
+        return targets.size();
+    }
+
+    private static int removeMirth(CommandSourceStack source, Collection<? extends Player> targets, long amount) {
+        for(Player target : targets) {
+            PlayerEntityMirthData pemd = MirthdewEncorePlayerEntityAttachment.fromPlayer(target).getMirthData();
+
+            pemd.removeMirth(amount);
+        }
+
+        if (targets.size() == 1) {
+            source.sendSuccess(
+                    () -> Component.translatable(
+                            "commands.mirthdew_encore.mirth.remove.single", amount, targets.iterator().next().getDisplayName()
+                    ),
+                    true
+            );
+        } else {
+            source.sendSuccess(
+                    () -> Component.translatable("commands.mirthdew_encore.mirth.remove.many", amount, targets.size()),
+                    true
+            );
+        }
+
+        return targets.size();
+    }
+
+    private static int setMirth(CommandSourceStack source, Collection<? extends Player> targets, long value) {
+        for(Player target : targets) {
+            PlayerEntityMirthData pemd = MirthdewEncorePlayerEntityAttachment.fromPlayer(target).getMirthData();
+
+            pemd.setMirth(value);
+        }
+
+        if (targets.size() == 1) {
+            source.sendSuccess(
+                    () -> Component.translatable(
+                            "commands.mirthdew_encore.mirth.set.single", value, targets.iterator().next().getDisplayName()
+                    ),
+                    true
+            );
+        } else {
+            source.sendSuccess(
+                    () -> Component.translatable("commands.mirthdew_encore.mirth.set.many", value, targets.size()),
+                    true
+            );
+        }
+
+        return targets.size();
+    }
+
+    private static int queryMirth(CommandSourceStack source, Player target) {
+        PlayerEntityMirthData pemd = MirthdewEncorePlayerEntityAttachment.fromPlayer(target).getMirthData();
+        long mirth = pemd.getMirth();
+
+        source.sendSuccess(
+                () -> Component.translatable("commands.mirthdew_encore.mirth.query", target.getDisplayName(), mirth),
+                false
+        );
+        return Math.clamp(mirth, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 }

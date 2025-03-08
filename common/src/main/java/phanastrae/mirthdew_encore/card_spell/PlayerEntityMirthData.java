@@ -41,6 +41,10 @@ public class PlayerEntityMirthData {
         }
     }
 
+    public void removeMirth(long mirth) {
+        this.mirth = Math.max(this.mirth - mirth, 0);
+    }
+
     public static PlayerEntityMirthData fromPlayer(Player player) {
         return MirthdewEncorePlayerEntityAttachment.fromPlayer(player).getMirthData();
     }
