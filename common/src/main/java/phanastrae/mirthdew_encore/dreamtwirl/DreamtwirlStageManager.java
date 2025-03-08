@@ -103,14 +103,18 @@ public class DreamtwirlStageManager extends SavedData {
         return this.basicStageDatas.get(id);
     }
 
-    public void tick() {
+    public void tick(boolean runsNormally) {
         for(DreamtwirlStage dreamtwirlStage : this.dreamtwirls.values()) {
-            dreamtwirlStage.tick(this.level);
+            dreamtwirlStage.tick(this.level, runsNormally);
         }
     }
 
     public void forEach(BiConsumer<Long, BasicStageData> biConsumer) {
         this.basicStageDatas.forEach(biConsumer);
+    }
+
+    public Map<Long, BasicStageData> getBasicStageDatas() {
+        return basicStageDatas;
     }
 
     public int getDreamtwirlStageCount() {

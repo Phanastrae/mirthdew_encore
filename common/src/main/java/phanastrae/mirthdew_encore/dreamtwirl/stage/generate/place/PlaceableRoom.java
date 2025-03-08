@@ -181,6 +181,10 @@ public class PlaceableRoom {
         return roomId;
     }
 
+    public boolean isRoomPlaced() {
+        return roomPlaced;
+    }
+
     public record LychsealDoorEntry(String lychsealName, BlockPos startPos, BlockPos endPos, int endRoomId) {
         public static final Codec<LychsealDoorEntry> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(

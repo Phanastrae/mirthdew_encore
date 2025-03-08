@@ -100,7 +100,7 @@ public class StageDesignData {
     }
 
     public void removeRoom(Room room) {
-        this.idToRoomMap.remove(room);
+        this.idToRoomMap.remove(room.getRoomId());
         this.collisionMap.removeRoom(room);
         this.roomGraph.removeRoom(room);
 
@@ -113,7 +113,7 @@ public class StageDesignData {
         if(this.idToRoomMap.isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of(this.idToRoomMap.get(random.nextInt(this.idToRoomMap.size())));
+            return Optional.of(this.idToRoomMap.values().stream().toList().get(random.nextInt(this.idToRoomMap.size())));
         }
     }
 

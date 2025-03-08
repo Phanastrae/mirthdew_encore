@@ -21,19 +21,19 @@ public class DreamtwirlLevelAttachment {
         this.level = level;
     }
 
-    public void tick() {
-        if(!this.level.isClientSide && this.level instanceof ServerLevel serverWorld) {
-            tickServer(serverWorld);
+    public void tick(boolean runsNormally) {
+        if(!this.level.isClientSide && this.level instanceof ServerLevel serverLevel) {
+            tickServerLevel(serverLevel, runsNormally);
         }
     }
 
-    private void tickServer(ServerLevel level) {
+    private void tickServerLevel(ServerLevel level, boolean runsNormally) {
         //EntityList serverEntityList = ((ServerLevelAccessor)level).getEntityList();
 
         //serverEntityList.forEach(this::tickEntity);
 
         if(this.dreamtwirlStageManager != null) {
-            this.dreamtwirlStageManager.tick();
+            this.dreamtwirlStageManager.tick(runsNormally);
         }
     }
 
@@ -80,7 +80,7 @@ public class DreamtwirlLevelAttachment {
         DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(level);
         if(DTWA == null) return;
 
-        DTWA.tick();
+        DTWA.tick(level.tickRateManager().runsNormally());
     }
 
     public static boolean positionsAreInSeperateDreamtwirls(Level level, Vec3 pos1, Vec3 pos2) {

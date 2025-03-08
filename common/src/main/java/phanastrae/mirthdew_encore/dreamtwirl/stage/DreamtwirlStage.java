@@ -3,6 +3,7 @@ package phanastrae.mirthdew_encore.dreamtwirl.stage;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -24,6 +25,7 @@ import phanastrae.mirthdew_encore.util.RegionPos;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DreamtwirlStage extends SavedData {
     public static final String KEY_PLACEABLE_ROOM_DATA = "placeable_room_data";
@@ -139,33 +141,77 @@ public class DreamtwirlStage extends SavedData {
         }
     }
 
-    public void tick(ServerLevel level) {
+    public void tick(ServerLevel level, boolean runsNormally) {
         // TODO tweak, optimise, etc.
-        if(this.stageDesignGenerator != null) {
-            boolean done = this.stageDesignGenerator.tick();
-            if(done) {
-                sendRoomsToStorage(this.getRoomStorage(), stageDesignGenerator.getDesignData());
+        if(runsNormally) {
+            if (this.stageDesignGenerator != null) {
+                boolean done = this.stageDesignGenerator.tick();
+                if (done) {
+                    sendRoomsToStorage(this.getRoomStorage(), stageDesignGenerator.getDesignData());
 
-                if(SEND_DEBUG_INFO) { // TODO do debug info properly
-                    List<ServerPlayer> players = level.getPlayers(p -> true);
-                    if(!players.isEmpty()) {
-                        DreamtwirlDebug.DebugInfo debugInfo = DreamtwirlDebugPayload.createDebugInfo(this.stageDesignGenerator.getDesignData(), this.id);
-                        DreamtwirlDebugPayload payload = new DreamtwirlDebugPayload(debugInfo);
-                        for(ServerPlayer player : players) {
-                            XPlatInterface.INSTANCE.sendPayload(player, payload);
+                    if (SEND_DEBUG_INFO) { // TODO do debug info properly
+                        List<ServerPlayer> players = level.getPlayers(p -> true);
+                        if (!players.isEmpty()) {
+                            DreamtwirlDebug.DebugInfo debugInfo = DreamtwirlDebugPayload.createDebugInfo(this.stageDesignGenerator.getDesignData(), this.id);
+                            DreamtwirlDebugPayload payload = new DreamtwirlDebugPayload(debugInfo);
+                            for (ServerPlayer player : players) {
+                                XPlatInterface.INSTANCE.sendPayload(player, payload);
+                            }
                         }
                     }
+                    this.stageDesignGenerator = null;
                 }
-                this.stageDesignGenerator = null;
+
+                this.setDirty(); // TODO review setDirty()'s
             }
 
-            this.setDirty(); // TODO review setDirty()'s
+            for (PlaceableRoom room : this.placeableRoomStorage.getRooms()) {
+                if (!room.shouldTick()) continue;
+
+                room.tick(level, this.placeableRoomStorage, this.stageAreaData.getInBoundsBoundingBox(), this);
+            }
         }
+    }
 
-        for(PlaceableRoom room : this.placeableRoomStorage.getRooms()) {
-            if(!room.shouldTick()) continue;
+    public void beginPlacingAllRooms() {
+        AtomicBoolean changed = new AtomicBoolean(false);
+        this.getRoomStorage().getRooms().forEach(room -> {
+            if(!room.isRoomPlaced()) {
+                room.beginPlacementFromCenter(false);
+                changed.set(true);
+            }
+        });
 
-            room.tick(level, this.placeableRoomStorage, this.stageAreaData.getInBoundsBoundingBox(), this);
+        if(changed.get()) {
+            this.setDirty();
+        }
+    }
+
+    public boolean clearDesignGenerator() {
+        if(this.stageDesignGenerator != null) {
+            this.stageDesignGenerator = null;
+            this.setDirty();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean clearRoomStorage() {
+        if(this.getRoomStorage().reset()) {
+            this.setDirty();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean clearAcherunes() {
+        if(this.stageAcherunes.reset()) {
+            this.setDirty();
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -193,8 +239,20 @@ public class DreamtwirlStage extends SavedData {
         return this.placeableRoomStorage;
     }
 
+    public @Nullable StageDesignGenerator getStageDesignGenerator() {
+        return stageDesignGenerator;
+    }
+
     public StageAcherunes getStageAcherunes() {
         return stageAcherunes;
+    }
+
+    public long getAgeInTicks() {
+        return this.basicStageData.getAgeInTicks(this.level.getGameTime());
+    }
+
+    public Component getAgeTextComponent() {
+        return BasicStageData.getAgeTextComponent(this.getAgeInTicks());
     }
 
     public static SavedData.Factory<DreamtwirlStage> getPersistentStateType(ServerLevel level, BasicStageData bsd) {

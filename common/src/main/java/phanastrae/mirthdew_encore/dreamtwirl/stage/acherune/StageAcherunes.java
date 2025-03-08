@@ -64,6 +64,15 @@ public class StageAcherunes {
         return nbt;
     }
 
+    public boolean reset() {
+        if(this.map.isEmpty()) {
+            return false;
+        } else {
+            this.map.clear();
+            return true;
+        }
+    }
+
     public @Nullable Acherune create(BlockPos pos, Level level) {
         if(this.map.containsKey(pos)) {
             // if acherune already exists at this position, return it
@@ -164,6 +173,14 @@ public class StageAcherunes {
 
     public @Nullable Acherune getAcherune(BlockPos pos) {
         return this.map.posMap.getOrDefault(pos, null);
+    }
+
+    public int getAcheruneCount() {
+        return this.map.idMap.size();
+    }
+
+    public List<Acherune> getAcherunes() {
+        return this.map.acherunes;
     }
 
     public static class AcheruneStorage {

@@ -69,6 +69,16 @@ public class PlaceableRoomStorage {
         return nbt;
     }
 
+    public boolean reset() {
+        if(this.rooms.isEmpty() && this.nextRoomId == 0) {
+            return false;
+        } else {
+            this.rooms.clear();
+            this.nextRoomId = 0;
+            return true;
+        }
+    }
+
     public void addRoom(Room room) {
         this.rooms.add(new PlaceableRoom(room, this.nextRoomId));
         this.nextRoomId++;
