@@ -20,6 +20,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -31,6 +32,8 @@ public class DreamtwirlStageManager extends SavedData {
 
     private final ServerLevel level;
     private final RandomSource random = RandomSource.create();
+
+    private boolean hasCheckedForDeletingStages = false;
 
     public DreamtwirlStageManager(ServerLevel level) {
         this.level = level;
@@ -70,7 +73,7 @@ public class DreamtwirlStageManager extends SavedData {
 
         for(int i = 0; i < nbtList.size(); ++i) {
             CompoundTag nbtCompound = nbtList.getCompound(i);
-            BasicStageData bsd = BasicStageData.fromNbt(level, nbtCompound);
+            BasicStageData bsd = BasicStageData.fromNbt(nbtCompound);
             dreamtwirlStageManager.basicStageDatas.put(bsd.getId(), bsd);
         }
 
@@ -89,7 +92,7 @@ public class DreamtwirlStageManager extends SavedData {
         } else if(this.basicStageDatas.containsKey(id)) {
             BasicStageData basicStageData = this.basicStageDatas.get(id);
 
-            DreamtwirlStage dreamtwirlStage = getStageSavedData(basicStageData);
+            DreamtwirlStage dreamtwirlStage = getExistingSavedStageData(basicStageData);
             this.dreamtwirls.put(id, dreamtwirlStage);
 
             this.setDirty();
@@ -99,12 +102,23 @@ public class DreamtwirlStageManager extends SavedData {
         }
     }
 
-    public BasicStageData getBasicStageData(long id) {
-        return this.basicStageDatas.get(id);
+    public @Nullable BasicStageData getBasicStageDataIfPresent(long id) {
+        return this.basicStageDatas.getOrDefault(id, null);
     }
 
     public void tick(boolean runsNormally) {
-        for(DreamtwirlStage dreamtwirlStage : this.dreamtwirls.values()) {
+        if(!this.hasCheckedForDeletingStages) {
+            for(BasicStageData bsd : this.basicStageDatas.values()) {
+                if(bsd.isDeletingSelf()) {
+                    this.getDreamtwirlIfPresent(bsd.getId()); // make sure dreamtwirl is loaded
+                }
+            }
+
+            this.hasCheckedForDeletingStages = true;
+        }
+
+        List<DreamtwirlStage> stages = this.dreamtwirls.values().stream().toList(); // copy list to allow for safe removal from stage manager mid-ticking
+        for( DreamtwirlStage dreamtwirlStage : stages) {
             dreamtwirlStage.tick(this.level, runsNormally);
         }
     }
@@ -166,7 +180,7 @@ public class DreamtwirlStageManager extends SavedData {
         } else {
             BasicStageData basicStageData = this.getOrCreateBasicStageData(regionPos);
 
-            DreamtwirlStage dreamtwirlStage = getStageSavedData(basicStageData);
+            DreamtwirlStage dreamtwirlStage = createNewSavedStageData(basicStageData);
             this.dreamtwirls.put(id, dreamtwirlStage);
 
             this.setDirty();
@@ -174,10 +188,31 @@ public class DreamtwirlStageManager extends SavedData {
         }
     }
 
+    public boolean deleteDreamtwirlStage(RegionPos regionPos) {
+        long id = regionPos.id;
+
+        boolean deleted = false;
+        if(this.basicStageDatas.containsKey(id)) {
+            this.basicStageDatas.remove(id);
+            deleted = true;
+        }
+        this.getDreamtwirlIfPresent(id); // make sure dreamtwirl is loaded
+        if(this.dreamtwirls.containsKey(id)) {
+            this.dreamtwirls.remove(id);
+            deleted = true;
+        }
+
+        if(deleted) {
+            this.setDirty();
+        }
+
+        return deleted;
+    }
+
     public BasicStageData getOrCreateBasicStageData(RegionPos regionPos) {
         long id = regionPos.id;
         if(this.basicStageDatas.containsKey(id)) {
-            return this.getBasicStageData(id);
+            return this.basicStageDatas.get(id);
         } else {
             BasicStageData basicStageData = new BasicStageData(regionPos.id, this.level.getGameTime());
             this.basicStageDatas.put(id, basicStageData);
@@ -187,10 +222,20 @@ public class DreamtwirlStageManager extends SavedData {
         }
     }
 
-    public DreamtwirlStage getStageSavedData(BasicStageData basicStageData) {
-        return this.level.getDataStorage().computeIfAbsent(
-                DreamtwirlStage.getPersistentStateType(this.level, basicStageData),
-                DreamtwirlStage.nameFor(basicStageData.getRegionPos()));
+    public DreamtwirlStage getExistingSavedStageData(BasicStageData basicStageData) {
+        String name = DreamtwirlStage.nameFor(basicStageData.getRegionPos());
+        SavedData.Factory<DreamtwirlStage> factory = DreamtwirlStage.getPersistentStateType(this.level, basicStageData);
+
+        return this.level.getDataStorage().computeIfAbsent(factory, name);
+    }
+
+    public DreamtwirlStage createNewSavedStageData(BasicStageData basicStageData) {
+        String name = DreamtwirlStage.nameFor(basicStageData.getRegionPos());
+        SavedData.Factory<DreamtwirlStage> factory = DreamtwirlStage.getPersistentStateType(this.level, basicStageData);
+
+        DreamtwirlStage stage = factory.constructor().get();
+        this.level.getDataStorage().set(name, stage);
+        return stage;
     }
 
     @Nullable

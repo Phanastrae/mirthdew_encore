@@ -162,6 +162,8 @@
   "commands.mirthdew_encore.dreamtwirl.create.success": "Created new Dreamtwirl (%s, %s)",
   "commands.mirthdew_encore.dreamtwirl.edit.clear.acherunes.failed.already_cleared": "This Dreamtwirl has no Acherunes!",
   "commands.mirthdew_encore.dreamtwirl.edit.clear.acherunes.success": "Removed all Acherunes in %s (%s, %s)",
+  "commands.mirthdew_encore.dreamtwirl.edit.clear.everything.success": "Clearing the Dreamtwirl (%s, %s)...",
+  "commands.mirthdew_encore.dreamtwirl.edit.clear.everything.failed.already_clearing": "That Dreamtwirl is already being Cleared!",
   "commands.mirthdew_encore.dreamtwirl.edit.clear.rooms.failed.already_cleared": "This Dreamtwirl's Room Storage is already Cleared!",
   "commands.mirthdew_encore.dreamtwirl.edit.clear.rooms.success": "Cleared Rooms for %s (%s, %s)",
   "commands.mirthdew_encore.dreamtwirl.edit.clear.sdg.failed.already_cleared": "The Stage Design Generator is already Cleared!",

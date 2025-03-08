@@ -11,11 +11,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
+import phanastrae.mirthdew_encore.MirthdewEncore;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.StageAcherunes;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignGenerator;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSourceCollection;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.destroy.StageNuker;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceableRoom;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceableRoomStorage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista.VistaTypes;
@@ -32,6 +35,7 @@ public class DreamtwirlStage extends SavedData {
     public static final String KEY_PLACEABLE_ROOM_DATA = "placeable_room_data";
     public static final String KEY_STAGE_DESIGN_GENERATOR = "stage_design_generator";
     public static final String KEY_ACHERUNE_DATA = "acherune_data";
+    public static final String KEY_DELETING_SELF = "is_deleting_self";
 
     public static boolean SEND_DEBUG_INFO = true;
 
@@ -50,6 +54,8 @@ public class DreamtwirlStage extends SavedData {
     private StageDesignGenerator stageDesignGenerator;
 
     private final DreamtwirlBorder dreamtwirlBorder;
+
+    private boolean isDeletingSelf = false;
 
     public DreamtwirlStage(Level level, BasicStageData basicStageData) {
         this.level = level;
@@ -87,6 +93,8 @@ public class DreamtwirlStage extends SavedData {
 
         tag.put(KEY_ACHERUNE_DATA, this.stageAcherunes.writeNbt(new CompoundTag(), registries));
 
+        tag.putBoolean(KEY_DELETING_SELF, this.isDeletingSelf);
+
         return tag;
     }
 
@@ -106,6 +114,12 @@ public class DreamtwirlStage extends SavedData {
 
         if(tag.contains(KEY_ACHERUNE_DATA, Tag.TAG_COMPOUND)) {
             stage.getStageAcherunes().readNbt(tag.getCompound(KEY_ACHERUNE_DATA), registries);
+        }
+
+        if(tag.contains(KEY_DELETING_SELF, Tag.TAG_BYTE)) {
+            stage.setDeletingSelf(tag.getBoolean(KEY_DELETING_SELF));
+        } else {
+            stage.setDeletingSelf(false);
         }
 
         return stage;
@@ -147,35 +161,94 @@ public class DreamtwirlStage extends SavedData {
     }
 
     public void tick(ServerLevel level, boolean runsNormally) {
-        // TODO tweak, optimise, etc.
-        if(runsNormally) {
-            if (this.stageDesignGenerator != null) {
-                boolean done = this.stageDesignGenerator.tick();
-                if (done) {
-                    sendRoomsToStorage(this.getRoomStorage(), stageDesignGenerator.getDesignData());
+        if(this.isDeletingSelf) {
+            this.tickSelfDeletion(level, runsNormally);
+        }
 
-                    if (SEND_DEBUG_INFO) { // TODO do debug info properly
-                        List<ServerPlayer> players = level.getPlayers(p -> true);
-                        if (!players.isEmpty()) {
-                            DreamtwirlDebug.DebugInfo debugInfo = DreamtwirlDebugPayload.createDebugInfo(this.stageDesignGenerator.getDesignData(), this.id);
-                            DreamtwirlDebugPayload payload = new DreamtwirlDebugPayload(debugInfo);
-                            for (ServerPlayer player : players) {
-                                XPlatInterface.INSTANCE.sendPayload(player, payload);
+        if(!this.isDeletingSelf) {
+            // TODO tweak, optimise, etc.
+            if (runsNormally) {
+                if (this.stageDesignGenerator != null) {
+                    boolean done = this.stageDesignGenerator.tick();
+                    if (done) {
+                        sendRoomsToStorage(this.getRoomStorage(), stageDesignGenerator.getDesignData());
+
+                        if (SEND_DEBUG_INFO) { // TODO do debug info properly
+                            List<ServerPlayer> players = level.getPlayers(p -> true);
+                            if (!players.isEmpty()) {
+                                DreamtwirlDebug.DebugInfo debugInfo = DreamtwirlDebugPayload.createDebugInfo(this.stageDesignGenerator.getDesignData(), this.id);
+                                DreamtwirlDebugPayload payload = new DreamtwirlDebugPayload(debugInfo);
+                                for (ServerPlayer player : players) {
+                                    XPlatInterface.INSTANCE.sendPayload(player, payload);
+                                }
                             }
                         }
+                        this.stageDesignGenerator = null;
                     }
-                    this.stageDesignGenerator = null;
+
+                    this.setDirty(); // TODO review setDirty()'s
                 }
 
-                this.setDirty(); // TODO review setDirty()'s
-            }
+                for (PlaceableRoom room : this.placeableRoomStorage.getRooms()) {
+                    if (!room.shouldTick()) continue;
 
-            for (PlaceableRoom room : this.placeableRoomStorage.getRooms()) {
-                if (!room.shouldTick()) continue;
-
-                room.tick(level, this.placeableRoomStorage, this.stageAreaData.getInBoundsBoundingBox(), this);
+                    room.tick(level, this.placeableRoomStorage, this.stageAreaData.getInBoundsBoundingBox(), this);
+                }
             }
         }
+    }
+
+    public void tickSelfDeletion(ServerLevel level, boolean runsNormally) {
+        if(this.stageDesignGenerator != null || !this.placeableRoomStorage.getRooms().isEmpty()) {
+            this.abortDestruction();
+        }
+
+        if(runsNormally) {
+            DreamtwirlStageManager dsm = DreamtwirlStageManager.getDreamtwirlStageManager(level);
+            if (dsm != null) {
+                long time = System.nanoTime();
+                try {
+                    StageNuker.clear(level, this);
+                } catch (Exception e) {
+                    MirthdewEncore.LOGGER.info(e.getMessage());
+                    return;
+                }
+
+                long time2 = System.nanoTime();
+                long dif = time2 - time;
+                long ms = dif / 1000000;
+                MirthdewEncore.LOGGER.info("Cleared Dreamtwirl({}, {}) in {}ms", this.regionPos.regionX, this.regionPos.regionZ, ms);
+
+                dsm.deleteDreamtwirlStage(this.regionPos);
+                this.setDeletingSelf(false);
+                this.setDirty();
+            }
+        }
+    }
+
+    public boolean initateSelfDestruct() {
+        // initiates self destruct
+        // this self destructs the dreamtwirl
+        // dreamtwirl go bye bye
+
+        // i sure do hope that this never ever gets triggered by accident :)
+
+        if(this.isDeletingSelf) {
+            return false;
+        } else {
+            this.clearDesignGenerator();
+            this.clearRoomStorage();
+            this.clearAcherunes();
+            this.setDeletingSelf(true);
+
+            this.setDirty();
+            return true;
+        }
+    }
+
+    public void abortDestruction() {
+        this.setDeletingSelf(false);
+        this.setDirty();
     }
 
     public void beginPlacingAllRooms() {
@@ -218,6 +291,27 @@ public class DreamtwirlStage extends SavedData {
         } else {
             return false;
         }
+    }
+
+    public void setDeletingSelf(boolean deletingSelf) {
+        if(this.isDeletingSelf != deletingSelf) {
+            this.isDeletingSelf = deletingSelf;
+            this.setDirty();
+
+            DreamtwirlStageManager dsm = DreamtwirlStageManager.getDreamtwirlStageManager(this.level);
+            if(dsm != null) {
+                BasicStageData bsd = dsm.getBasicStageDataIfPresent(this.id);
+
+                if(bsd != null && bsd.getTimestamp() == this.timestamp) {
+                    bsd.setDeletingSelf(deletingSelf);
+                    dsm.setDirty();
+                }
+            }
+        }
+    }
+
+    public boolean isDeletingSelf() {
+        return this.isDeletingSelf;
     }
 
     public long getId() {

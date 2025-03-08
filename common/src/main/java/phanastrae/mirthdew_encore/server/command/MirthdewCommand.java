@@ -12,16 +12,15 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.card_spell.PlayerEntityMirthData;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.EntityDreamtwirlData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.BasicStageData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.destroy.StageNuker;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceableRoom;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.entity.MirthdewEncorePlayerEntityAttachment;
@@ -75,6 +74,9 @@ public class MirthdewCommand {
     );
     private static final SimpleCommandExceptionType FAILED_ACHERUNES_ALREADY_CLEAR = new SimpleCommandExceptionType(
             Component.translatableEscape("commands.mirthdew_encore.dreamtwirl.edit.clear.acherunes.failed.already_cleared")
+    );
+    private static final SimpleCommandExceptionType FAILED_DREAMTWIRL_ALREADY_CLEARING = new SimpleCommandExceptionType(
+            Component.translatableEscape("commands.mirthdew_encore.dreamtwirl.edit.clear.everything.failed.already_clearing")
     );
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -139,10 +141,10 @@ public class MirthdewCommand {
                                                             )
                                                         )
                                                         .then(literal("clear")
-                                                                .then(literal("allChunks")
+                                                                .then(literal("theEntireDreamtwirlIncludingTheBlocksYesAllOfItPleaseJustDeleteItAll")
                                                                         .requires(source -> source.hasPermission(4))
                                                                         .then(literal("CONFIRM")
-                                                                                .executes(context -> clearAllChunks(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ")))
+                                                                                .executes(context -> clearTheEntireDreamtwirlIncludingTheBlocksYesAllOfItPleaseJustDeleteItAll(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ")))
                                                                         )
                                                                 )
                                                                 .then(literal("stageDesignGenerator")
@@ -261,7 +263,7 @@ public class MirthdewCommand {
             for(BasicStageData BSD : dreamtwirlStageManager.getBasicStageDatas().values().stream().sorted(Comparator.comparingLong(BasicStageData::getTimestamp)).toList()) {
                 RegionPos regionPos = BSD.getRegionPos();
 
-                Component dreamtwirlComponent = getDreamtwirlComponent();
+                Component dreamtwirlComponent = getDreamtwirlComponent(BSD.isDeletingSelf());
                 Component regionXComponent = getRegionXComponent(regionPos.regionX);
                 Component regionZComponent = getRegionZComponent(regionPos.regionZ);
                 Component ageComponent = BSD.getAgeTextComponentFromLevelTime(levelTime).copy().withStyle(ChatFormatting.YELLOW);
@@ -288,25 +290,16 @@ public class MirthdewCommand {
         return 1;
     }
 
-    private static int clearAllChunks(CommandSourceStack source, int regionX, int regionZ) throws CommandSyntaxException {
+    private static int clearTheEntireDreamtwirlIncludingTheBlocksYesAllOfItPleaseJustDeleteItAll(CommandSourceStack source, int regionX, int regionZ) throws CommandSyntaxException {
         DreamtwirlStageManager dreamtwirlStageManager = getStageManager(source);
         DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
 
-        long time = System.nanoTime();
-
-        try {
-            StageNuker.clear(source.getLevel(), dreamtwirlStage);
-        } catch (Exception e) {
-            MirthdewEncore.LOGGER.info(e.getMessage());
+        if(dreamtwirlStage.initateSelfDestruct()) {
+            source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.edit.clear.everything.success", regionX, regionZ), true);
+            return 1;
+        } else {
+            throw FAILED_DREAMTWIRL_ALREADY_CLEARING.create();
         }
-
-        long time2 = System.nanoTime();
-        long dif = time2 - time;
-        long ms = dif / 1000000;
-        MirthdewEncore.LOGGER.info("Cleared in {}ms", ms);
-
-        source.sendSuccess(() -> Component.literal("Cleared Dreamtwirl"), true);
-        return 1;
     }
 
     private static int clearSDG(CommandSourceStack source, int regionX, int regionZ) throws CommandSyntaxException {
@@ -314,7 +307,7 @@ public class MirthdewCommand {
         DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
 
         if(dreamtwirlStage.clearDesignGenerator()) {
-            source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.edit.clear.sdg.success", getDreamtwirlComponent(), getRegionXComponent(regionX), getRegionZComponent(regionZ)), true);
+            source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.edit.clear.sdg.success", getDreamtwirlComponent(dreamtwirlStage.isDeletingSelf()), getRegionXComponent(regionX), getRegionZComponent(regionZ)), true);
             return 1;
         } else {
             throw FAILED_SDG_ALREADY_CLEAR.create();
@@ -326,7 +319,7 @@ public class MirthdewCommand {
         DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
 
         if(dreamtwirlStage.clearRoomStorage()) {
-            source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.edit.clear.rooms.success", getDreamtwirlComponent(), getRegionXComponent(regionX), getRegionZComponent(regionZ)), true);
+            source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.edit.clear.rooms.success", getDreamtwirlComponent(dreamtwirlStage.isDeletingSelf()), getRegionXComponent(regionX), getRegionZComponent(regionZ)), true);
             return 1;
         } else {
             throw FAILED_ROOM_STORAGE_ALREADY_CLEAR.create();
@@ -338,7 +331,7 @@ public class MirthdewCommand {
         DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
 
         if(dreamtwirlStage.clearAcherunes()) {
-            source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.edit.clear.acherunes.success", getDreamtwirlComponent(), getRegionXComponent(regionX), getRegionZComponent(regionZ)), true);
+            source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.edit.clear.acherunes.success", getDreamtwirlComponent(dreamtwirlStage.isDeletingSelf()), getRegionXComponent(regionX), getRegionZComponent(regionZ)), true);
             return 1;
         } else {
             throw FAILED_ACHERUNES_ALREADY_CLEAR.create();
@@ -351,7 +344,7 @@ public class MirthdewCommand {
 
         dreamtwirlStage.beginPlacingAllRooms();
 
-        Component dreamtwirlComponent = getDreamtwirlComponent();
+        Component dreamtwirlComponent = getDreamtwirlComponent(dreamtwirlStage.isDeletingSelf());
         Component regionXComponent = getRegionXComponent(regionX);
         Component regionZComponent = getRegionZComponent(regionZ);
         source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.edit.place_all_rooms", dreamtwirlComponent, regionXComponent, regionZComponent), true);
@@ -362,7 +355,7 @@ public class MirthdewCommand {
         DreamtwirlStageManager dreamtwirlStageManager = getStageManager(source);
         DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
 
-        Component dreamtwirlComponent = getDreamtwirlComponent();
+        Component dreamtwirlComponent = getDreamtwirlComponent(dreamtwirlStage.isDeletingSelf());
         Component regionXComponent = getRegionXComponent(regionX);
         Component regionZComponent = getRegionZComponent(regionZ);
 
@@ -400,7 +393,7 @@ public class MirthdewCommand {
         DreamtwirlStageManager dreamtwirlStageManager = getStageManager(source);
         DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
 
-        Component dreamtwirlComponent = getDreamtwirlComponent();
+        Component dreamtwirlComponent = getDreamtwirlComponent(dreamtwirlStage.isDeletingSelf());
         Component regionXComponent = getRegionXComponent(regionX);
         Component regionZComponent = getRegionZComponent(regionZ);
 
@@ -585,8 +578,14 @@ public class MirthdewCommand {
         return MirthdewEncorePlayerEntityAttachment.fromPlayer(player).getMirthData();
     }
 
-    private static Component getDreamtwirlComponent() {
-        return Component.translatable("commands.mirthdew_encore.dreamtwirl.info.dreamtwirl").withStyle(ChatFormatting.AQUA);
+    private static Component getDreamtwirlComponent(boolean isDeletingSelf) {
+        MutableComponent component = Component.translatable("commands.mirthdew_encore.dreamtwirl.info.dreamtwirl");
+        if(isDeletingSelf) {
+            component = component.withStyle(ChatFormatting.RED).withStyle(ChatFormatting.STRIKETHROUGH);
+        } else {
+            component = component.withStyle(ChatFormatting.AQUA);
+        }
+        return component;
     }
 
     private static Component getRegionXComponent(int regionX) {
