@@ -81,31 +81,54 @@ public class DreamtwirlLevelAttachment {
         if(entity == null) return;
         if(entity.level() != level) return;
 
-        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(level);
-        if(DTWA == null) return;
+        DreamtwirlLevelAttachment DTLA = DreamtwirlLevelAttachment.fromLevel(level);
+        if(DTLA == null) return;
 
         RegionPos regionPos = RegionPos.fromEntity(entity);
-        DreamtwirlBorder border = DTWA.getDreamtwirlBorder(regionPos);
+        DreamtwirlBorder border = DTLA.getDreamtwirlBorder(regionPos);
         if(border != null) {
             builder.add(border.voxelShape);
         }
     }
 
     public static void tickLevel(Level level) {
-        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(level);
-        if(DTWA == null) return;
+        DreamtwirlLevelAttachment DTLA = DreamtwirlLevelAttachment.fromLevel(level);
+        if(DTLA == null) return;
 
-        DTWA.tick(level.tickRateManager().runsNormally());
+        DTLA.tick(level.tickRateManager().runsNormally());
     }
 
-    public static boolean positionsAreInSeperateDreamtwirls(Level level, Vec3 pos1, Vec3 pos2) {
-        DreamtwirlLevelAttachment DTWA = DreamtwirlLevelAttachment.fromLevel(level);
-        if(DTWA == null) {
+    public static boolean positionsAreInSeparateDreamtwirls(Level level, Vec3 pos1, Vec3 pos2) {
+        DreamtwirlLevelAttachment DTLA = DreamtwirlLevelAttachment.fromLevel(level);
+        if(DTLA == null) {
             return false;
         } else {
             RegionPos region1 = RegionPos.fromVec3d(pos1);
             RegionPos region2 = RegionPos.fromVec3d(pos2);
             return !region1.equals(region2);
+        }
+    }
+
+    public static boolean posInUnstableDreamtwirl(Level level, Vec3 pos) {
+        DreamtwirlLevelAttachment DTLA = DreamtwirlLevelAttachment.fromLevel(level);
+        if(DTLA == null) return false;
+
+        DreamtwirlStageManager dsm = DTLA.getDreamtwirlStageManager();
+        if(dsm == null) return false;
+
+        RegionPos region = RegionPos.fromVec3d(pos);
+        DreamtwirlStage stage = dsm.getDreamtwirlIfPresent(region);
+
+        return stage == null || stage.isDeletingSelf();
+    }
+
+    public static boolean positionsAreInSeparateOrUnstableDreamtwirls(Level level, Vec3 pos1, Vec3 pos2) {
+        if(posInUnstableDreamtwirl(level, pos1)) {
+            return true;
+        } else if(posInUnstableDreamtwirl(level, pos2)) {
+            return true;
+        } else {
+            return positionsAreInSeparateDreamtwirls(level, pos1, pos2);
         }
     }
 }

@@ -29,6 +29,7 @@ import phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes;
 import phanastrae.mirthdew_encore.component.type.LinkedAcheruneComponent;
 import phanastrae.mirthdew_encore.component.type.LocationComponent;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
@@ -272,7 +273,8 @@ public class SlumberveilBlock extends Block implements Portal {
                     boolean validTarget = true;
                     DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getDreamtwirlStageManager(targetWorld);
                     if (dreamtwirlStageManager != null) {
-                        if (dreamtwirlStageManager.getDreamtwirlIfPresent(RegionPos.fromVec3d(targetPos)) == null) {
+                        DreamtwirlStage stage = dreamtwirlStageManager.getDreamtwirlIfPresent(RegionPos.fromVec3d(targetPos));
+                        if (stage == null || stage.isDeletingSelf()) {
                             validTarget = false;
                         }
                     }

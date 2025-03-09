@@ -35,7 +35,7 @@ public class ServerLevelMixin {
 
     @Inject(method = "mayInteract", at = @At("HEAD"), cancellable = true)
     private void mirthdew_encore$preventAdjacentDreamtwirlInteraction(Player player, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if(DreamtwirlLevelAttachment.positionsAreInSeperateDreamtwirls(player.level(), player.position(), Vec3.atCenterOf(pos))) {
+        if(DreamtwirlLevelAttachment.positionsAreInSeparateOrUnstableDreamtwirls(player.level(), player.position(), Vec3.atCenterOf(pos))) {
             cir.setReturnValue(false);
         }
     }

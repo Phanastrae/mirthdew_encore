@@ -18,7 +18,6 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
-import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.play.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
@@ -26,6 +25,8 @@ import phanastrae.mirthdew_encore.entity.effect.MirthdewEncoreStatusEffects;
 import phanastrae.mirthdew_encore.mixin.ProjectileAccessor;
 import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
+
+import java.util.Objects;
 
 public class EntityDreamtwirlData {
 
@@ -59,19 +60,23 @@ public class EntityDreamtwirlData {
                 DreamtwirlBorder dreamtwirlBorder = DTWA.getDreamtwirlBorder(this.dreamtwirlRegion);
                 boolean touchingBorder = dreamtwirlBorder != null && dreamtwirlBorder.entityTouchingBorder(this.entity);
 
-                if (this.dreamtwirlRegion != entityRegion) {
-                    DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getDreamtwirlStageManager(world);
-                    if (dreamtwirlStageManager != null) {
-                        DreamtwirlStage currentStage = dreamtwirlStageManager.getDreamtwirlIfPresent(entityRegion);
-                        DreamtwirlStage newStage = dreamtwirlStageManager.getDreamtwirlIfPresent(entityRegion);
-                        if (newStage != null) {
+                DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getDreamtwirlStageManager(world);
+                if(dreamtwirlStageManager != null) {
+                    DreamtwirlStage newStage = dreamtwirlStageManager.getDreamtwirlIfPresent(entityRegion);
+
+                    if(newStage == null || newStage.isDeletingSelf()) {
+                        // entity is currently not in a valid dreamtwirl
+                        touchingBorder = true;
+                    } else {
+                        if (!Objects.equals(this.dreamtwirlRegion, entityRegion)) {
+                            // entity has switched dreamtwirls
                             if (this.canJoinRegion(entityRegion)) {
+                                // transfer entity to new dreamtwirl
                                 this.setDreamtwirlRegion(entityRegion);
-                            } else if (currentStage == null) {
+                            } else {
+                                // dreamtwirl is no longer in bounds for its current dreamtwirl
                                 touchingBorder = true;
                             }
-                        } else {
-                            touchingBorder = true;
                         }
                     }
                 }
@@ -83,7 +88,7 @@ public class EntityDreamtwirlData {
                         }
                     }
 
-                    if (this.entity instanceof Projectile projectileEntity) {
+                    if (this.entity instanceof Projectile projectileEntity && dreamtwirlBorder != null) {
                         HitResult hitResult = dreamtwirlBorder.voxelShape.clip(entity.position(), entity.position().add(entity.getDeltaMovement()), BlockPos.containing(entity.position()));
                         if (hitResult != null && !hitResult.getType().equals(HitResult.Type.MISS)) {
                             ((ProjectileAccessor) projectileEntity).invokeOnHit(hitResult);
@@ -129,9 +134,6 @@ public class EntityDreamtwirlData {
             }
 
             if(teleportEntity(this.entity, teleportTarget)) {
-                if(this.entity instanceof Player) {
-                    MirthdewEncore.LOGGER.info("Player {} was sent to the Dreamtwirl ({}, {})", this.entity.getName().getString(), dreamtwirlRegion.regionX, dreamtwirlRegion.regionZ);
-                }
                 this.setDreamtwirlRegion(dreamtwirlRegion);
                 this.applyDreamtwirlEffects();
                 return true;
@@ -166,9 +168,6 @@ public class EntityDreamtwirlData {
             }
 
             if (teleportEntity(this.entity, teleportTarget)) {
-                if(this.entity instanceof Player) {
-                    MirthdewEncore.LOGGER.info("Player {} was ejected from a Dreamtwirl", this.entity.getName().getString());
-                }
                 this.setDreamtwirlRegion(null);
                 return true;
             } else {
@@ -187,7 +186,7 @@ public class EntityDreamtwirlData {
 
     public void setDreamtwirlRegion(@Nullable RegionPos region) {
         this.dreamtwirlRegion = region;
-        this.inDreamtwirl = !(region == null);
+        this.inDreamtwirl = region != null;
     }
 
     public static VoxelShape addCollisionsTo(@Nullable VoxelShape original, Entity entity) {

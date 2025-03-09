@@ -171,6 +171,7 @@
   "commands.mirthdew_encore.dreamtwirl.edit.place_all_rooms": "Begun placing all Rooms in %s (%s, %s)",
   "commands.mirthdew_encore.dreamtwirl.failed.does_not_exist": "That Dreamtwirl does not exist.",
   "commands.mirthdew_encore.dreamtwirl.failed.no_manager": "Failed to get Dreamtwirls",
+  "commands.mirthdew_encore.dreamtwirl.failed.stage_deleting": "That Dreamtwirl is being deleted!",
   "commands.mirthdew_encore.dreamtwirl.info.acherunes.total": "Active Acherunes: %s",
   "commands.mirthdew_encore.dreamtwirl.info.acherunes.single.linked": "- Acherune (%s, %s, %s) (Linked to (%s, %s, %s) in %s)",
   "commands.mirthdew_encore.dreamtwirl.info.acherunes.single.unlinked": "- Acherune (%s, %s, %s) (Unlinked)",

@@ -79,6 +79,11 @@ public class StageAcherunes {
             return this.map.get(pos);
         }
 
+        if(this.stage.isDeletingSelf()) {
+            // no creating acherunes in self-deleting stages
+            return null;
+        }
+
         long time = level.getGameTime();
         RandomSource random = level.random;
         for(int i = 0; i < 5; i++) {

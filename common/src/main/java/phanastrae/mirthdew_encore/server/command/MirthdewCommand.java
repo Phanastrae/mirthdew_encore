@@ -78,6 +78,9 @@ public class MirthdewCommand {
     private static final SimpleCommandExceptionType FAILED_DREAMTWIRL_ALREADY_CLEARING = new SimpleCommandExceptionType(
             Component.translatableEscape("commands.mirthdew_encore.dreamtwirl.edit.clear.everything.failed.already_clearing")
     );
+    private static final SimpleCommandExceptionType FAILED_STAGE_DELETING = new SimpleCommandExceptionType(
+            Component.translatableEscape("commands.mirthdew_encore.dreamtwirl.failed.stage_deleting")
+    );
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
@@ -279,7 +282,7 @@ public class MirthdewCommand {
 
     private static int generate(CommandSourceStack source, int regionX, int regionZ) throws CommandSyntaxException {
         DreamtwirlStageManager dreamtwirlStageManager = getStageManager(source);
-        DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
+        DreamtwirlStage dreamtwirlStage = getSafeStage(dreamtwirlStageManager, regionX, regionZ);
 
         // TODO add a seed parameter to the command
         //long dreamtwirlSeed = source.getLevel().getSeed() ^ regionPos.id;
@@ -304,7 +307,7 @@ public class MirthdewCommand {
 
     private static int clearSDG(CommandSourceStack source, int regionX, int regionZ) throws CommandSyntaxException {
         DreamtwirlStageManager dreamtwirlStageManager = getStageManager(source);
-        DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
+        DreamtwirlStage dreamtwirlStage = getSafeStage(dreamtwirlStageManager, regionX, regionZ);
 
         if(dreamtwirlStage.clearDesignGenerator()) {
             source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.edit.clear.sdg.success", getDreamtwirlComponent(dreamtwirlStage.isDeletingSelf()), getRegionXComponent(regionX), getRegionZComponent(regionZ)), true);
@@ -316,7 +319,7 @@ public class MirthdewCommand {
 
     private static int clearRoomStorage(CommandSourceStack source, int regionX, int regionZ) throws CommandSyntaxException {
         DreamtwirlStageManager dreamtwirlStageManager = getStageManager(source);
-        DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
+        DreamtwirlStage dreamtwirlStage = getSafeStage(dreamtwirlStageManager, regionX, regionZ);
 
         if(dreamtwirlStage.clearRoomStorage()) {
             source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.edit.clear.rooms.success", getDreamtwirlComponent(dreamtwirlStage.isDeletingSelf()), getRegionXComponent(regionX), getRegionZComponent(regionZ)), true);
@@ -328,7 +331,7 @@ public class MirthdewCommand {
 
     private static int clearAcherunes(CommandSourceStack source, int regionX, int regionZ) throws CommandSyntaxException {
         DreamtwirlStageManager dreamtwirlStageManager = getStageManager(source);
-        DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
+        DreamtwirlStage dreamtwirlStage = getSafeStage(dreamtwirlStageManager, regionX, regionZ);
 
         if(dreamtwirlStage.clearAcherunes()) {
             source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.edit.clear.acherunes.success", getDreamtwirlComponent(dreamtwirlStage.isDeletingSelf()), getRegionXComponent(regionX), getRegionZComponent(regionZ)), true);
@@ -340,7 +343,7 @@ public class MirthdewCommand {
 
     private static int placeAllRooms(CommandSourceStack source, int regionX, int regionZ) throws CommandSyntaxException {
         DreamtwirlStageManager dreamtwirlStageManager = getStageManager(source);
-        DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
+        DreamtwirlStage dreamtwirlStage = getSafeStage(dreamtwirlStageManager, regionX, regionZ);
 
         dreamtwirlStage.beginPlacingAllRooms();
 
@@ -432,7 +435,7 @@ public class MirthdewCommand {
 
     private static int join(CommandSourceStack source, int regionX, int regionZ, Collection<? extends Entity> targets) throws CommandSyntaxException {
         DreamtwirlStageManager dreamtwirlStageManager = getStageManager(source);
-        DreamtwirlStage dreamtwirlStage = getStage(dreamtwirlStageManager, regionX, regionZ);
+        DreamtwirlStage dreamtwirlStage = getSafeStage(dreamtwirlStageManager, regionX, regionZ);
 
         int successCount = 0;
         for(Entity entity : targets) {
@@ -562,6 +565,15 @@ public class MirthdewCommand {
             throw FAILED_NO_MANAGER_EXCEPTION.create();
         }
         return dreamtwirlStageManager;
+    }
+
+    private static DreamtwirlStage getSafeStage(DreamtwirlStageManager dreamtwirlStageManager, int regionX, int regionZ) throws CommandSyntaxException {
+        DreamtwirlStage stage = getStage(dreamtwirlStageManager, regionX, regionZ);
+        if(stage.isDeletingSelf()) {
+            throw FAILED_STAGE_DELETING.create();
+        } else {
+            return stage;
+        }
     }
 
     private static DreamtwirlStage getStage(DreamtwirlStageManager dreamtwirlStageManager, int regionX, int regionZ) throws CommandSyntaxException {
