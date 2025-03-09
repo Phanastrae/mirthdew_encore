@@ -372,7 +372,7 @@ public class MirthdewCommand {
         int placedRooms = (int)rooms.stream().filter(PlaceableRoom::isRoomPlaced).count();
         Component placedRoomsComponent = Component.literal(String.valueOf(placedRooms)).withStyle(ChatFormatting.GOLD);
 
-        int placedPercentage = (int)Math.floor(roomCount == 0 ? 100 : (100F * placedRooms) / roomCount);
+        int placedPercentage = roomCount == 0 ? 100 : (int)Math.floor((100F * placedRooms) / roomCount);
 
         int acheruneCount = dreamtwirlStage.getStageAcherunes().getAcheruneCount();
         Component acheruneCountComponent = Component.literal(String.valueOf(acheruneCount)).withStyle(ChatFormatting.LIGHT_PURPLE);
@@ -384,6 +384,10 @@ public class MirthdewCommand {
 
         source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.info.summary", dreamtwirlComponent, regionXComponent, regionZComponent), true);
         source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.info.time_since_creation", ageComponent), true);
+        if(dreamtwirlStage.isDeletingSelf()) {
+            int chunkDeletionProgressPercentage = (int)Math.floor((100F * dreamtwirlStage.getChunkDeletionProgress()) / 900);
+            source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.info.deletion_progress", Component.literal(String.valueOf(chunkDeletionProgressPercentage)).withStyle(ChatFormatting.GOLD)).withStyle(ChatFormatting.RED), true);
+        }
         source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.info.rooms.total",roomCountComponent), true);
         source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.info.rooms.placed", placedRoomsComponent, placedPercentage), true);
         source.sendSuccess(() -> Component.translatable("commands.mirthdew_encore.dreamtwirl.info.acherunes.total", acheruneCountComponent), true);

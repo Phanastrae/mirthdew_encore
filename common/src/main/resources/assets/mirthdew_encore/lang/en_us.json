@@ -176,6 +176,7 @@
   "commands.mirthdew_encore.dreamtwirl.info.acherunes.single.linked": "- Acherune (%s, %s, %s) (Linked to (%s, %s, %s) in %s)",
   "commands.mirthdew_encore.dreamtwirl.info.acherunes.single.unlinked": "- Acherune (%s, %s, %s) (Unlinked)",
   "commands.mirthdew_encore.dreamtwirl.info.acherunes.summary": "Acherune Info Summary for %s (%s, %s)",
+  "commands.mirthdew_encore.dreamtwirl.info.deletion_progress": "Deletion Progress: %s%%",
   "commands.mirthdew_encore.dreamtwirl.info.dreamtwirl": "Dreamtwirl",
   "commands.mirthdew_encore.dreamtwirl.info.rooms.placed": "Placed Rooms: %s (%s%%)",
   "commands.mirthdew_encore.dreamtwirl.info.rooms.total": "Total Rooms: %s",

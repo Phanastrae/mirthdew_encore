@@ -357,6 +357,10 @@ public class DreamtwirlStage extends SavedData {
         this.setDirty();
     }
 
+    public int getChunkDeletionProgress() {
+        return chunkDeletionProgress;
+    }
+
     public long getId() {
         return this.id;
     }
