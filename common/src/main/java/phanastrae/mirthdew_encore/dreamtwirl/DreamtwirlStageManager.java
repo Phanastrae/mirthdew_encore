@@ -20,12 +20,11 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.world.dimension.MirthdewEncoreDimensions;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 public class DreamtwirlStageManager extends SavedData {
+    private static final int CACHE_SIZE = 4;
 
     private final Map<Long, BasicStageData> basicStageDatas = new Object2ObjectOpenHashMap<>();
     private final Map<Long, DreamtwirlStage> dreamtwirls = new Object2ObjectOpenHashMap<>();
@@ -34,6 +33,9 @@ public class DreamtwirlStageManager extends SavedData {
     private final RandomSource random = RandomSource.create();
 
     private boolean hasCheckedForDeletingStages = false;
+
+    private final Long[] lastId = new Long[CACHE_SIZE];
+    private final DreamtwirlStage[] lastStage = new DreamtwirlStage[CACHE_SIZE];
 
     public DreamtwirlStageManager(ServerLevel level) {
         this.level = level;
@@ -87,8 +89,18 @@ public class DreamtwirlStageManager extends SavedData {
 
     @Nullable
     public DreamtwirlStage getDreamtwirlIfPresent(long id) {
+        for (int j = 0; j < CACHE_SIZE; j++) {
+            if (Objects.equals(id, this.lastId[j])) {
+                DreamtwirlStage stage = this.lastStage[j];
+                if (stage != null && !stage.isRemoved()) {
+                    return stage;
+                }
+            }
+        }
+
+        DreamtwirlStage stage;
         if(this.dreamtwirls.containsKey(id)) {
-            return this.dreamtwirls.get(id);
+            stage = this.dreamtwirls.get(id);
         } else if(this.basicStageDatas.containsKey(id)) {
             BasicStageData basicStageData = this.basicStageDatas.get(id);
 
@@ -96,10 +108,29 @@ public class DreamtwirlStageManager extends SavedData {
             this.dreamtwirls.put(id, dreamtwirlStage);
 
             this.setDirty();
-            return dreamtwirlStage;
+            stage = dreamtwirlStage;
         } else {
-            return null;
+            stage = null;
         }
+        if(stage != null) {
+            this.storeInCache(id, stage);
+        }
+        return stage;
+    }
+
+    private void storeInCache(long id, DreamtwirlStage stage) {
+        for (int i = CACHE_SIZE - 1; i > 0; i--) {
+            this.lastId[i] = this.lastId[i - 1];
+            this.lastStage[i] = this.lastStage[i - 1];
+        }
+
+        this.lastId[0] = id;
+        this.lastStage[0] = stage;
+    }
+
+    private void clearCache() {
+        Arrays.fill(this.lastId, null);
+        Arrays.fill(this.lastStage, null);
     }
 
     public @Nullable BasicStageData getBasicStageDataIfPresent(long id) {
@@ -198,11 +229,12 @@ public class DreamtwirlStageManager extends SavedData {
         }
         this.getDreamtwirlIfPresent(id); // make sure dreamtwirl is loaded
         if(this.dreamtwirls.containsKey(id)) {
-            this.dreamtwirls.remove(id);
+            this.dreamtwirls.remove(id).setRemoved(true);
             deleted = true;
         }
 
         if(deleted) {
+            this.clearCache();
             this.setDirty();
         }
 

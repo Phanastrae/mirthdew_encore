@@ -58,6 +58,7 @@ public class DreamtwirlStage extends SavedData {
 
     private boolean isDeletingSelf = false;
     private int chunkDeletionProgress = 0;
+    private boolean isRemoved = false;
 
     public DreamtwirlStage(Level level, BasicStageData basicStageData) {
         this.level = level;
@@ -318,6 +319,14 @@ public class DreamtwirlStage extends SavedData {
         } else {
             return false;
         }
+    }
+
+    public void setRemoved(boolean removed) {
+        this.isRemoved = removed;
+    }
+
+    public boolean isRemoved() {
+        return this.isRemoved;
     }
 
     public void setDeletingSelf(boolean deletingSelf) {
