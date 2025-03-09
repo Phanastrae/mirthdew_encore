@@ -24,7 +24,8 @@
     "ServerLevelMixin",
     "ServerPlayerMixin",
     "SimpleParticleTypeAccessor",
-    "SinglePoolElementAccesor"
+    "SinglePoolElementAccesor",
+    "TickRateManagerMixin"
   ],
   "client": [
     "client.BlockEntityRenderersAccessor",
