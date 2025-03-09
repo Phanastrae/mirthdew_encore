@@ -7,11 +7,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
-import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.StageAcherunes;
@@ -36,6 +36,7 @@ public class DreamtwirlStage extends SavedData {
     public static final String KEY_STAGE_DESIGN_GENERATOR = "stage_design_generator";
     public static final String KEY_ACHERUNE_DATA = "acherune_data";
     public static final String KEY_DELETING_SELF = "is_deleting_self";
+    public static final String KEY_CHUNK_DELETION_PROGRESS = "chunk_deletion_progress";
 
     public static boolean SEND_DEBUG_INFO = true;
 
@@ -56,6 +57,7 @@ public class DreamtwirlStage extends SavedData {
     private final DreamtwirlBorder dreamtwirlBorder;
 
     private boolean isDeletingSelf = false;
+    private int chunkDeletionProgress = 0;
 
     public DreamtwirlStage(Level level, BasicStageData basicStageData) {
         this.level = level;
@@ -95,6 +97,10 @@ public class DreamtwirlStage extends SavedData {
 
         tag.putBoolean(KEY_DELETING_SELF, this.isDeletingSelf);
 
+        if(this.isDeletingSelf) {
+            tag.putInt(KEY_CHUNK_DELETION_PROGRESS, this.chunkDeletionProgress);
+        }
+
         return tag;
     }
 
@@ -120,6 +126,12 @@ public class DreamtwirlStage extends SavedData {
             stage.setDeletingSelf(tag.getBoolean(KEY_DELETING_SELF));
         } else {
             stage.setDeletingSelf(false);
+        }
+
+        if(tag.contains(KEY_CHUNK_DELETION_PROGRESS, Tag.TAG_INT)) {
+            stage.chunkDeletionProgress = tag.getInt(KEY_CHUNK_DELETION_PROGRESS);
+        } else {
+            stage.chunkDeletionProgress = 0;
         }
 
         return stage;
@@ -206,22 +218,37 @@ public class DreamtwirlStage extends SavedData {
         if(runsNormally) {
             DreamtwirlStageManager dsm = DreamtwirlStageManager.getDreamtwirlStageManager(level);
             if (dsm != null) {
-                long time = System.nanoTime();
-                try {
-                    StageNuker.clear(level, this);
-                } catch (Exception e) {
-                    MirthdewEncore.LOGGER.info(e.getMessage());
-                    return;
+                int CLEAR_COUNT = 1;
+                int PRELOAD_COUNT = 2; // i have no idea if this value makes sense
+
+                // preload chunks
+                for(int i = 0; i < PRELOAD_COUNT; i++) {
+                    int target = this.chunkDeletionProgress + i;
+                    if(0 <= target && target < 900) {
+                        ChunkPos targetChunkPos = StageNuker.getChunkPosForProgress(this.regionPos, target);
+                        StageNuker.tryPreLoadChunk(level, targetChunkPos);
+                    }
+                }
+                // try to clear chunks
+                for (int i = 0; i < CLEAR_COUNT; i++) {
+                    if (0 <= this.chunkDeletionProgress && this.chunkDeletionProgress < 900) {
+                        ChunkPos targetChunkPos = StageNuker.getChunkPosForProgress(this.regionPos, this.chunkDeletionProgress);
+
+                        if(StageNuker.tryClearChunk(level, targetChunkPos)) {
+                            this.setChunkDeletionProgress(this.chunkDeletionProgress + 1);
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
                 }
 
-                long time2 = System.nanoTime();
-                long dif = time2 - time;
-                long ms = dif / 1000000;
-                MirthdewEncore.LOGGER.info("Cleared Dreamtwirl({}, {}) in {}ms", this.regionPos.regionX, this.regionPos.regionZ, ms);
-
-                dsm.deleteDreamtwirlStage(this.regionPos);
-                this.setDeletingSelf(false);
-                this.setDirty();
+                if(this.chunkDeletionProgress >= 900) { // if all chunks are cleared
+                    dsm.deleteDreamtwirlStage(this.regionPos);
+                    this.setDeletingSelf(false);
+                    this.setDirty();
+                }
             }
         }
     }
@@ -298,6 +325,8 @@ public class DreamtwirlStage extends SavedData {
             this.isDeletingSelf = deletingSelf;
             this.setDirty();
 
+            this.setChunkDeletionProgress(0);
+
             DreamtwirlStageManager dsm = DreamtwirlStageManager.getDreamtwirlStageManager(this.level);
             if(dsm != null) {
                 BasicStageData bsd = dsm.getBasicStageDataIfPresent(this.id);
@@ -312,6 +341,11 @@ public class DreamtwirlStage extends SavedData {
 
     public boolean isDeletingSelf() {
         return this.isDeletingSelf;
+    }
+
+    public void setChunkDeletionProgress(int chunkDeletionProgress) {
+        this.chunkDeletionProgress = chunkDeletionProgress;
+        this.setDirty();
     }
 
     public long getId() {
