@@ -1,6 +1,7 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage.generate.destroy;
 
 import io.netty.buffer.Unpooled;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
@@ -8,6 +9,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.*;
 import net.minecraft.server.network.PlayerChunkSender;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.biome.Biome;
@@ -18,6 +21,12 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.AABB;
+import phanastrae.mirthdew_encore.MirthdewEncore;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlLevelAttachment;
+import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
+import phanastrae.mirthdew_encore.dreamtwirl.EntityDreamtwirlData;
+import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.util.RegionPos;
 import phanastrae.mirthdew_encore.world.biome.MirthdewEncoreBiomes;
 
@@ -46,6 +55,17 @@ public class StageNuker {
     }
 
     public static boolean tryClearChunk(ServerLevel level, ChunkPos chunkPos) {
+        DreamtwirlLevelAttachment dla = DreamtwirlLevelAttachment.fromLevel(level);
+        if(dla == null) {
+            MirthdewEncore.LOGGER.warn("Tried to clear chunks in a non-dreamtwirl level??? Cancelling.");
+            return false;
+        }
+        DreamtwirlStageManager dsm = dla.getDreamtwirlStageManager();
+        if(dsm == null) {
+            MirthdewEncore.LOGGER.warn("Tried to clear chunks in a non-dreamtwirl level??? Cancelling.");
+            return false;
+        }
+
         // try to get the chunk
         ServerChunkCache chunkSource = level.getChunkSource();
 
@@ -56,6 +76,33 @@ public class StageNuker {
 
         // start clearing chunk
         chunk.setUnsaved(true);
+
+        // destroy block entities
+        List<BlockPos> blockEntityPositions = chunk.getBlockEntities().keySet().stream().toList();
+        for(BlockPos pos : blockEntityPositions) {
+            chunk.setBlockState(pos, Blocks.AIR.defaultBlockState(), false);
+        }
+
+        // eject, discard, or (try to) damage entities
+        RegionPos regionPos = RegionPos.fromChunkPos(chunkPos);
+        ChunkPos regionMinChunkPos = regionPos.getMinChunkPos();
+        ChunkPos regionMaxChunkPos = regionPos.getMaxChunkPos();
+        AABB regionAABB = new AABB(regionMinChunkPos.getMinBlockX(), -99999999, regionMinChunkPos.getMinBlockZ(), regionMaxChunkPos.getMaxBlockX() + 1, 99999999, regionMaxChunkPos.getMaxBlockZ() + 1);
+        for(Entity entity : level.getEntities(null, regionAABB)) {
+            MirthdewEncoreEntityAttachment meea = MirthdewEncoreEntityAttachment.fromEntity(entity);
+            EntityDreamtwirlData edd = meea.getDreamtwirlEntityData();
+
+            if(RegionPos.fromVec3(entity.position()).equals(RegionPos.fromChunkPos(chunkPos))) {
+                // if entity is centered somewhere in this region, try to deal with them
+                if (edd.canLeave()) {
+                    edd.leaveDreamtwirl(true);
+                } else if (!entity.isInvulnerable() && !(entity instanceof Player)) {
+                    entity.discard();
+                } else {
+                    entity.hurt(entity.damageSources().outOfBorder(), 100000000);
+                }
+            }
+        }
 
         // setup empty containers
         PalettedContainer<BlockState> airBlockStateContainer = new PalettedContainer<>(Block.BLOCK_STATE_REGISTRY, Blocks.AIR.defaultBlockState(), PalettedContainer.Strategy.SECTION_STATES);
@@ -98,7 +145,7 @@ public class StageNuker {
         EnumSet<Heightmap.Types> enumSet = EnumSet.copyOf(heightmapTypes);
         Heightmap.primeHeightmaps(chunk, enumSet);
 
-        // clear block entities
+        // ensure block entities are all cleared
         chunk.clearAllBlockEntities();
 
         // send new chunk data to any players that are (somehow) in range

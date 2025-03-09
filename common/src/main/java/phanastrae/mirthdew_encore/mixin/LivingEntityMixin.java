@@ -64,7 +64,7 @@ public abstract class LivingEntityMixin extends Entity implements Attackable {
 
         EntityDreamtwirlData dreamtwirlData = MirthdewEncoreEntityAttachment.fromEntity(thisEntity).getDreamtwirlEntityData();
         if(dreamtwirlData.isInDreamtwirl() && dreamtwirlData.canLeave()) {
-            if(dreamtwirlData.leaveDreamtwirl()) {
+            if(dreamtwirlData.leaveDreamtwirl(false)) {
                 ci.cancel();
             }
         }

@@ -273,7 +273,7 @@ public class SlumberveilBlock extends Block implements Portal {
                     boolean validTarget = true;
                     DreamtwirlStageManager dreamtwirlStageManager = DreamtwirlStageManager.getDreamtwirlStageManager(targetWorld);
                     if (dreamtwirlStageManager != null) {
-                        DreamtwirlStage stage = dreamtwirlStageManager.getDreamtwirlIfPresent(RegionPos.fromVec3d(targetPos));
+                        DreamtwirlStage stage = dreamtwirlStageManager.getDreamtwirlIfPresent(RegionPos.fromVec3(targetPos));
                         if (stage == null || stage.isDeletingSelf()) {
                             validTarget = false;
                         }

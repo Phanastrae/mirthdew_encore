@@ -103,8 +103,8 @@ public class DreamtwirlLevelAttachment {
         if(DTLA == null) {
             return false;
         } else {
-            RegionPos region1 = RegionPos.fromVec3d(pos1);
-            RegionPos region2 = RegionPos.fromVec3d(pos2);
+            RegionPos region1 = RegionPos.fromVec3(pos1);
+            RegionPos region2 = RegionPos.fromVec3(pos2);
             return !region1.equals(region2);
         }
     }
@@ -116,7 +116,7 @@ public class DreamtwirlLevelAttachment {
         DreamtwirlStageManager dsm = DTLA.getDreamtwirlStageManager();
         if(dsm == null) return false;
 
-        RegionPos region = RegionPos.fromVec3d(pos);
+        RegionPos region = RegionPos.fromVec3(pos);
         DreamtwirlStage stage = dsm.getDreamtwirlIfPresent(region);
 
         return stage == null || stage.isDeletingSelf();

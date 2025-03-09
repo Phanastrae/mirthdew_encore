@@ -212,7 +212,7 @@ public class DreamtwirlBorderRenderer {
     }
 
     public static RegionPos getRegionPosFromEntityOrElseVec3d(Vec3 cameraPos) {
-        return RegionPos.fromVec3d(getVec3dFromEntityOrElseDefault(cameraPos));
+        return RegionPos.fromVec3(getVec3dFromEntityOrElseDefault(cameraPos));
     }
 
     public static RegionPos getRegionPosFromEntityOrElseCamera(Camera camera) {

@@ -83,7 +83,7 @@ public class EntityDreamtwirlData {
 
                 if (touchingBorder) {
                     if (this.canLeave()) {
-                        if (leaveDreamtwirl()) {
+                        if (leaveDreamtwirl(false)) {
                             return;
                         }
                     }
@@ -143,8 +143,8 @@ public class EntityDreamtwirlData {
         }
     }
 
-    public boolean leaveDreamtwirl() {
-        if(!this.isInDreamtwirl()) {
+    public boolean leaveDreamtwirl(boolean force) {
+        if(!this.isInDreamtwirl() && !force) {
             return false;
         } else {
             DimensionTransition teleportTarget;
@@ -216,7 +216,7 @@ public class EntityDreamtwirlData {
 
     public static boolean leaveDreamtwirl(Entity entity) {
         MirthdewEncoreEntityAttachment MEA = MirthdewEncoreEntityAttachment.fromEntity(entity);
-        return MEA.getDreamtwirlEntityData().leaveDreamtwirl();
+        return MEA.getDreamtwirlEntityData().leaveDreamtwirl(false);
     }
 
     public static boolean teleportEntity(Entity entity, DimensionTransition teleportTarget) {

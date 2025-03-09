@@ -80,12 +80,12 @@ public class RegionPos {
         return RegionPos.fromWorldCoords(blockPos.getX(), blockPos.getZ());
     }
 
-    public static RegionPos fromVec3d(Vec3 vec3d) {
+    public static RegionPos fromVec3(Vec3 vec3d) {
         return RegionPos.fromWorldCoordsDoubles(vec3d.x(), vec3d.z());
     }
 
     public static RegionPos fromEntity(Entity entity) {
-        return RegionPos.fromVec3d(entity.position());
+        return RegionPos.fromVec3(entity.position());
     }
 
     public static RegionPos fromChunkPos(ChunkPos chunkPos) {
