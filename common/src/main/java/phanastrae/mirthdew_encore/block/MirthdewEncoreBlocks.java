@@ -72,6 +72,13 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
+    public static final Block WAKESIDE_RUNE = new Block(createSettings()
+            .mapColor(MapColor.COLOR_PURPLE)
+            .strength(3F)
+            .sound(SoundType.AMETHYST)
+            .requiresCorrectToolForDrops()
+    );
+
     public static final Block BACCHENITE_BLOCK = new AcherunePoweredBlock(createSettings()
             .mapColor(MapColor.COLOR_BLUE)
             .strength(1.25F)
@@ -661,6 +668,8 @@ public class MirthdewEncoreBlocks {
 
         r.accept(id("greater_acherune"), GREATER_ACHERUNE);
         r.accept(id("acherune_hollow"), ACHERUNE_HOLLOW);
+
+        r.accept(id("wakeside_rune"), WAKESIDE_RUNE);
 
         r.accept(id("bacchenite_block"), BACCHENITE_BLOCK);
 

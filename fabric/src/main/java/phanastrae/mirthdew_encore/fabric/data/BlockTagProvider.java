@@ -83,6 +83,7 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                         SLUMBERSOCKET,
 
                         ACHERUNE_HOLLOW,
+                        WAKESIDE_RUNE,
 
                         BACCHENITE_BLOCK,
 

@@ -237,6 +237,60 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         }
     }
 
+    public BlockPos getTargetPos() {
+        BlockPos socketPos = this.getBlockPos();
+        Level level = this.getLevel();
+        if(level == null) return socketPos;
+
+        // search for runes near socket
+        Optional<BlockPos> blockPosOptional = BlockPos.findClosestMatch(socketPos, 24, 24, (blockPos -> {
+            BlockState checkState = level.getBlockState(blockPos);
+            return checkState.is(MirthdewEncoreBlocks.WAKESIDE_RUNE);
+        }));
+        if(blockPosOptional.isPresent()) {
+            return blockPosOptional.get().above();
+        }
+
+        BlockState state = this.getBlockState();
+        if(state.hasProperty(SlumbersocketBlock.FACING)) {
+            Direction direction = state.getValue(SlumbersocketBlock.FACING);
+
+            // move forwards out of the eye
+            BlockPos targetPos = socketPos;
+            for(int i = 0; i < 5; i++) {
+                BlockPos adjPos = targetPos.relative(direction);
+                BlockState adjState = level.getBlockState(adjPos);
+
+                if(adjState.getCollisionShape(level, adjPos).isEmpty()) {
+                    targetPos = adjPos;
+                }
+            }
+
+            // move downwards to ground
+            for(int i = 0; i < 48; i++) {
+                BlockPos downPos = targetPos.below();
+                BlockState downState = level.getBlockState(downPos);
+
+                if(downState.getCollisionShape(level, downPos).isEmpty()) {
+                    targetPos = downPos;
+                }
+            }
+
+            // search for runes near target pos
+            Optional<BlockPos> blockPosOptional2 = BlockPos.findClosestMatch(targetPos, 24, 24, (blockPos -> {
+                BlockState checkState = level.getBlockState(blockPos);
+                return checkState.is(MirthdewEncoreBlocks.WAKESIDE_RUNE);
+            }));
+            if(blockPosOptional2.isPresent()) {
+                return blockPosOptional2.get().above();
+            }
+
+            return targetPos;
+        } else {
+            return socketPos;
+        }
+    }
+
     public boolean isDreaming(Level level, BlockPos pos) {
         if(this.canDream()) {
             BlockState below = level.getBlockState(pos.below());

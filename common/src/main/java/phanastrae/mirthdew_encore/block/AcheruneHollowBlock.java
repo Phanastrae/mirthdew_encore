@@ -15,7 +15,6 @@ import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.StageAcherunes;
-import phanastrae.mirthdew_encore.util.RegionPos;
 
 public class AcheruneHollowBlock extends Block {
     public static final MapCodec<AcheruneHollowBlock> CODEC = simpleCodec(AcheruneHollowBlock::new);

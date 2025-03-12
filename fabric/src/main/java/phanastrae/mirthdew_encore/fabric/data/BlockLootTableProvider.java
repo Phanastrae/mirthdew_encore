@@ -31,23 +31,28 @@ public class BlockLootTableProvider extends FabricBlockLootTableProvider {
         forEachBlockInFamilies(this::dropSelf,
                 MirthdewEncoreBlockFamilies.BACCHENITE_BRICKS,
                 MirthdewEncoreBlockFamilies.BACCHENITE_TILES,
+
                 MirthdewEncoreBlockFamilies.UNGUISHALE,
                 MirthdewEncoreBlockFamilies.UNGUISHALE_BRICKS,
                 MirthdewEncoreBlockFamilies.UNGUISHALE_TILES,
+
                 MirthdewEncoreBlockFamilies.ROUGH_GACHERIMM,
                 MirthdewEncoreBlockFamilies.GACHERIMM_BRICKS,
                 MirthdewEncoreBlockFamilies.GACHERIMM_TILES,
                 MirthdewEncoreBlockFamilies.POLISHED_GACHERIMM,
                 MirthdewEncoreBlockFamilies.CUT_POLISHED_GACHERIMM,
+
                 MirthdewEncoreBlockFamilies.REVERIME,
                 MirthdewEncoreBlockFamilies.REVERIME_BRICKS,
                 MirthdewEncoreBlockFamilies.REVERIME_TILES,
                 MirthdewEncoreBlockFamilies.POLISHED_REVERIME,
                 MirthdewEncoreBlockFamilies.POLISHED_REVERIME_BRICKS,
                 MirthdewEncoreBlockFamilies.CUT_POLISHED_REVERIME,
+
                 MirthdewEncoreBlockFamilies.SCARABRIM,
                 MirthdewEncoreBlockFamilies.POLISHED_SCARBRIM,
                 MirthdewEncoreBlockFamilies.SCARABRIM_BRICKS,
+
                 MirthdewEncoreBlockFamilies.CUT_PSYRITE,
                 MirthdewEncoreBlockFamilies.PSYRITE_GRATE
         );
@@ -60,6 +65,7 @@ public class BlockLootTableProvider extends FabricBlockLootTableProvider {
                 SLUMBERSOCKET,
 
                 ACHERUNE_HOLLOW,
+                WAKESIDE_RUNE,
 
                 BACCHENITE_BLOCK,
 

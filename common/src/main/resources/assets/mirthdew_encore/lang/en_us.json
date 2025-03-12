@@ -155,6 +155,7 @@
   "block.mirthdew_encore.unguishale_wall": "Unguishale Wall",
   "block.mirthdew_encore.veric_dreamsnare": "Veric Dreamsnare",
   "block.mirthdew_encore.vesperbile": "Vesperbile",
+  "block.mirthdew_encore.wakeside_rune": "Wakeside Rune",
 
   "commands.mirthdew_encore.dreamtwirl.create.failed.already_exists": "That Dreamtwirl already exists.",
   "commands.mirthdew_encore.dreamtwirl.create.failed.invalid_position": "Invalid Position: Dreamtwirls may only be created at even-numbered region coordinates",

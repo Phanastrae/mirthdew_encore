@@ -50,7 +50,7 @@ public class StageAcherunes {
     public CompoundTag readNbt(CompoundTag nbt, HolderLookup.Provider registries) {
         this.map.clear();
 
-        if(nbt.contains(KEY_ACHERUNE_LIST)) {
+        if(nbt.contains(KEY_ACHERUNE_LIST, Tag.TAG_LIST)) {
             ListTag listTag = nbt.getList(KEY_ACHERUNE_LIST, Tag.TAG_COMPOUND);
 
             for(int i = 0; i < listTag.size(); i++) {

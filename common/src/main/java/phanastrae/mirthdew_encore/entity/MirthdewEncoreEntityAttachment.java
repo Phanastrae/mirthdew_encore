@@ -161,26 +161,29 @@ public class MirthdewEncoreEntityAttachment {
         Acherune acherune = lac.getAcherune(server);
         if(acherune == null) return;
 
-        if (acherune.validateLinkedPos(server, stageAcherunes)) {
-            BlockPosDimensional linkedPos = acherune.getLinkedPos();
-            if (linkedPos != null) {
-                if (linkedPos.getLevel(server) instanceof ServerLevel linkedLevel) {
-                    Vec3 targetPos = linkedPos.getPos().above().getBottomCenter();
+        Optional<BlockPos> targetBlockPosOptional = acherune.getTargetPos(server, stageAcherunes);
 
-                    this.entity.level().playSound(null, this.entity, SoundEvents.PLAYER_TELEPORT, SoundSource.PLAYERS, 0.4F, 1F);
+        if(targetBlockPosOptional.isEmpty()) return;
+        BlockPos targetBlockPos = targetBlockPosOptional.get();
 
-                    this.entity.teleportTo(
-                            linkedLevel,
-                            targetPos.x,
-                            targetPos.y,
-                            targetPos.z,
-                            Set.of(),
-                            this.entity.getYRot(),
-                            this.entity.getXRot()
-                    );
+        BlockPosDimensional linkedPos = acherune.getLinkedPos();
 
-                    linkedLevel.playSound(null, this.entity, SoundEvents.PLAYER_TELEPORT, SoundSource.PLAYERS, 0.4F, 1F);
-                }
+        if (linkedPos != null) {
+            if (linkedPos.getLevel(server) instanceof ServerLevel linkedLevel) {
+                this.entity.level().playSound(null, this.entity, SoundEvents.PLAYER_TELEPORT, SoundSource.PLAYERS, 0.4F, 1F);
+
+                Vec3 targetPos = targetBlockPos.getBottomCenter();
+                this.entity.teleportTo(
+                        linkedLevel,
+                        targetPos.x,
+                        targetPos.y,
+                        targetPos.z,
+                        Set.of(),
+                        this.entity.getYRot(),
+                        this.entity.getXRot()
+                );
+
+                linkedLevel.playSound(null, this.entity, SoundEvents.PLAYER_TELEPORT, SoundSource.PLAYERS, 0.4F, 1F);
             }
         }
     }

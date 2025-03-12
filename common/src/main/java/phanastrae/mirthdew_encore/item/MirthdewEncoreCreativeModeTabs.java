@@ -297,6 +297,7 @@ public class MirthdewEncoreCreativeModeTabs {
 
                 GREATER_ACHERUNE,
                 ACHERUNE_HOLLOW,
+                WAKESIDE_RUNE,
                 LYCHSEAL
         );
 

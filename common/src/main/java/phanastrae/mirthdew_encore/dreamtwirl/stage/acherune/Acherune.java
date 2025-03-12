@@ -18,6 +18,8 @@ import phanastrae.mirthdew_encore.component.type.LinkedAcheruneComponent;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
 import phanastrae.mirthdew_encore.util.BlockPosDimensional;
 
+import java.util.Optional;
+
 public class Acherune {
     public static final String KEY_TIMESTAMP = "timestamp";
     public static final String KEY_ID = "id";
@@ -68,10 +70,12 @@ public class Acherune {
         Acherune acherune = new Acherune(pos, aId);
 
         RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
-        BlockPosDimensional.CODEC
-                .parse(registryops, nbt.get(KEY_LINKED_POS))
-                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to parse location for Acherune: '{}'", st))
-                .ifPresent(acherune::setLinkedPos);
+        if(nbt.contains(KEY_LINKED_POS, Tag.TAG_COMPOUND)) {
+            BlockPosDimensional.CODEC
+                    .parse(registryops, nbt.get(KEY_LINKED_POS))
+                    .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to parse location for Acherune: '{}'", st))
+                    .ifPresent(acherune::setLinkedPos);
+        }
 
         return acherune;
     }
@@ -125,6 +129,52 @@ public class Acherune {
         this.setLinkedPos(null);
         stageAcherunes.setDirty();
         return false;
+    }
+
+    public Optional<BlockPos> validateLinke(MinecraftServer server, StageAcherunes stageAcherunes) {
+        if(this.linkedPos == null) return Optional.empty();
+
+        Level level = this.linkedPos.getLevel(server);
+        if(!(level instanceof ServerLevel)) return Optional.empty();
+
+        BlockPos linkedBlockPos = this.linkedPos.getPos();
+        if(level.getBlockEntity(linkedBlockPos) instanceof SlumbersocketBlockEntity socket) {
+            ItemStack eye = socket.getHeldItem();
+            if(eye.is(MirthdewEncoreItems.SLUMBERING_EYE) && eye.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
+                LinkedAcheruneComponent lac = eye.get(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE);
+
+                if(this.getId().equals(lac.getAcheruneId())) {
+                    return Optional.of(socket.getTargetPos());
+                }
+            }
+        }
+
+        this.setLinkedPos(null);
+        stageAcherunes.setDirty();
+        return Optional.empty();
+    }
+
+    public Optional<BlockPos> getTargetPos(MinecraftServer server, StageAcherunes stageAcherunes) {
+        if(this.linkedPos == null) return Optional.empty();
+
+        Level level = this.linkedPos.getLevel(server);
+        if(!(level instanceof ServerLevel)) return Optional.empty();
+
+        BlockPos linkedBlockPos = this.linkedPos.getPos();
+        if(level.getBlockEntity(linkedBlockPos) instanceof SlumbersocketBlockEntity socket) {
+            ItemStack eye = socket.getHeldItem();
+            if(eye.is(MirthdewEncoreItems.SLUMBERING_EYE) && eye.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
+                LinkedAcheruneComponent lac = eye.get(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE);
+
+                if(this.getId().equals(lac.getAcheruneId())) {
+                    return Optional.of(socket.getTargetPos());
+                }
+            }
+        }
+
+        this.setLinkedPos(null);
+        stageAcherunes.setDirty();
+        return Optional.empty();
     }
 
     public record AcheruneId(long timestamp, long id) {

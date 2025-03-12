@@ -27,6 +27,8 @@ public class MirthdewEncoreItems {
     public static final Item GREATER_ACHERUNE = blockOf(MirthdewEncoreBlocks.GREATER_ACHERUNE, settings().rarity(Rarity.EPIC));
     public static final Item ACHERUNE_HOLLOW = blockOf(MirthdewEncoreBlocks.ACHERUNE_HOLLOW, settings().rarity(Rarity.EPIC));
 
+    public static final Item WAKESIDE_RUNE = blockOf(MirthdewEncoreBlocks.WAKESIDE_RUNE);
+
     public static final Item BACCHENITE_BLOCK = blockOf(MirthdewEncoreBlocks.BACCHENITE_BLOCK);
 
     public static final Item BACCHENITE_BRICKS = blockOf(MirthdewEncoreBlocks.BACCHENITE_BRICKS);
@@ -244,6 +246,8 @@ public class MirthdewEncoreItems {
 
         rwig.accept(id("greater_acherune"), GREATER_ACHERUNE);
         rwig.accept(id("acherune_hollow"), ACHERUNE_HOLLOW);
+
+        rwig.accept(id("wakeside_rune"), WAKESIDE_RUNE);
 
         rwig.accept(id("bacchenite_shard"), BACCHENITE_SHARD);
         rwig.accept(id("bacchenite_block"), BACCHENITE_BLOCK);
