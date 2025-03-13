@@ -34,6 +34,8 @@ import java.util.Optional;
 
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
+import static phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager.DEFAULT_MAX_REGION_BOUND;
+import static phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager.DEFAULT_MIN_REGION_BOUND;
 
 public class MirthdewCommand {
     private static final SimpleCommandExceptionType FAILED_NO_MANAGER_EXCEPTION = new SimpleCommandExceptionType(
@@ -80,6 +82,9 @@ public class MirthdewCommand {
     );
     private static final SimpleCommandExceptionType FAILED_STAGE_DELETING = new SimpleCommandExceptionType(
             Component.translatableEscape("commands.mirthdew_encore.dreamtwirl.failed.stage_deleting")
+    );
+    private static final SimpleCommandExceptionType FAILED_INVALID_BOUNDS = new SimpleCommandExceptionType(
+            Component.translatableEscape("commands.mirthdew_encore.dreamtwirl.valid_regions.failed.invalid_bounds")
     );
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -181,6 +186,32 @@ public class MirthdewCommand {
                                                         )
                                                 )
                                         )
+                                )
+                                .then(literal("validRegions")
+                                        .then(literal("query")
+                                                .executes(
+                                                        context -> queryValidRegions(context.getSource())
+                                                )
+                                        )
+                                        .then(literal("set")
+                                                .then(argument("minRegionX", IntegerArgumentType.integer())
+                                                        .then(argument("minRegionZ", IntegerArgumentType.integer())
+                                                                .then(argument("maxRegionX", IntegerArgumentType.integer())
+                                                                        .then(argument("maxRegionZ", IntegerArgumentType.integer())
+                                                                                .executes(
+                                                                                        context -> setValidRegions(context.getSource(), IntegerArgumentType.getInteger(context, "minRegionX"), IntegerArgumentType.getInteger(context, "minRegionZ"), IntegerArgumentType.getInteger(context, "maxRegionX"), IntegerArgumentType.getInteger(context, "maxRegionZ"))
+                                                                                )
+                                                                        )
+                                                                )
+                                                        )
+                                                )
+                                                .then(literal("default")
+                                                        .executes(
+                                                                context -> setValidRegionsDefault(context.getSource())
+                                                        )
+                                                )
+                                        )
+
                                 )
                         )
                         .then(literal("mirth")
@@ -425,6 +456,41 @@ public class MirthdewCommand {
         }
 
         return 1;
+    }
+
+    private static int queryValidRegions(CommandSourceStack source) throws CommandSyntaxException {
+        DreamtwirlStageManager dsm = getStageManager(source);
+
+        int minX = dsm.getMinRegionX();
+        int minZ = dsm.getMinRegionZ();
+        int maxX = dsm.getMaxRegionX();
+        int maxZ = dsm.getMaxRegionZ();
+
+        Component component = Component.translatable("commands.mirthdew_encore.dreamtwirl.valid_regions.query", minX, minZ, maxX, maxZ);
+        source.sendSuccess(() -> component, true);
+        return 1;
+    }
+
+    private static int setValidRegions(CommandSourceStack source, int minX, int minZ, int maxX, int maxZ) throws CommandSyntaxException {
+        DreamtwirlStageManager dsm = getStageManager(source);
+
+        boolean success = dsm.setRegionBounds(minX, minZ, maxX, maxZ);
+        if(success) {
+            int minX2 = dsm.getMinRegionX();
+            int minZ2 = dsm.getMinRegionZ();
+            int maxX2 = dsm.getMaxRegionX();
+            int maxZ2 = dsm.getMaxRegionZ();
+
+            Component component = Component.translatable("commands.mirthdew_encore.dreamtwirl.valid_regions.set", minX2, minZ2, maxX2, maxZ2);
+            source.sendSuccess(() -> component, true);
+            return 1;
+        } else {
+            throw FAILED_INVALID_BOUNDS.create();
+        }
+    }
+
+    private static int setValidRegionsDefault(CommandSourceStack source) throws CommandSyntaxException {
+        return setValidRegions(source, DEFAULT_MIN_REGION_BOUND, DEFAULT_MIN_REGION_BOUND, DEFAULT_MAX_REGION_BOUND, DEFAULT_MAX_REGION_BOUND);
     }
 
     private static int joinPlayer(CommandSourceStack source, Entity entity, Collection<? extends Entity> targets) throws CommandSyntaxException {

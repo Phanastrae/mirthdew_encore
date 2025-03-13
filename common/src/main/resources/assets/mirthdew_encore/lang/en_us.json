@@ -197,6 +197,9 @@
   "commands.mirthdew_encore.dreamtwirl.leave.failed.multiple": "Couldn't free %s entities from the Dreamtwirl",
   "commands.mirthdew_encore.dreamtwirl.leave.failed.single": "Couldn't free %s from the Dreamtwirl",
   "commands.mirthdew_encore.dreamtwirl.leave.success": "Freed %s from the Dreamtwirl",
+  "commands.mirthdew_encore.dreamtwirl.valid_regions.query": "Current Dreamtwirl Region Bounds are (%s, %s) to (%s, %s).",
+  "commands.mirthdew_encore.dreamtwirl.valid_regions.set": "Set Dreamtwirl Region Bounds to (%s, %s) to (%s, %s).",
+  "commands.mirthdew_encore.dreamtwirl.valid_regions.failed.invalid_bounds": "Those bounds are not valid!",
 
   "commands.mirthdew_encore.mirth.add.single": "Gave %s Mirth to %s",
   "commands.mirthdew_encore.mirth.add.many": "Gave %s Mirth to %s Players",

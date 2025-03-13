@@ -24,6 +24,14 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 public class DreamtwirlStageManager extends SavedData {
+    public static final String KEY_MIN_RX = "min_region_x";
+    public static final String KEY_MIN_RZ = "min_region_z";
+    public static final String KEY_MAX_RX = "max_region_x";
+    public static final String KEY_MAX_RZ = "max_region_z";
+    // default values are the furthest out dreamtwirls that don't intersect or bypass the world border
+    public static final int DEFAULT_MIN_REGION_BOUND = -58593;
+    public static final int DEFAULT_MAX_REGION_BOUND = 58592;
+
     private static final int CACHE_SIZE = 4;
 
     private final Map<Long, BasicStageData> basicStageDatas = new Object2ObjectOpenHashMap<>();
@@ -36,6 +44,12 @@ public class DreamtwirlStageManager extends SavedData {
 
     private final Long[] lastId = new Long[CACHE_SIZE];
     private final DreamtwirlStage[] lastStage = new DreamtwirlStage[CACHE_SIZE];
+
+    // region position bounds for naturally generating new dreamtwirls
+    private int minRegionX = DEFAULT_MIN_REGION_BOUND;
+    private int minRegionZ = DEFAULT_MIN_REGION_BOUND;
+    private int maxRegionX = DEFAULT_MAX_REGION_BOUND;
+    private int maxRegionZ = DEFAULT_MAX_REGION_BOUND;
 
     public DreamtwirlStageManager(ServerLevel level) {
         this.level = level;
@@ -65,6 +79,11 @@ public class DreamtwirlStageManager extends SavedData {
 
         nbt.put("DreamtwirlStages", nbtList);
 
+        nbt.putInt(KEY_MIN_RX, this.minRegionX);
+        nbt.putInt(KEY_MIN_RZ, this.minRegionZ);
+        nbt.putInt(KEY_MAX_RX, this.maxRegionX);
+        nbt.putInt(KEY_MAX_RZ, this.maxRegionZ);
+
         return nbt;
     }
 
@@ -77,6 +96,19 @@ public class DreamtwirlStageManager extends SavedData {
             CompoundTag nbtCompound = nbtList.getCompound(i);
             BasicStageData bsd = BasicStageData.fromNbt(nbtCompound);
             dreamtwirlStageManager.basicStageDatas.put(bsd.getId(), bsd);
+        }
+
+        if(nbt.contains(KEY_MIN_RX, Tag.TAG_INT)) {
+            dreamtwirlStageManager.minRegionX = nbt.getInt(KEY_MIN_RX);
+        }
+        if(nbt.contains(KEY_MIN_RZ, Tag.TAG_INT)) {
+            dreamtwirlStageManager.minRegionZ = nbt.getInt(KEY_MIN_RZ);
+        }
+        if(nbt.contains(KEY_MAX_RX, Tag.TAG_INT)) {
+            dreamtwirlStageManager.maxRegionX = nbt.getInt(KEY_MAX_RX);
+        }
+        if(nbt.contains(KEY_MAX_RZ, Tag.TAG_INT)) {
+            dreamtwirlStageManager.maxRegionZ = nbt.getInt(KEY_MAX_RZ);
         }
 
         return dreamtwirlStageManager;
@@ -190,6 +222,9 @@ public class DreamtwirlStageManager extends SavedData {
                 int randomZ = random.nextInt(1 + 2 * radius) - radius;
                 // multiply by 2 to assure region sized gaps between all Dreamtwirls
                 RegionPos candidatePos = new RegionPos(randomX * 2, randomZ * 2);
+
+                if(!regionPosInBounds(candidatePos)) continue;
+
                 long candidateId = candidatePos.id;
                 if(!this.basicStageDatas.containsKey(candidateId)) {
                     return Optional.of(candidatePos);
@@ -198,6 +233,18 @@ public class DreamtwirlStageManager extends SavedData {
         }
 
         return Optional.empty();
+    }
+
+    public boolean regionPosInBounds(RegionPos regionPos) {
+        int rx = regionPos.regionX;
+        int rz = regionPos.regionZ;
+        if(rx < this.minRegionX || this.maxRegionX < rx) {
+            return false;
+        } else if(rz < this.minRegionZ || this.maxRegionZ < rz) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public DreamtwirlStage getOrCreateDreamtwirlStage(RegionPos regionPos) {
@@ -306,5 +353,48 @@ public class DreamtwirlStageManager extends SavedData {
     @Nullable
     public static DreamtwirlStage getStage(Level level, long stageId) {
         return getStage(level, new RegionPos(stageId));
+    }
+
+    public boolean setRegionBounds(int minX, int minZ, int maxX, int maxZ) {
+        if(minX < DEFAULT_MIN_REGION_BOUND) {
+            minX = DEFAULT_MIN_REGION_BOUND;
+        }
+        if(minZ < DEFAULT_MIN_REGION_BOUND) {
+            minZ = DEFAULT_MIN_REGION_BOUND;
+        }
+        if(maxX > DEFAULT_MAX_REGION_BOUND) {
+            minX = DEFAULT_MAX_REGION_BOUND;
+        }
+        if(maxZ > DEFAULT_MAX_REGION_BOUND) {
+            maxZ = DEFAULT_MAX_REGION_BOUND;
+        }
+
+        if(minX > maxX || minZ > maxZ) {
+            return false;
+        }
+
+        this.minRegionX = minX;
+        this.minRegionZ = minZ;
+        this.maxRegionX = maxX;
+        this.maxRegionZ = maxZ;
+        this.setDirty();
+
+        return true;
+    }
+
+    public int getMinRegionX() {
+        return minRegionX;
+    }
+
+    public int getMinRegionZ() {
+        return minRegionZ;
+    }
+
+    public int getMaxRegionX() {
+        return maxRegionX;
+    }
+
+    public int getMaxRegionZ() {
+        return maxRegionZ;
     }
 }
