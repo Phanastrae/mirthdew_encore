@@ -39,6 +39,7 @@ public class ModelProvider extends FabricModelProvider {
                 WAKESIDE_RUNE,
                 
                 BACCHENITE_BLOCK,
+                LYCHETHER,
 
                 DECIDRHEUM_LEAVES,
 

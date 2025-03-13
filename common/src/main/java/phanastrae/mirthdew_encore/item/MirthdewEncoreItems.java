@@ -42,6 +42,7 @@ public class MirthdewEncoreItems {
     public static final Item BACCHENITE_TILE_WALL = blockOf(MirthdewEncoreBlocks.BACCHENITE_TILE_WALL);
 
     public static final Item LYCHSEAL = blockOf(MirthdewEncoreBlocks.LYCHSEAL, settings().rarity(Rarity.EPIC));
+    public static final Item LYCHETHER = blockOf(MirthdewEncoreBlocks.LYCHETHER, settings());
 
     public static final Item UNGUISHALE = blockOf(MirthdewEncoreBlocks.UNGUISHALE);
     public static final Item UNGUISHALE_STAIRS = blockOf(MirthdewEncoreBlocks.UNGUISHALE_STAIRS);
@@ -263,6 +264,7 @@ public class MirthdewEncoreItems {
         rwig.accept(id("bacchenite_tile_wall"), BACCHENITE_TILE_WALL);
 
         rwig.accept(id("lychseal"), LYCHSEAL);
+        rwig.accept(id("lychether"), LYCHETHER);
 
         rwig.accept(id("unguishale"), UNGUISHALE);
         rwig.accept(id("unguishale_stairs"), UNGUISHALE_STAIRS);

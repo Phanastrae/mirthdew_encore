@@ -3,9 +3,13 @@ package phanastrae.mirthdew_encore.block.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import phanastrae.mirthdew_encore.block.LychetherBlock;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 
@@ -49,7 +53,11 @@ public class LychsealBlockEntity extends BlockEntity {
     }
 
     public void open(Level level, BlockPos pos, BlockState state) {
+        RandomSource random = level.getRandom();
+
         level.destroyBlock(pos, false);
+        level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1.5F, 0.8F + random.nextFloat() * 0.5F);
+        LychetherBlock.dissolveAdjacentLychether(level, pos, random);
 
         DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, pos);
         if(stage != null) {

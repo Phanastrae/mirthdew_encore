@@ -229,6 +229,7 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(
                         GREATER_ACHERUNE,
                         LYCHSEAL,
+                        LYCHETHER,
 
                         DREAMTWIRL_BARRIER,
 
@@ -243,6 +244,7 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .add(
                         GREATER_ACHERUNE,
                         LYCHSEAL,
+                        LYCHETHER,
 
                         DREAMTWIRL_BARRIER,
 

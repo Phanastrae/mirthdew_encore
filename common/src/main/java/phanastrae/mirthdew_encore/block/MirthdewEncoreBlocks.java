@@ -109,10 +109,29 @@ public class MirthdewEncoreBlocks {
     public static final Block BACCHENITE_TILE_WALL = wallOf(BACCHENITE_TILES);
 
     public static final Block LYCHSEAL = new LychsealBlock(createSettings()
-            .mapColor(MapColor.COLOR_GRAY)
+            .mapColor(MapColor.COLOR_PURPLE)
             .strength(-1.0F, 3600000.0F)
+            .sound(SoundType.HONEY_BLOCK)
+            .instrument(NoteBlockInstrument.CHIME)
+            .emissiveRendering((state, blockGetter, blockPos) -> true)
+            .lightLevel((blockState) -> 14)
             .noLootTable()
             .isValidSpawn(MirthdewEncoreBlocks::never)
+    );
+
+    public static final Block LYCHETHER = new LychetherBlock(createSettings()
+            .mapColor(MapColor.COLOR_MAGENTA)
+            .strength(6.0F, 3600000.0F)
+            .sound(SoundType.HONEY_BLOCK)
+            .instrument(NoteBlockInstrument.CHIME)
+            .emissiveRendering((state, blockGetter, blockPos) -> true)
+            .lightLevel((blockState) -> 11)
+            .noLootTable()
+            .isValidSpawn(MirthdewEncoreBlocks::never)
+            .isRedstoneConductor(MirthdewEncoreBlocks::never)
+            .isSuffocating(MirthdewEncoreBlocks::never)
+            .isViewBlocking(MirthdewEncoreBlocks::never)
+            .noOcclusion()
     );
 
     public static final Block UNGUISHALE = new Block(createSettings()
@@ -634,8 +653,8 @@ public class MirthdewEncoreBlocks {
     public static final Block MEMORY_FOAM = new MemoryFoamBlock(createSettings()
             .mapColor(MapColor.COLOR_CYAN)
             .instrument(NoteBlockInstrument.CHIME)
-            .strength(4F, 55555F)
-            .sound(SoundType.SLIME_BLOCK)
+            .strength(4.0F, 3600000.0F)
+            .sound(SoundType.HONEY_BLOCK)
             .emissiveRendering((state, blockGetter, blockPos) -> true)
             .lightLevel((blockState) -> 11)
             .isValidSpawn(MirthdewEncoreBlocks::never)
@@ -684,6 +703,7 @@ public class MirthdewEncoreBlocks {
         r.accept(id("bacchenite_tile_wall"), BACCHENITE_TILE_WALL);
 
         r.accept(id("lychseal"), LYCHSEAL);
+        r.accept(id("lychether"), LYCHETHER);
 
         r.accept(id("unguishale"), UNGUISHALE);
         r.accept(id("unguishale_stairs"), UNGUISHALE_STAIRS);
