@@ -250,6 +250,9 @@ public class SlumberveilBlock extends Block implements Portal {
         Optional<SlumbersocketBlockEntity> slumbersocketBlockEntityOptional = findVeilSocket(level, pos);
         if(slumbersocketBlockEntityOptional.isPresent()) {
             SlumbersocketBlockEntity slumbersocketBlockEntity = slumbersocketBlockEntityOptional.get();
+
+            slumbersocketBlockEntity.checkAcherune(level, slumbersocketBlockEntity.getBlockPos());
+
             ItemStack itemStack = slumbersocketBlockEntity.getHeldItem();
             if(!itemStack.isEmpty()) {
                 Vec3 targetPos = null;

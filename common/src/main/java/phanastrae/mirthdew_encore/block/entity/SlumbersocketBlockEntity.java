@@ -169,6 +169,8 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         }
 
         if(blockEntity.timer % 100 == 0) {
+            blockEntity.checkAcherune(level, pos);
+
             if(state.hasProperty(SlumbersocketBlock.DREAMING)) {
                 ItemStack heldItem = blockEntity.getHeldItem();
                 if(!blockEntity.wasDreaming) {
@@ -191,6 +193,40 @@ public class SlumbersocketBlockEntity extends BlockEntity {
         if(eye.has(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE)) {
             LinkedAcheruneComponent lac = eye.get(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE);
             this.linkedAcherune = lac.getAcherune(level.getServer());
+            if(this.linkedAcherune == null && (eye.is(MirthdewEncoreItems.SLEEPY_EYE) || eye.is(MirthdewEncoreItems.SLUMBERING_EYE))) {
+                // if acherune is not found, remove component from item and revert to an ender eye
+                ItemStack itemStack = Items.ENDER_EYE.getDefaultInstance();
+                itemStack.applyComponents(eye.getComponentsPatch());
+                itemStack.remove(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE);
+                this.setHeldItem(itemStack);
+
+                if(this.getLevel() instanceof ServerLevel serverLevel) {
+                    this.markForUpdate(serverLevel);
+
+                    serverLevel.sendParticles(
+                            ParticleTypes.SMOKE,
+                            pos.getX() + 0.5,
+                            pos.getY() + 0.5,
+                            pos.getZ() + 0.5,
+                            50,
+                            0.3,
+                            0.3,
+                            0.3,
+                            0.1
+                    );
+
+                    level.playSound(
+                            null,
+                            pos.getX() + 0.5,
+                            pos.getY() + 0.5,
+                            pos.getZ() + 0.5,
+                            SoundEvents.ENDERMAN_HURT,
+                            SoundSource.BLOCKS,
+                            3F,
+                            1F
+                    );
+                }
+            }
         } else {
             this.linkedAcherune = null;
         }
