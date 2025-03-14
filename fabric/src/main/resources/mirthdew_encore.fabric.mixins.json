@@ -10,7 +10,8 @@
     "ItemEntityMixin",
     "ItemStackMixin",
     "LiquidBlockMixin",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "PlayerMixin"
   ],
   "client": [
     "client.FogRendererMixin",
