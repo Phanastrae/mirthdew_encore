@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import phanastrae.mirthdew_encore.particle.MirthdewEncoreParticleTypes;
 
 import java.util.Set;
 
@@ -107,14 +108,27 @@ public class AcherunePoweredBlock extends Block {
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if(state.getValue(ACHERUNE_POWER) > 0) {
-            level.addParticle(ParticleTypes.ENCHANT,
-                    pos.getX() + random.nextFloat(),
-                    pos.getY() + 1F + random.nextFloat(),
-                    pos.getZ() + random.nextFloat(),
-                    0,
-                    0.5,
-                    0
-            );
+            if(random.nextBoolean()) {
+                level.addParticle(ParticleTypes.ENCHANT,
+                        pos.getX() + random.nextFloat(),
+                        pos.getY() + 1F + random.nextFloat(),
+                        pos.getZ() + random.nextFloat(),
+                        0,
+                        0.5,
+                        0
+                );
+            }
+
+            for(int i = 0; i < 3; i++) {
+                level.addParticle(MirthdewEncoreParticleTypes.BACCHENITE_GLIMMER,
+                        pos.getX() + random.nextFloat(),
+                        pos.getY() + 1F + random.nextFloat(),
+                        pos.getZ() + random.nextFloat(),
+                        (random.nextFloat() - 0.5) * 0.01,
+                        0.1,
+                        (random.nextFloat() - 0.5) * 0.01
+                );
+            }
         }
     }
 }

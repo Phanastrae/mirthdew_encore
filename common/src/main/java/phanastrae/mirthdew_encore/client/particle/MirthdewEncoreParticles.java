@@ -15,6 +15,7 @@ public class MirthdewEncoreParticles {
         r.register(MirthdewEncoreParticleTypes.FALLING_VESPERBILE, MirthdewEncoreDripParticle::createVesperbileFallParticle);
         r.register(MirthdewEncoreParticleTypes.DRIPPING_DRIPSTONE_VESPERBILE, MirthdewEncoreDripParticle::createDripstoneVesperbileHangParticle);
         r.register(MirthdewEncoreParticleTypes.FALLING_DRIPSTONE_VESPERBILE, MirthdewEncoreDripParticle::createDripstoneVesperbileFallParticle);
+        r.register(MirthdewEncoreParticleTypes.BACCHENITE_GLIMMER, BaccheniteGlimmerParticle.BaccheniteGlimmerProvider::new);
     }
 
     public interface ClientParticleRegistrar {

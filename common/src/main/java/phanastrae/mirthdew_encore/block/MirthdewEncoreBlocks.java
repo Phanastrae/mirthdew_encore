@@ -72,7 +72,7 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static final Block WAKESIDE_RUNE = new Block(createSettings()
+    public static final Block WAKESIDE_RUNE = new WakesideRuneBlock(createSettings()
             .mapColor(MapColor.COLOR_PURPLE)
             .strength(3F)
             .sound(SoundType.AMETHYST)

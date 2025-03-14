@@ -2,6 +2,8 @@ package phanastrae.mirthdew_encore.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -28,6 +30,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.DreamtwirlStage;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.item.MirthdewEncoreItems;
+import phanastrae.mirthdew_encore.particle.MirthdewEncoreParticleTypes;
 
 import static phanastrae.mirthdew_encore.component.MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE;
 
@@ -114,6 +117,33 @@ public class GreaterAcheruneBlock extends BaseEntityBlock {
             }
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+    }
+
+    @Override
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if(state.getValue(RUNE_STATE) == RuneState.BOUND) {
+            if(random.nextBoolean()) {
+                level.addParticle(ParticleTypes.ENCHANT,
+                        pos.getX() + random.nextFloat(),
+                        pos.getY() + 1F + random.nextFloat(),
+                        pos.getZ() + random.nextFloat(),
+                        0,
+                        0.5,
+                        0
+                );
+            }
+
+            for(int i = 0; i < 3; i++) {
+                level.addParticle(MirthdewEncoreParticleTypes.BACCHENITE_GLIMMER,
+                        pos.getX() + random.nextFloat(),
+                        pos.getY() + 1F + random.nextFloat(),
+                        pos.getZ() + random.nextFloat(),
+                        (random.nextFloat() - 0.5) * 0.01,
+                        0.1,
+                        (random.nextFloat() - 0.5) * 0.01
+                );
+            }
+        }
     }
 
     public enum RuneState implements StringRepresentable {
