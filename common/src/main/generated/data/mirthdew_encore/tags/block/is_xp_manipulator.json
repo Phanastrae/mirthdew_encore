@@ -1,0 +1,13 @@
+{
+  "values": [
+    {
+      "id": "#minecraft:enchantment_power_provider",
+      "required": false
+    },
+    "minecraft:enchanting_table",
+    "minecraft:grindstone",
+    "minecraft:anvil",
+    "minecraft:chipped_anvil",
+    "minecraft:damaged_anvil"
+  ]
+}

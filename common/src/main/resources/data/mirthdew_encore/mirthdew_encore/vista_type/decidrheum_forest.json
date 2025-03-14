@@ -1,0 +1,36 @@
+{
+  "entries": [
+    {
+      "room_type": "mirthdew_encore:test/decidrheum_acherune_entrance",
+      "weight": 1
+    },
+    {
+      "room_type": "mirthdew_encore:test/lychseal_gate",
+      "weight": 1
+    },
+    {
+      "room_type": "mirthdew_encore:test/decidrheum_fourway",
+      "weight": 1
+    },
+    {
+      "room_type": "mirthdew_encore:test/decidrheum_corner",
+      "weight": 1
+    },
+    {
+      "room_type": "mirthdew_encore:test/decidrheum_twisting_path",
+      "weight": 1
+    },
+    {
+      "room_type": "mirthdew_encore:test/clinkera_twirl_path",
+      "weight": 1
+    },
+    {
+      "room_type": "mirthdew_encore:test/decidrheum_ring",
+      "weight": 1
+    },
+    {
+      "room_type": "mirthdew_encore:test/clinkera_vesperbile_fountain",
+      "weight": 1
+    }
+  ]
+}

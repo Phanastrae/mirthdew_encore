@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.7,
+  "group": "psyrite_ingot",
+  "ingredient": {
+    "item": "mirthdew_encore:raw_psyrite"
+  },
+  "result": {
+    "id": "mirthdew_encore:psyrite_ingot"
+  }
+}

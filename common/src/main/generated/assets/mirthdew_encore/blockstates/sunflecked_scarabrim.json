@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "mirthdew_encore:block/sunflecked_scarabrim"
+      },
+      {
+        "model": "mirthdew_encore:block/sunflecked_scarabrim",
+        "y": 90
+      },
+      {
+        "model": "mirthdew_encore:block/sunflecked_scarabrim",
+        "y": 180
+      },
+      {
+        "model": "mirthdew_encore:block/sunflecked_scarabrim",
+        "y": 270
+      }
+    ]
+  }
+}

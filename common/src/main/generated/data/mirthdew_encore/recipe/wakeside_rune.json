@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "B": {
+      "item": "mirthdew_encore:bacchenite_shard"
+    },
+    "E": {
+      "item": "minecraft:ender_pearl"
+    }
+  },
+  "pattern": [
+    "ABA",
+    "BEB",
+    "ABA"
+  ],
+  "result": {
+    "count": 1,
+    "id": "mirthdew_encore:wakeside_rune"
+  }
+}

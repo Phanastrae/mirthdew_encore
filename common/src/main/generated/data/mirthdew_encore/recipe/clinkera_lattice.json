@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "mirthdew_encore:clinkera_planks"
+    }
+  },
+  "pattern": [
+    "# #",
+    " # ",
+    "# #"
+  ],
+  "result": {
+    "count": 12,
+    "id": "mirthdew_encore:clinkera_lattice"
+  }
+}

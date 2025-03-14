@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "mirthdew_encore:block/bacchenite_bricks",
+    "side": "mirthdew_encore:block/bacchenite_bricks",
+    "top": "mirthdew_encore:block/bacchenite_bricks"
+  }
+}

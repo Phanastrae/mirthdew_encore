@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:unguishale_bricks_from_unguishale_stonecutting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_unguishale": {
+      "conditions": {
+        "items": [
+          {
+            "items": "mirthdew_encore:unguishale"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_unguishale"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:unguishale_bricks_from_unguishale_stonecutting"
+    ]
+  }
+}

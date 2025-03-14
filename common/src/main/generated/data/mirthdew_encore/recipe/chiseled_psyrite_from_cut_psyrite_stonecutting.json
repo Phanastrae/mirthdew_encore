@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "mirthdew_encore:cut_psyrite"
+  },
+  "result": {
+    "count": 1,
+    "id": "mirthdew_encore:chiseled_psyrite"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "mirthdew_encore:block/template_lattice_post",
+  "textures": {
+    "pane": "mirthdew_encore:block/psyrite_bars",
+    "particle": "mirthdew_encore:block/psyrite_bars"
+  }
+}

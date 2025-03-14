@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "mirthdew_encore:bacchenite_tiles"
+  },
+  "result": {
+    "count": 1,
+    "id": "mirthdew_encore:bacchenite_tile_wall"
+  }
+}

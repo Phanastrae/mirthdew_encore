@@ -1,0 +1,38 @@
+{
+  "type": "emi:world_interaction",
+  "left": "item:mirthdew_encore:dreamspeck_spawn_egg",
+  "right": [
+    {
+      "type": "item",
+      "id": "mirthdew_encore:veric_dreamsnare",
+      "amount": 1,
+      "remainder": {
+        "type": "item",
+        "id": "mirthdew_encore:veric_dreamsnare",
+        "amount": 1
+      }
+    },
+    {
+      "type": "item",
+      "id": "minecraft:sculk_sensor",
+      "amount": 1,
+      "remainder": {
+        "type": "item",
+        "id": "minecraft:sculk_sensor",
+        "amount": 1
+      }
+    },
+    {
+      "type": "item",
+      "id": "minecraft:shears",
+      "amount": 1,
+      "remainder": {
+        "type": "item",
+        "id": "minecraft:shears",
+        "amount": 1,
+        "nbt": "{damage:1}"
+      }
+    }
+  ],
+  "output": "item:mirthdew_encore:dreamseed"
+}

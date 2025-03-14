@@ -1,0 +1,50 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "phanastrae.mirthdew_encore.mixin",
+  "refmap": "${mod_id}.refmap.json",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CollisionGetterMixin",
+    "EntityAccessor",
+    "EntityMixin",
+    "FoodDataMixin",
+    "FoodPropertiesPossibleEffectAccessor",
+    "LevelMixin",
+    "ListPoolElementAccessor",
+    "LivingEntityAccessor",
+    "LivingEntityMixin",
+    "PlayerMixin",
+    "PointedDripstoneBlockMixin",
+    "ProjectileAccessor",
+    "SculkBlockMixin",
+    "ServerEntityMixin",
+    "ServerGamePacketListenerImplMixin",
+    "ServerLevelAccessor",
+    "ServerLevelMixin",
+    "ServerPlayerMixin",
+    "SimpleParticleTypeAccessor",
+    "SinglePoolElementAccesor",
+    "TickRateManagerMixin"
+  ],
+  "client": [
+    "client.BlockEntityRenderersAccessor",
+    "client.CameraAccessor",
+    "client.DebugRendererMixin",
+    "client.DripHangParticleAccessor",
+    "client.DripstoneFallAndLandParticleAccessor",
+    "client.FallAndLandParticleAccessor",
+    "client.GameRendererMixin",
+    "client.GuiGraphicsMixin",
+    "client.GuiMixin",
+    "client.LevelRendererMixin",
+    "client.LightTextureMixin",
+    "client.LivingEntityRendererMixin",
+    "client.LocalPlayerMixin",
+    "client.MinecraftMixin",
+    "client.PlayerRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

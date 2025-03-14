@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "mirthdew_encore:gacherimm_tiles"
+  },
+  "result": {
+    "count": 1,
+    "id": "mirthdew_encore:gacherimm_tile_stairs"
+  }
+}

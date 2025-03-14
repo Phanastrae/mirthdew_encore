@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "mirthdew_encore:block/polished_scarabrim",
+    "side": "mirthdew_encore:block/polished_scarabrim",
+    "top": "mirthdew_encore:block/polished_scarabrim"
+  }
+}

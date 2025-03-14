@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "psyrite_ingot",
+  "key": {
+    "#": {
+      "item": "mirthdew_encore:psyrite_nugget"
+    }
+  },
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "mirthdew_encore:psyrite_ingot"
+  }
+}

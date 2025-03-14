@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "mirthdew_encore:block/reverime_tiles",
+    "side": "mirthdew_encore:block/reverime_tiles",
+    "top": "mirthdew_encore:block/reverime_tiles"
+  }
+}

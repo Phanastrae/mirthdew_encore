@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "mirthdew_encore:block/magenta_foghair"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_cut_polished_reverime": {
+      "conditions": {
+        "items": [
+          {
+            "items": "mirthdew_encore:cut_polished_reverime"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "mirthdew_encore:cut_polished_reverime_stairs"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_cut_polished_reverime"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "mirthdew_encore:cut_polished_reverime_stairs"
+    ]
+  }
+}

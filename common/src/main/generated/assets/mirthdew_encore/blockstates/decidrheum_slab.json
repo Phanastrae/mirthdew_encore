@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "mirthdew_encore:block/decidrheum_slab"
+    },
+    "type=double": {
+      "model": "mirthdew_encore:block/decidrheum_planks"
+    },
+    "type=top": {
+      "model": "mirthdew_encore:block/decidrheum_slab_top"
+    }
+  }
+}

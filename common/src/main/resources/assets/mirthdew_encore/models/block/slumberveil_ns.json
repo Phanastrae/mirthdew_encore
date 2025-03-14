@@ -1,0 +1,19 @@
+{
+    "textures": {
+        "particle": "mirthdew_encore:block/slumberveil",
+        "veil": "mirthdew_encore:block/slumberveil"
+    },
+    "elements": [
+        {   "from": [ 0, 0, 7 ],
+            "to": [ 16, 16, 9 ],
+            "faces": {
+                "up":    { "uv": [ 0, 7, 16,  9 ], "texture": "#veil", "cullface": "up" },
+                "down":  { "uv": [ 0, 7, 16,  9 ], "texture": "#veil", "cullface": "down" },
+                "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#veil" },
+                "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#veil" },
+                "east":  { "uv": [ 7, 0,  9, 16 ], "texture": "#veil", "cullface": "east" },
+                "west":  { "uv": [ 7, 0,  9, 16 ], "texture": "#veil", "cullface": "west" }
+            }
+        }
+    ]
+}

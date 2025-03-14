@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_reverime": {
+      "conditions": {
+        "items": [
+          {
+            "items": "mirthdew_encore:reverime"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:reverime_tiles_from_reverime_stonecutting"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_reverime"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:reverime_tiles_from_reverime_stonecutting"
+    ]
+  }
+}

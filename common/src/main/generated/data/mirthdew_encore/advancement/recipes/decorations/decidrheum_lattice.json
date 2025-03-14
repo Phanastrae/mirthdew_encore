@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_decidrheum_planks": {
+      "conditions": {
+        "items": [
+          {
+            "items": "mirthdew_encore:decidrheum_planks"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "mirthdew_encore:decidrheum_lattice"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_decidrheum_planks"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "mirthdew_encore:decidrheum_lattice"
+    ]
+  }
+}

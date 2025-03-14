@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_sunslaked_psyrite_ore": {
+      "conditions": {
+        "items": [
+          {
+            "items": "mirthdew_encore:sunslaked_psyrite_ore"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:psyrite_ingot_from_smelting_sunslaked_psyrite_ore"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_sunslaked_psyrite_ore"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:psyrite_ingot_from_smelting_sunslaked_psyrite_ore"
+    ]
+  }
+}

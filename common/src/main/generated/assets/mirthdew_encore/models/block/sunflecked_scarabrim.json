@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "mirthdew_encore:block/scarabrim",
+    "side": "mirthdew_encore:block/sunflecked_scarabrim_side",
+    "top": "mirthdew_encore:block/sunflecked_scarabrim"
+  }
+}

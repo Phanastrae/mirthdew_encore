@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube_directional",
+  "textures": {
+    "down": "mirthdew_encore:block/door_marker_side",
+    "east": "mirthdew_encore:block/door_marker_side",
+    "north": "mirthdew_encore:block/door_marker_top",
+    "particle": "mirthdew_encore:block/door_marker_top",
+    "south": "mirthdew_encore:block/door_marker_bottom",
+    "up": "mirthdew_encore:block/door_marker_lock",
+    "west": "mirthdew_encore:block/door_marker_side"
+  }
+}

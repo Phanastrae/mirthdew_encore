@@ -1,0 +1,19 @@
+{
+  "type": "emi:world_interaction",
+  "left": {
+    "type": "fluid",
+    "id": "minecraft:lava",
+    "amount": 1000
+  },
+  "right": {
+    "type": "fluid",
+    "id": "mirthdew_encore:vesperbile",
+    "amount": 1000,
+    "remainder": {
+      "type": "fluid",
+      "id": "mirthdew_encore:vesperbile",
+      "amount": 1000
+    }
+  },
+  "output": "item:minecraft:obsidian"
+}

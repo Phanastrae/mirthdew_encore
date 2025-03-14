@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "mirthdew_encore:raw_psyrite_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "mirthdew_encore:raw_psyrite"
+  }
+}

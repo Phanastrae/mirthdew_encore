@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "mirthdew_encore:block/polished_gacherimm_slab"
+    },
+    "type=double": {
+      "model": "mirthdew_encore:block/polished_gacherimm"
+    },
+    "type=top": {
+      "model": "mirthdew_encore:block/polished_gacherimm_slab_top"
+    }
+  }
+}

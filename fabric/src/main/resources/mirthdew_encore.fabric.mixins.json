@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "phanastrae.mirthdew_encore.fabric.mixin",
+  "refmap": "${mod_id}.refmap.json",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ClipContextMixin",
+    "EntityMixin",
+    "ItemEntityMixin",
+    "ItemStackMixin",
+    "LiquidBlockMixin",
+    "LivingEntityMixin",
+    "PlayerMixin"
+  ],
+  "client": [
+    "client.FogRendererMixin",
+    "client.GuiMixin",
+    "client.ScreenEffectRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}

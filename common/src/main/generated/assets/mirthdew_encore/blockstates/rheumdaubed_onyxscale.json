@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "mirthdew_encore:block/rheumdaubed_onyxscale"
+      },
+      {
+        "model": "mirthdew_encore:block/rheumdaubed_onyxscale",
+        "y": 90
+      },
+      {
+        "model": "mirthdew_encore:block/rheumdaubed_onyxscale",
+        "y": 180
+      },
+      {
+        "model": "mirthdew_encore:block/rheumdaubed_onyxscale",
+        "y": 270
+      }
+    ]
+  }
+}

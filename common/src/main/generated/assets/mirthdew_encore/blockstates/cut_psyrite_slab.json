@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "mirthdew_encore:block/cut_psyrite_slab"
+    },
+    "type=double": {
+      "model": "mirthdew_encore:block/cut_psyrite"
+    },
+    "type=top": {
+      "model": "mirthdew_encore:block/cut_psyrite_slab_top"
+    }
+  }
+}

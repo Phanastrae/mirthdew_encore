@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "mirthdew_encore:block/unguishale"
+      },
+      {
+        "model": "mirthdew_encore:block/unguishale",
+        "y": 90
+      },
+      {
+        "model": "mirthdew_encore:block/unguishale",
+        "y": 180
+      },
+      {
+        "model": "mirthdew_encore:block/unguishale",
+        "y": 270
+      }
+    ]
+  }
+}

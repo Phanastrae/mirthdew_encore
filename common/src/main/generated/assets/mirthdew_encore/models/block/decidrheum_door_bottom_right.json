@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_right",
+  "textures": {
+    "bottom": "mirthdew_encore:block/decidrheum_door_bottom",
+    "top": "mirthdew_encore:block/decidrheum_door_top"
+  }
+}

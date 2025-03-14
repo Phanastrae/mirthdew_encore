@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "mirthdew_encore:reverime_bricks"
+  },
+  "result": {
+    "count": 1,
+    "id": "mirthdew_encore:reverime_tile_stairs"
+  }
+}

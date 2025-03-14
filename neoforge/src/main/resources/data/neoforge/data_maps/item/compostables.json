@@ -1,0 +1,37 @@
+{
+  "values": {
+    "mirthdew_encore:clinkera_scraps": {
+      "chance": 0.2
+    },
+
+    "mirthdew_encore:decidrheum_leaves": {
+      "chance": 0.3
+    },
+    "mirthdew_encore:decidrheum_sapling": {
+      "chance": 0.3
+    },
+    "mirthdew_encore:rheumbristles": {
+      "chance": 0.3
+    },
+    "mirthdew_encore:orange_foghair": {
+      "chance": 0.3
+    },
+    "mirthdew_encore:lime_foghair": {
+      "chance": 0.3
+    },
+    "mirthdew_encore:cyan_foghair": {
+      "chance": 0.3
+    },
+    "mirthdew_encore:magenta_foghair": {
+      "chance": 0.3
+    },
+
+    "mirthdew_encore:soulspot_mushrheum": {
+      "chance": 0.65
+    },
+
+    "mirthdew_encore:dreamseed": {
+      "chance": 1.0
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_psyrite_nugget": {
+      "conditions": {
+        "items": [
+          {
+            "items": "mirthdew_encore:psyrite_nugget"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:psyrite_ingot_from_nuggets"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_psyrite_nugget"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:psyrite_ingot_from_nuggets"
+    ]
+  }
+}

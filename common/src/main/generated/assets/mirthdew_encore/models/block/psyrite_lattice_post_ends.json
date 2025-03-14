@@ -1,0 +1,7 @@
+{
+  "parent": "mirthdew_encore:block/template_lattice_post_ends",
+  "textures": {
+    "edge": "mirthdew_encore:block/psyrite_lattice_edge",
+    "particle": "mirthdew_encore:block/psyrite_lattice"
+  }
+}

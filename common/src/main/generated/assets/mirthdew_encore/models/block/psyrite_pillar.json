@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "mirthdew_encore:block/psyrite_pillar_top",
+    "side": "mirthdew_encore:block/psyrite_pillar"
+  }
+}

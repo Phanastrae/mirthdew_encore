@@ -1,0 +1,5 @@
+{
+  "template_pool": "mirthdew_encore:test/decidrheum_fourway/starts",
+  "max_depth": 1,
+  "category": "path"
+}
