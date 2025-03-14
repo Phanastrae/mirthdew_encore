@@ -73,7 +73,7 @@ public class RoomSourceCollection {
 
         int weightSoFar = 0;
         for(Entry entry : entries) {
-            if(weightSoFar <= target && target < entry.weight) {
+            if(weightSoFar <= target && target < weightSoFar + entry.weight) {
                 return Optional.of(entry.roomSource);
             }
             weightSoFar += entry.weight;
