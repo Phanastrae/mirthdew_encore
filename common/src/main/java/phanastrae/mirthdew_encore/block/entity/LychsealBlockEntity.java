@@ -57,6 +57,7 @@ public class LychsealBlockEntity extends BlockEntity {
 
         level.destroyBlock(pos, false);
         level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1.5F, 0.8F + random.nextFloat() * 0.5F);
+        level.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1.5F, 0.8F + random.nextFloat() * 0.5F);
         LychetherBlock.dissolveAdjacentLychether(level, pos, random);
 
         DreamtwirlStage stage = DreamtwirlStageManager.getStage(level, pos);
