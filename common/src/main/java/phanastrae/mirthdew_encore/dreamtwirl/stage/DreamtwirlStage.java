@@ -41,7 +41,7 @@ public class DreamtwirlStage extends SavedData {
     public static final String KEY_DELETING_SELF = "is_deleting_self";
     public static final String KEY_CHUNK_DELETION_PROGRESS = "chunk_deletion_progress";
 
-    public static boolean SEND_DEBUG_INFO = true;
+    public static boolean SEND_DEBUG_INFO = false;
 
     private final Level level;
 
