@@ -21,7 +21,6 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.SourcedRoom;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSource;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSourceCollection;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomCategory;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
 
 import java.util.List;
 import java.util.Optional;
@@ -145,15 +144,6 @@ public class StageDesignGenerator {
 
     public Optional<SourcedRoom> tryGetRoomFromSource(RoomSource roomSource) {
         return roomSource.tryGetRoom(this.stageSeed, this.stageAreaData.getStageChunkCenter(), this.random, this.serverLevel, this.designData);
-    }
-
-    public Optional<SourcedRoom> tryGetRandomRoom() {
-        Optional<RoomSource> roomSourceOptional = this.roomSourceCollection.getRandomRoomSource(this.random);
-        if(roomSourceOptional.isPresent()) {
-            RoomSource roomSource = roomSourceOptional.get();
-            return this.tryGetRoomFromSource(roomSource);
-        }
-        return Optional.empty();
     }
 
     public Optional<SourcedRoom> tryGetRandomRoomOfType(RoomCategory category) {

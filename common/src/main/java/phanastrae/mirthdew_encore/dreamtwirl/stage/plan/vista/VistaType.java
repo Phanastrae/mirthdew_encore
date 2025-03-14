@@ -10,28 +10,31 @@ import java.util.Optional;
 
 public class VistaType {
 
-    public final List<RoomType> roomTypes;
+    public final List<Entry> roomTypes;
 
-    public VistaType(List<RoomType> roomTypes) {
+    public VistaType(List<Entry> roomTypes) {
         this.roomTypes = roomTypes;
     }
 
     public static class Builder {
 
-        private final List<RoomType> roomTypes;
+        private final List<Entry> roomTypes;
 
         public Builder() {
             this.roomTypes = new ArrayList<>();
         }
 
-        public Builder addRoomType(Registry<RoomType> registry, ResourceLocation resourceLocation) {
+        public Builder addRoomType(Registry<RoomType> registry, ResourceLocation resourceLocation, int weight) {
             Optional<RoomType> optional = registry.getOptional(resourceLocation);
-            optional.ifPresent(this.roomTypes::add);
+            optional.ifPresent(roomType -> this.roomTypes.add(new Entry(roomType, weight)));
             return this;
         }
 
         public VistaType build() {
             return new VistaType(this.roomTypes);
         }
+    }
+
+    public record Entry(RoomType roomType, int weight) {
     }
 }
