@@ -26,7 +26,6 @@ import static net.minecraft.world.level.block.LiquidBlock.POSSIBLE_FLOW_DIRECTIO
 public abstract class LiquidBlockMixin {
 
     @Shadow protected abstract void fizz(LevelAccessor level, BlockPos pos);
-
     @Shadow @Final protected FlowingFluid fluid;
 
     @Inject(method = "shouldSpreadLiquid", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getFluidState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/material/FluidState;", ordinal = 0), cancellable = true)

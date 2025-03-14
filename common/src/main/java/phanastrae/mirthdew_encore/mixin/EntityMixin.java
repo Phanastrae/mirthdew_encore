@@ -33,26 +33,20 @@ import java.util.List;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements EntityDuckInterface {
 
-    @Unique
-    private boolean mirthdew_encore$wasTouchingVesperbile = false;
-
     @Shadow
     private static List<VoxelShape> collectColliders(@Nullable Entity entity, Level world, List<VoxelShape> regularCollisions, AABB movingEntityBoundingBox) {
         return List.of();
     }
-
     @Shadow
     private static Vec3 collideWithShapes(Vec3 movement, AABB entityBoundingBox, List<VoxelShape> collisions) {
         return Vec3.ZERO;
     }
-
     @Shadow public abstract double getFluidHeight(TagKey<Fluid> fluidTag);
-
     @Shadow protected boolean firstTick;
-    @Shadow protected boolean wasTouchingWater;
-
     @Shadow protected abstract void doWaterSplashEffect();
 
+    @Unique
+    private boolean mirthdew_encore$wasTouchingVesperbile = false;
     @Unique
     private MirthdewEncoreEntityAttachment mirthdew_encore$entityAttachment;
 

@@ -16,9 +16,7 @@ import phanastrae.mirthdew_encore.client.fluid.MirthdewEncoreClientFluids;
 public class FogRendererMixin {
 
     @Shadow private static float fogRed;
-
     @Shadow private static float fogGreen;
-
     @Shadow private static float fogBlue;
 
     @Inject(method = "setupFog", at = @At(value = "RETURN"))

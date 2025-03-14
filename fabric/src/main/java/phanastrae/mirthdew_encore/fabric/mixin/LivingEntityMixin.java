@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -24,6 +25,7 @@ public abstract class LivingEntityMixin extends Entity {
         super(entityType, level);
     }
 
+    @Unique
     private boolean mirthdewEncore$isInWaterEsqueFluid() {
         if(this.firstTick) {
             return false;
@@ -41,6 +43,7 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
+    @Unique
     private double mirthdewEncore$getHighestCustomFluid() {
         AtomicDouble ad = new AtomicDouble(0.0);
         MirthdewEncoreFluids.forEachXPGF(xpgf -> {
@@ -54,6 +57,7 @@ public abstract class LivingEntityMixin extends Entity {
         return ad.get();
     }
 
+    @Unique
     private void mirthdewEncore$setForceInWaterTrue(boolean value) {
         ((FabricEntityDuckInterface)this).mirthdewEncore$setForceInWaterTrue(value);
     }

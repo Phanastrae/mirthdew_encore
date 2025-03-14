@@ -22,7 +22,7 @@ public class GameRendererMixin {
     Minecraft minecraft;
 
     @Inject(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getFluidInCamera()Lnet/minecraft/world/level/material/FogType;", shift = At.Shift.AFTER))
-    private void mirthdewEncore$fluidTweakFOV(Camera activeRenderInfo, float partialTicks, boolean useFOVSetting, CallbackInfoReturnable<Double> cir, @Local(ordinal = 0) LocalDoubleRef LDR_d) {
+    private void mirthdew_encore$fluidTweakFOV(Camera activeRenderInfo, float partialTicks, boolean useFOVSetting, CallbackInfoReturnable<Double> cir, @Local(ordinal = 0) LocalDoubleRef LDR_d) {
         MirthdewEncoreClientFluids.XPlatGenericClientFluid xpgcf = MirthdewEncoreClientFluids.getXPGCF(activeRenderInfo);
         if(xpgcf != null) {
             LDR_d.set(LDR_d.get() * Mth.lerp(this.minecraft.options.fovEffectScale().get(), 1.0, xpgcf.getFovScaleFactor()));

@@ -106,7 +106,7 @@ public class ModelProvider extends FabricModelProvider {
         generateSlab(BMG, UNGUISHALE_SLAB, unguishaleMapping, unguishaleModel);
         generateWall(BMG, UNGUISHALE_WALL, unguishaleMapping);
 
-        // vesperbile
+        // fluids
         BMG.createNonTemplateModelBlock(VESPERBILE);
 
         // door marker

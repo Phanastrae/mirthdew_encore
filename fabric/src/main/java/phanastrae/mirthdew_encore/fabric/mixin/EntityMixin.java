@@ -2,7 +2,6 @@ package phanastrae.mirthdew_encore.fabric.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
-import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.material.Fluid;
@@ -18,12 +17,8 @@ import phanastrae.mirthdew_encore.fluid.MirthdewEncoreFluids;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements FabricEntityDuckInterface {
 
-    @Shadow protected Object2DoubleMap<TagKey<Fluid>> fluidHeight;
-
     @Shadow public abstract boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> fluidTag, double motionScale);
-
     @Shadow public float fallDistance;
-
     @Shadow public abstract void clearFire();
 
     @Unique

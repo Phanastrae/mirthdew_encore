@@ -139,7 +139,7 @@ public class MirthdewEncoreClientFluids {
             return flowTexture;
         }
 
-        public XPlatGenericClientFluid setOverlayTexture(ResourceLocation overlayTexture) {
+        public XPlatGenericClientFluid setOverlayTexture(@Nullable ResourceLocation overlayTexture) {
             this.overlayTexture = overlayTexture;
             return this;
         }

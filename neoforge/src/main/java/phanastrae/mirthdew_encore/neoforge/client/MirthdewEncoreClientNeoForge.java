@@ -57,6 +57,8 @@ public class MirthdewEncoreClientNeoForge {
         // register client extensions
         modEventBus.addListener(this::registerClientExtensions);
 
+
+
         // client shutdown
         NeoForge.EVENT_BUS.addListener(this::onGameShutdown);
 
