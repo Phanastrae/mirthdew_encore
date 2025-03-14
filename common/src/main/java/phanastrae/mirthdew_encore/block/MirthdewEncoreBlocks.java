@@ -32,7 +32,7 @@ public class MirthdewEncoreBlocks {
             .strength(2.0F, 8.0F)
             .mapColor(MapColor.COLOR_MAGENTA)
             .sound(SoundType.WART_BLOCK)
-            .lightLevel(constant(5))
+            .lightLevel(state -> state.getValue(DreamseedBlock.LIT) ? 10 : 5)
     );
 
     public static final Block SLUMBERSOCKET = new SlumbersocketBlock((createSettings())
