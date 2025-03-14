@@ -2,6 +2,7 @@
   "recipes": [
     "mirthdew_encore:slumbersocket",
     "emi/generated/recipe/additions/mirthdew_encore/slumbersocket_eye_conversion.json",
+    "mirthdew_encore:wakeside_rune",
     "mirthdew_encore:bacchenite_block",
     "mirthdew_encore:bacchenite_bricks",
     "mirthdew_encore:bacchenite_brick_slab",

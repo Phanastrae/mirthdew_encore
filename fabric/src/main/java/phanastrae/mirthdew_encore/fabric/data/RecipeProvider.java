@@ -63,6 +63,19 @@ public class RecipeProvider extends FabricRecipeProvider {
                 )
                 .save(exporter);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, WAKESIDE_RUNE)
+                .define('B', BACCHENITE_SHARD)
+                .define('A', Items.AMETHYST_SHARD)
+                .define('E', Items.ENDER_PEARL)
+                .pattern("ABA")
+                .pattern("BEB")
+                .pattern("ABA")
+                .unlockedBy(
+                        getHasName(BACCHENITE_SHARD),
+                        has(BACCHENITE_SHARD)
+                )
+                .save(exporter);
+
         twoByTwoPacker(exporter, RecipeCategory.BUILDING_BLOCKS, BACCHENITE_BLOCK, BACCHENITE_SHARD);
         savePolished(BACCHENITE_BRICKS, BACCHENITE_BLOCK, exporter);
         savePolished(BACCHENITE_TILES, BACCHENITE_BRICKS, exporter);
