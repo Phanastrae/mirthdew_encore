@@ -7,9 +7,7 @@ import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -32,7 +30,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import org.jetbrains.annotations.Nullable;
-import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.block.MirthdewEncoreBlocks;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.Room;
@@ -42,6 +39,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.SourcedRoom;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
 import phanastrae.mirthdew_encore.mixin.ListPoolElementAccessor;
 import phanastrae.mirthdew_encore.mixin.SinglePoolElementAccesor;
+import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -64,12 +62,16 @@ public class RoomSource {
     }
 
     public CompoundTag writeNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext) {
-        RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
+        // room type
+        Optional<Registry<RoomType>> roomTypeRegistryOptional = spsContext.registryAccess().registry(MirthdewEncoreRegistries.ROOM_TYPE_KEY);
+        if(roomTypeRegistryOptional.isPresent()) {
+            Registry<RoomType> roomTypeRegistry = roomTypeRegistryOptional.get();
 
-        RoomType.CODEC
-                .encodeStart(registryops, this.roomType)
-                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to encode room type for Room: '{}'", st))
-                .ifPresent(bpdTag -> nbt.put(KEY_ROOM_TYPE, bpdTag));
+            ResourceLocation roomTypeKey = roomTypeRegistry.getKey(this.roomType);
+            if(roomTypeKey != null) {
+                nbt.putString(KEY_ROOM_TYPE, roomTypeKey.toString());
+            }
+        }
 
         ListTag attemptRoomList = new ListTag();
         for(Room room : this.attemptRooms) {
@@ -87,18 +89,20 @@ public class RoomSource {
     }
 
     public static @Nullable RoomSource fromNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext) {
-        RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
+        // room type
+        if(!nbt.contains(KEY_ROOM_TYPE, Tag.TAG_STRING)) {
+            return null;
+        }
+        Optional<Registry<RoomType>> roomTypeRegistryOptional = spsContext.registryAccess().registry(MirthdewEncoreRegistries.ROOM_TYPE_KEY);
+        if(roomTypeRegistryOptional.isEmpty()) {
+            return null;
+        }
+        Registry<RoomType> roomTypeRegistry = roomTypeRegistryOptional.get();
 
-        if(!nbt.contains(KEY_ROOM_TYPE, Tag.TAG_COMPOUND)) {
+        RoomType roomType = roomTypeRegistry.get(ResourceLocation.parse(nbt.getString(KEY_ROOM_TYPE)));
+        if(roomType == null) {
             return null;
         }
-        Optional<RoomType> roomTypeOptional = RoomType.CODEC
-                .parse(registryops, nbt.get(KEY_ROOM_TYPE))
-                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to parse room type for Room: '{}'", st));
-        if(roomTypeOptional.isEmpty()) {
-            return null;
-        }
-        RoomType roomType = roomTypeOptional.get();
 
         RoomSource source = new RoomSource(roomType);
 

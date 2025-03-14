@@ -5,8 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 
-public record RoomType(ResourceLocation templatePool, int maxDepth, Category category) {
-    public static final StringRepresentable.StringRepresentableCodec<Category> CATEGORY_CODEC = StringRepresentable.fromEnum(Category::values);
+public record RoomType(ResourceLocation templatePool, int maxDepth, RoomCategory category) {
+    public static final StringRepresentable.StringRepresentableCodec<RoomCategory> CATEGORY_CODEC = StringRepresentable.fromEnum(RoomCategory::values);
 
     public static final Codec<RoomType> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
@@ -18,36 +18,18 @@ public record RoomType(ResourceLocation templatePool, int maxDepth, Category cat
     );
 
     public boolean isEntrance() {
-        return this.category == Category.ENTRANCE;
+        return this.category == RoomCategory.ENTRANCE;
     }
 
     public boolean isPath() {
-        return this.category == Category.PATH;
+        return this.category == RoomCategory.PATH;
     }
 
-    public boolean isRoom() {
-        return this.category == Category.ROOM;
+    public boolean isLarge() {
+        return this.category == RoomCategory.LARGE;
     }
 
     public boolean isGate() {
-        return this.category == Category.GATE;
-    }
-
-    public enum Category implements StringRepresentable {
-        ENTRANCE("entrance"),
-        PATH("path"),
-        ROOM("room"),
-        GATE("gate");
-
-        private String name;
-
-        Category(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String getSerializedName() {
-            return this.name;
-        }
+        return this.category == RoomCategory.GATE;
     }
 }

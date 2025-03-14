@@ -20,6 +20,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.RoomDoor;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room.SourcedRoom;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSource;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSourceCollection;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomCategory;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
 
 import java.util.List;
@@ -155,7 +156,7 @@ public class StageDesignGenerator {
         return Optional.empty();
     }
 
-    public Optional<SourcedRoom> tryGetRandomRoomOfType(RoomType.Category category) {
+    public Optional<SourcedRoom> tryGetRandomRoomOfType(RoomCategory category) {
         Optional<RoomSource> roomSourceOptional = this.roomSourceCollection.getRandomMatching(this.random, source -> source.getRoomType().category().equals(category));
         if(roomSourceOptional.isPresent()) {
             RoomSource roomSource = roomSourceOptional.get();
@@ -223,12 +224,12 @@ public class StageDesignGenerator {
         if(door == null) return false;
 
         Branch branch = new Branch(new ParentedRoomDoor(door, room));
-        if(branch.tryAddRoom(2, RoomType.Category.GATE, this)) {
+        if(branch.tryAddRoom(2, RoomCategory.GATE, this)) {
             for(int i = 0; i < 5; i++) {
-                branch.tryAddRoom(4, RoomType.Category.PATH, this);
+                branch.tryAddRoom(4, RoomCategory.PATH, this);
             }
             if(branch.getRoomCount() >= 2) {
-                if(branch.tryAddRoom(10, RoomType.Category.ROOM, this)) {
+                if(branch.tryAddRoom(10, RoomCategory.LARGE, this)) {
                     return true;
                 }
             }
@@ -247,7 +248,7 @@ public class StageDesignGenerator {
             this.start = start;
         }
 
-        public boolean tryAddRoom(int attempts, RoomType.Category category, StageDesignGenerator sdg) {
+        public boolean tryAddRoom(int attempts, RoomCategory category, StageDesignGenerator sdg) {
             for(int i = 0; i < attempts; i++) {
                 ParentedRoomDoor rootDoor;
                 if(this.rooms.isEmpty()) {
@@ -298,7 +299,7 @@ public class StageDesignGenerator {
         //int distanceFromEntrance = doorNode.getDistanceInfo().getDistanceFromEntrance();
         int distanceFromEntrance = 0; // TODO tidy whatever is going on here
         int d = distanceFromEntrance % 10;
-        RoomType.Category target = d == 9 ? RoomType.Category.ROOM : (d == 1 ? RoomType.Category.GATE : RoomType.Category.PATH);
+        RoomCategory target = d == 9 ? RoomCategory.LARGE : (d == 1 ? RoomCategory.GATE : RoomCategory.PATH);
 
         // create a new room
         Optional<SourcedRoom> newRoomOptional = this.tryGetRandomRoomOfType(target);

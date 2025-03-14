@@ -4,11 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
@@ -16,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.design.StageDesignData;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
+import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,10 +53,16 @@ public class Room {
 
         nbt.putLong(KEY_ID, this.roomId);
 
-        RoomType.CODEC
-                .encodeStart(registryops, this.roomType)
-                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to encode room type for Room: '{}'", st))
-                .ifPresent(bpdTag -> nbt.put(KEY_ROOM_TYPE, bpdTag));
+        // room type
+        Optional<Registry<RoomType>> roomTypeRegistryOptional = spsContext.registryAccess().registry(MirthdewEncoreRegistries.ROOM_TYPE_KEY);
+        if(roomTypeRegistryOptional.isPresent()) {
+            Registry<RoomType> roomTypeRegistry = roomTypeRegistryOptional.get();
+
+            ResourceLocation roomTypeKey = roomTypeRegistry.getKey(this.roomType);
+            if(roomTypeKey != null) {
+                nbt.putString(KEY_ROOM_TYPE, roomTypeKey.toString());
+            }
+        }
 
         nbt.put(KEY_STRUCTURE_PIECES, this.piecesContainer.save(spsContext));
 
@@ -73,16 +82,20 @@ public class Room {
         }
         long id = nbt.getLong(KEY_ID);
 
-        if(!nbt.contains(KEY_ROOM_TYPE, Tag.TAG_COMPOUND)) {
+        // room type
+        if(!nbt.contains(KEY_ROOM_TYPE, Tag.TAG_STRING)) {
             return null;
         }
-        Optional<RoomType> roomTypeOptional = RoomType.CODEC
-                .parse(registryops, nbt.get(KEY_ROOM_TYPE))
-                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to parse room type for Room: '{}'", st));
-        if(roomTypeOptional.isEmpty()) {
+        Optional<Registry<RoomType>> roomTypeRegistryOptional = spsContext.registryAccess().registry(MirthdewEncoreRegistries.ROOM_TYPE_KEY);
+        if(roomTypeRegistryOptional.isEmpty()) {
             return null;
         }
-        RoomType roomType = roomTypeOptional.get();
+        Registry<RoomType> roomTypeRegistry = roomTypeRegistryOptional.get();
+
+        RoomType roomType = roomTypeRegistry.get(ResourceLocation.parse(nbt.getString(KEY_ROOM_TYPE)));
+        if(roomType == null) {
+            return null;
+        }
 
         PiecesContainer pieces;
         if(!nbt.contains(KEY_STRUCTURE_PIECES, Tag.TAG_LIST)) {

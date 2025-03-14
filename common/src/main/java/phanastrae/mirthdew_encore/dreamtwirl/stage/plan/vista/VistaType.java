@@ -1,9 +1,12 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista;
 
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class VistaType {
 
@@ -21,8 +24,9 @@ public class VistaType {
             this.roomTypes = new ArrayList<>();
         }
 
-        public Builder addRoomType(RoomType roomType) {
-            this.roomTypes.add(roomType);
+        public Builder addRoomType(Registry<RoomType> registry, ResourceLocation resourceLocation) {
+            Optional<RoomType> optional = registry.getOptional(resourceLocation);
+            optional.ifPresent(this.roomTypes::add);
             return this;
         }
 

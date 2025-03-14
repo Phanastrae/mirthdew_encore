@@ -1,6 +1,7 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -21,9 +22,11 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSource
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.destroy.StageNuker;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceableRoom;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceableRoomStorage;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista.VistaTypes;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.play.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.network.packet.DreamtwirlDebugPayload;
+import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
 import phanastrae.mirthdew_encore.services.XPlatInterface;
 import phanastrae.mirthdew_encore.util.RegionPos;
 
@@ -156,7 +159,10 @@ public class DreamtwirlStage extends SavedData {
     }
 
     public void generate(long stageSeed, ServerLevel serverLevel) {
-        RoomSourceCollection roomSources = RoomSourceCollection.create(VistaTypes.DECIDRHEUM_FOREST);
+        Optional<Registry<RoomType>> regOptional = serverLevel.registryAccess().registry(MirthdewEncoreRegistries.ROOM_TYPE_KEY);
+        if(regOptional.isEmpty()) return;
+
+        RoomSourceCollection roomSources = RoomSourceCollection.create(VistaTypes.createDecidrheumForest(regOptional.get()));
         this.stageDesignGenerator = new StageDesignGenerator(this.getStageAreaData(), serverLevel, stageSeed, roomSources);
 
         this.setDirty();

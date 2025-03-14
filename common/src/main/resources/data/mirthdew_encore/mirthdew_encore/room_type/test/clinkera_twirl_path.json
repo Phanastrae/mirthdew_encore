@@ -1,0 +1,5 @@
+{
+  "template_pool": "mirthdew_encore:test/clinkera_twirl_path/starts",
+  "max_depth": 1,
+  "category": "path"
+}

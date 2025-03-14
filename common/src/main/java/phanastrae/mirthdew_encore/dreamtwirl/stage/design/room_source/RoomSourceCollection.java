@@ -66,7 +66,7 @@ public class RoomSourceCollection {
     }
 
     public Optional<RoomSource> getRoom(RandomSource random) {
-        return getRandomMatching(random, prefabSet -> prefabSet.getRoomType().isRoom());
+        return getRandomMatching(random, prefabSet -> prefabSet.getRoomType().isLarge());
     }
 
     public Optional<RoomSource> getGate(RandomSource random) {
