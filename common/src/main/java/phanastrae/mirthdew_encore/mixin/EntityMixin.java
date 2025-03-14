@@ -4,9 +4,11 @@ import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -24,11 +26,15 @@ import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlLevelAttachment;
 import phanastrae.mirthdew_encore.duck.EntityDuckInterface;
 import phanastrae.mirthdew_encore.entity.MirthdewEncoreEntityAttachment;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreEntityTypeTags;
+import phanastrae.mirthdew_encore.registry.MirthdewEncoreFluidTags;
 
 import java.util.List;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements EntityDuckInterface {
+
+    @Unique
+    private boolean mirthdew_encore$wasTouchingVesperbile = false;
 
     @Shadow
     private static List<VoxelShape> collectColliders(@Nullable Entity entity, Level world, List<VoxelShape> regularCollisions, AABB movingEntityBoundingBox) {
@@ -39,6 +45,13 @@ public abstract class EntityMixin implements EntityDuckInterface {
     private static Vec3 collideWithShapes(Vec3 movement, AABB entityBoundingBox, List<VoxelShape> collisions) {
         return Vec3.ZERO;
     }
+
+    @Shadow public abstract double getFluidHeight(TagKey<Fluid> fluidTag);
+
+    @Shadow protected boolean firstTick;
+    @Shadow protected boolean wasTouchingWater;
+
+    @Shadow protected abstract void doWaterSplashEffect();
 
     @Unique
     private MirthdewEncoreEntityAttachment mirthdew_encore$entityAttachment;
@@ -102,6 +115,18 @@ public abstract class EntityMixin implements EntityDuckInterface {
     private void mirthdew_encore$cancelGravity(CallbackInfoReturnable<Double> cir) {
         if(this.mirthdew_encore$entityAttachment.shouldCancelGravity()) {
             cir.setReturnValue(0.0);
+        }
+    }
+
+    @Inject(method = "updateFluidHeightAndDoFluidPushing", at = @At(value = "RETURN"))
+    private void mirthdew_encore$playFluidsSplashEffect(TagKey<Fluid> fluidTag, double motionScale, CallbackInfoReturnable<Boolean> cir) {
+        if(fluidTag.equals(MirthdewEncoreFluidTags.VESPERBILE)) {
+            boolean touchingVesperbile = this.getFluidHeight(MirthdewEncoreFluidTags.VESPERBILE) > 0.0;
+            if ((touchingVesperbile != this.mirthdew_encore$wasTouchingVesperbile) && !firstTick) {
+                // play both on entrance and exit
+                this.doWaterSplashEffect();
+            }
+            this.mirthdew_encore$wasTouchingVesperbile = touchingVesperbile;
         }
     }
 
