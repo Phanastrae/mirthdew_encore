@@ -51,7 +51,7 @@ public class MirthdewEncoreBlocks {
 
     public static final Block SLUMBERVEIL = new SlumberveilBlock(createSettings()
             .noCollission()
-            .sound(SoundType.WOOL)
+            .sound(SoundType.HONEY_BLOCK)
             .lightLevel(constant(13))
             .pushReaction(PushReaction.DESTROY)
             .replaceable()
