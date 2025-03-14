@@ -1,40 +1,27 @@
 package phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista;
 
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class VistaType {
+public record VistaType(List<Entry> roomTypeEntries) {
+    public static final Codec<VistaType> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                            Entry.CODEC.listOf().fieldOf("entries").forGetter(VistaType::roomTypeEntries)
+                    )
+                    .apply(instance, VistaType::new)
+    );
 
-    public final List<Entry> roomTypes;
-
-    public VistaType(List<Entry> roomTypes) {
-        this.roomTypes = roomTypes;
-    }
-
-    public static class Builder {
-
-        private final List<Entry> roomTypes;
-
-        public Builder() {
-            this.roomTypes = new ArrayList<>();
-        }
-
-        public Builder addRoomType(Registry<RoomType> registry, ResourceLocation resourceLocation, int weight) {
-            Optional<RoomType> optional = registry.getOptional(resourceLocation);
-            optional.ifPresent(roomType -> this.roomTypes.add(new Entry(roomType, weight)));
-            return this;
-        }
-
-        public VistaType build() {
-            return new VistaType(this.roomTypes);
-        }
-    }
-
-    public record Entry(RoomType roomType, int weight) {
+    public record Entry(Holder<RoomType> roomType, int weight) {
+        public static final Codec<Entry> CODEC = RecordCodecBuilder.create(
+                instance -> instance.group(
+                                RoomType.REGISTRY_CODEC.fieldOf("room_type").forGetter(Entry::roomType),
+                                Codec.INT.fieldOf("weight").forGetter(Entry::weight)
+                        )
+                        .apply(instance, Entry::new)
+        );
     }
 }

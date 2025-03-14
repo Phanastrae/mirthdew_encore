@@ -84,7 +84,7 @@ public class RoomSourceCollection {
 
     public static RoomSourceCollection create(VistaType vistaSettings) {
         List<Entry> roomSources = new ArrayList<>();
-        vistaSettings.roomTypes.forEach(roomType -> roomSources.add(new Entry(new RoomSource(roomType.roomType()), roomType.weight())));
+        vistaSettings.roomTypeEntries().forEach(roomType -> roomSources.add(new Entry(new RoomSource(roomType.roomType().value()), roomType.weight())));
         return new RoomSourceCollection(roomSources);
     }
 

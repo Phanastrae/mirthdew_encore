@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.Nullable;
+import phanastrae.mirthdew_encore.MirthdewEncore;
 import phanastrae.mirthdew_encore.dreamtwirl.DreamtwirlStageManager;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.StageAcherunes;
@@ -22,8 +23,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source.RoomSource
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.destroy.StageNuker;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceableRoom;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place.PlaceableRoomStorage;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.room.RoomType;
-import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista.VistaTypes;
+import phanastrae.mirthdew_encore.dreamtwirl.stage.plan.vista.VistaType;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.play.DreamtwirlBorder;
 import phanastrae.mirthdew_encore.network.packet.DreamtwirlDebugPayload;
 import phanastrae.mirthdew_encore.registry.MirthdewEncoreRegistries;
@@ -159,10 +159,14 @@ public class DreamtwirlStage extends SavedData {
     }
 
     public void generate(long stageSeed, ServerLevel serverLevel) {
-        Optional<Registry<RoomType>> regOptional = serverLevel.registryAccess().registry(MirthdewEncoreRegistries.ROOM_TYPE_KEY);
-        if(regOptional.isEmpty()) return;
+        Optional<Registry<VistaType>> vistaTypeRegistryOptional = serverLevel.registryAccess().registry(MirthdewEncoreRegistries.VISTA_TYPE_KEY);
+        if(vistaTypeRegistryOptional.isEmpty()) return;
+        Registry<VistaType> vistaTypeRegistry = vistaTypeRegistryOptional.get();
 
-        RoomSourceCollection roomSources = RoomSourceCollection.create(VistaTypes.createDecidrheumForest(regOptional.get()));
+        VistaType vistaType = vistaTypeRegistry.get(MirthdewEncore.id("decidrheum_forest"));
+        if(vistaType == null) return;
+
+        RoomSourceCollection roomSources = RoomSourceCollection.create(vistaType);
         this.stageDesignGenerator = new StageDesignGenerator(this.getStageAreaData(), serverLevel, stageSeed, roomSources);
 
         this.setDirty();
