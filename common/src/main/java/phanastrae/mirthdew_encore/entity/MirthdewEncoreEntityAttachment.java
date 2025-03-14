@@ -1,12 +1,14 @@
 package phanastrae.mirthdew_encore.entity;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -119,6 +121,10 @@ public class MirthdewEncoreEntityAttachment {
 
         if(this.warping) {
             if(keepWarping()) {
+                if(!clientSide && this.entity instanceof Player player) {
+                    player.displayClientMessage(Component.translatable("mirthdew_encore.acherune.exit_warp_info").withStyle(ChatFormatting.AQUA), true);
+                }
+
                 this.warpTicks++;
 
                 this.entity.setDeltaMovement(this.entity.getDeltaMovement().lerp(new Vec3(0, 0.025, 0), 0.13));

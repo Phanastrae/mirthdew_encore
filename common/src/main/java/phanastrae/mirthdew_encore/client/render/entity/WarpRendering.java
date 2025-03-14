@@ -66,7 +66,7 @@ public class WarpRendering {
 
             float size = 0.1F * (1 + i + 0.1F * i * i) * (2.5F - startProgress - endProgress);
             guiGraphics.pose().scale(size, size, 1);
-            guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(360 * (startProgress + endProgress) * (1 + p * 3) * -0.5F + i * 413));
+            guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(360 * ((meea.getWarpTicks() + partialTicks) / (float)MirthdewEncoreEntityAttachment.WARP_TIME) * (1 + p * 3) + i * 413));
 
             Matrix4f matrix4f = guiGraphics.pose().last().pose();
 
