@@ -67,6 +67,14 @@ public class RecipeProvider extends FabricRecipeProvider {
         savePolished(BACCHENITE_BRICKS, BACCHENITE_BLOCK, exporter);
         savePolished(BACCHENITE_TILES, BACCHENITE_BRICKS, exporter);
 
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, BACCHENITE_SHARD, 4)
+                .requires(BACCHENITE_BLOCK)
+                .unlockedBy(
+                        getHasName(BACCHENITE_BLOCK),
+                        has(BACCHENITE_BLOCK)
+                )
+                .save(exporter);
+
         savePolished(UNGUISHALE_BRICKS, UNGUISHALE, exporter);
         savePolished(UNGUISHALE_TILES, UNGUISHALE_BRICKS, exporter);
 
