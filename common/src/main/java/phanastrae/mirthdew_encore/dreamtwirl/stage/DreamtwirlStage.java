@@ -156,7 +156,7 @@ public class DreamtwirlStage extends SavedData {
     }
 
     public void generate(long stageSeed, ServerLevel serverLevel) {
-        RoomSourceCollection roomSources = RoomSourceCollection.create(serverLevel, VistaTypes.DECIDRHEUM_FOREST);
+        RoomSourceCollection roomSources = RoomSourceCollection.create(VistaTypes.DECIDRHEUM_FOREST);
         this.stageDesignGenerator = new StageDesignGenerator(this.getStageAreaData(), serverLevel, stageSeed, roomSources);
 
         this.setDirty();

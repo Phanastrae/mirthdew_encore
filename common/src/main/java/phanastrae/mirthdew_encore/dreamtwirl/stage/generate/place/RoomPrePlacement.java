@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
@@ -39,7 +38,6 @@ import java.util.Optional;
 public class RoomPrePlacement {
 
     public static boolean placeStructure(Room room, ServerLevel serverLevel, WorldGenLevel worldGenLevel, BoundingBox areaBox, boolean forceLoadChunks, int roomId) {
-        Structure structure = room.getStructure();
         PiecesContainer piecesContainer = room.getPiecesContainer();
         List<StructurePiece> list = piecesContainer.pieces();
         BoundingBox blockBox = room.getBoundingBox();
@@ -104,16 +102,6 @@ public class RoomPrePlacement {
                                     }
                                 }
                             }
-
-                            structure.afterPlace(
-                                    worldGenLevel,
-                                    structureAccessor,
-                                    chunkGenerator,
-                                    random,
-                                    chunkBox,
-                                    chunkPos,
-                                    piecesContainer
-                            );
                         }
                 );
         for(StructurePiece structurePiece : list) {

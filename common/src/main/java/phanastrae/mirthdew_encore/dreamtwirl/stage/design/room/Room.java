@@ -10,7 +10,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import org.jetbrains.annotations.Nullable;
@@ -23,13 +22,11 @@ import java.util.Optional;
 
 public class Room {
     public static final String KEY_ID = "id";
-    public static final String KEY_STRUCTURE = "structure";
     public static final String KEY_ROOM_TYPE = "room_type";
     public static final String KEY_STRUCTURE_PIECES = "structure_pieces";
     public static final String KEY_ROOM_OBJECTS = "room_objects";
 
     private final long roomId;
-    private final Structure structure;
     private final RoomType roomType;
 
     private final PiecesContainer piecesContainer;
@@ -38,8 +35,7 @@ public class Room {
     private BoundingBox boundingBox;
     private boolean bbNeedsRecalc;
 
-    public Room(long roomId, Structure structure, RoomType roomType, PiecesContainer piecesContainer, RoomObjects roomObjects) {
-        this.structure = structure;
+    public Room(long roomId, RoomType roomType, PiecesContainer piecesContainer, RoomObjects roomObjects) {
         this.roomType = roomType;
         this.piecesContainer = piecesContainer;
         this.roomObjects = roomObjects;
@@ -53,11 +49,6 @@ public class Room {
         RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
 
         nbt.putLong(KEY_ID, this.roomId);
-
-        Structure.DIRECT_CODEC
-                .encodeStart(registryops, this.structure)
-                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to encode structure for Room: '{}'", st))
-                .ifPresent(bpdTag -> nbt.put(KEY_STRUCTURE, bpdTag));
 
         RoomType.CODEC
                 .encodeStart(registryops, this.roomType)
@@ -81,17 +72,6 @@ public class Room {
             return null;
         }
         long id = nbt.getLong(KEY_ID);
-
-        if(!nbt.contains(KEY_STRUCTURE, Tag.TAG_COMPOUND)) {
-            return null;
-        }
-        Optional<Structure> structureOptional = Structure.DIRECT_CODEC
-                .parse(registryops, nbt.get(KEY_STRUCTURE))
-                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to parse structure for Room: '{}'", st));
-        if(structureOptional.isEmpty()) {
-            return null;
-        }
-        Structure structure = structureOptional.get();
 
         if(!nbt.contains(KEY_ROOM_TYPE, Tag.TAG_COMPOUND)) {
             return null;
@@ -121,7 +101,7 @@ public class Room {
         }
         RoomObjects roomObjects = roomObjectsOptional.get();
 
-        return new Room(id, structure, roomType, pieces, roomObjects);
+        return new Room(id, roomType, pieces, roomObjects);
     }
 
     public void translateToMatchDoor(RoomDoor thisDoor, RoomDoor targetDoor, StageDesignData designData) {
@@ -178,10 +158,6 @@ public class Room {
 
     public RoomObjects getRoomObjects() {
         return roomObjects;
-    }
-
-    public Structure getStructure() {
-        return structure;
     }
 
     public RoomType getRoomType() {

@@ -5,12 +5,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
 
-public record RoomType(ResourceLocation resourceLocation, Category category) {
+public record RoomType(ResourceLocation templatePool, int maxDepth, Category category) {
     public static final StringRepresentable.StringRepresentableCodec<Category> CATEGORY_CODEC = StringRepresentable.fromEnum(Category::values);
 
     public static final Codec<RoomType> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
-                            ResourceLocation.CODEC.fieldOf("location").forGetter(RoomType::resourceLocation),
+                            ResourceLocation.CODEC.fieldOf("template_pool").forGetter(RoomType::templatePool),
+                            Codec.INT.fieldOf("max_depth").forGetter(RoomType::maxDepth),
                             CATEGORY_CODEC.fieldOf("category").forGetter(RoomType::category)
                     )
                     .apply(instance, RoomType::new)

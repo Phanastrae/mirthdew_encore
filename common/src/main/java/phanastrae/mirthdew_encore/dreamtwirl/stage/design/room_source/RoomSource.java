@@ -3,14 +3,14 @@ package phanastrae.mirthdew_encore.dreamtwirl.stage.design.room_source;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Optionull;
 import net.minecraft.Util;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.FrontAndTop;
-import net.minecraft.core.HolderLookup;
+import net.minecraft.core.*;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
@@ -25,9 +25,9 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
-import net.minecraft.world.level.levelgen.structure.pools.ListPoolElement;
-import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
-import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.*;
+import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
+import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
@@ -49,18 +49,15 @@ import java.util.List;
 import java.util.Optional;
 
 public class RoomSource {
-    public static final String KEY_STRUCTURE = "structure";
     public static final String KEY_ROOM_TYPE = "room_type";
     public static final String KEY_ATTEMPT_ROOMS = "attempt_rooms";
     public static final String KEY_FAILED_ROOMS = "failed_rooms";
 
-    private final Structure structure;
     private final RoomType roomType;
     private final List<Room> attemptRooms;
     private final List<Room> failedRooms;
 
-    public RoomSource(Structure structure, RoomType roomType) {
-        this.structure = structure;
+    public RoomSource(RoomType roomType) {
         this.roomType = roomType;
         this.attemptRooms = new ArrayList<>();
         this.failedRooms = new ArrayList<>();
@@ -68,11 +65,6 @@ public class RoomSource {
 
     public CompoundTag writeNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext) {
         RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
-
-        Structure.DIRECT_CODEC
-                .encodeStart(registryops, this.structure)
-                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to encode structure for Room: '{}'", st))
-                .ifPresent(bpdTag -> nbt.put(KEY_STRUCTURE, bpdTag));
 
         RoomType.CODEC
                 .encodeStart(registryops, this.roomType)
@@ -97,17 +89,6 @@ public class RoomSource {
     public static @Nullable RoomSource fromNbt(CompoundTag nbt, HolderLookup.Provider registries, StructurePieceSerializationContext spsContext) {
         RegistryOps<Tag> registryops = registries.createSerializationContext(NbtOps.INSTANCE);
 
-        if(!nbt.contains(KEY_STRUCTURE, Tag.TAG_COMPOUND)) {
-            return null;
-        }
-        Optional<Structure> structureOptional = Structure.DIRECT_CODEC
-                .parse(registryops, nbt.get(KEY_STRUCTURE))
-                .resultOrPartial(st -> MirthdewEncore.LOGGER.error("Failed to parse structure for Room: '{}'", st));
-        if(structureOptional.isEmpty()) {
-            return null;
-        }
-        Structure structure = structureOptional.get();
-
         if(!nbt.contains(KEY_ROOM_TYPE, Tag.TAG_COMPOUND)) {
             return null;
         }
@@ -119,7 +100,7 @@ public class RoomSource {
         }
         RoomType roomType = roomTypeOptional.get();
 
-        RoomSource source = new RoomSource(structure, roomType);
+        RoomSource source = new RoomSource(roomType);
 
         if(nbt.contains(KEY_ATTEMPT_ROOMS, Tag.TAG_LIST)) {
             ListTag attemptRoomList = nbt.getList(KEY_ATTEMPT_ROOMS, Tag.TAG_COMPOUND);
@@ -165,12 +146,21 @@ public class RoomSource {
     }
 
     public Optional<SourcedRoom> tryGenerateRoom(long stageSeed, ChunkPos stageCenterPos, RandomSource random, ServerLevel serverLevel, StageDesignData designData) {
-        Optional<PiecesContainer> piecesContainerOptional = tryMakePiecesContainer(this.structure, stageSeed, random, stageCenterPos, serverLevel);
+        // try get pieces container
+        Optional<PiecesContainer> piecesContainerOptional = tryMakePiecesContainer(
+                serverLevel,
+                random,
+                stageSeed,
+                stageCenterPos.getWorldPosition(),
+                this.roomType
+        );
+
+        // generate room if present
         return piecesContainerOptional
                 .map(piecesContainer -> {
                     long roomId = designData.getNextRoomId();
                     Room.RoomObjects objects = collectRoomObjects(piecesContainer, serverLevel.getStructureManager(), random, roomId);
-                    Room room = new Room(roomId, this.structure, this.roomType, piecesContainer, objects);
+                    Room room = new Room(roomId, this.roomType, piecesContainer, objects);
                     return new SourcedRoom(room, this);
                 });
     }
@@ -183,32 +173,63 @@ public class RoomSource {
         return roomType;
     }
 
-    public Structure getStructure() {
-        return structure;
+    public static Optional<PiecesContainer> tryMakePiecesContainer(ServerLevel serverLevel, RandomSource random, long stageSeed, BlockPos pos, RoomType roomType) {
+        return tryMakePiecesContainer(
+                serverLevel,
+                stageSeed ^ random.nextLong(),
+                pos,
+                roomType.maxDepth(),
+                roomType.templatePool()
+        );
     }
 
-    public static Optional<PiecesContainer> tryMakePiecesContainer(Structure structure, long stageSeed, RandomSource random, ChunkPos stageCenterPos, ServerLevel serverLevel) {
-        Optional<Structure.GenerationStub> generationStubOptional = tryGetStructureGenStub(structure, stageSeed, random, stageCenterPos, serverLevel);
-        return generationStubOptional.map(generationStub -> generationStub.getPiecesBuilder().build());
-    }
+    public static Optional<PiecesContainer> tryMakePiecesContainer(ServerLevel serverLevel, long seed, BlockPos pos, int maxDepth, ResourceLocation templatePool) {
+        // get registry access
+        RegistryAccess registryAccess = serverLevel.registryAccess();
+        Optional<Registry<StructureTemplatePool>> structureTemplateRegistryOptional = registryAccess.registry(Registries.TEMPLATE_POOL);
+        if(structureTemplateRegistryOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        Registry<StructureTemplatePool> structureTemplateRegistry = structureTemplateRegistryOptional.get();
 
-    public static Optional<Structure.GenerationStub> tryGetStructureGenStub(Structure structure, long stageSeed, RandomSource random, ChunkPos stageCenterPos, ServerLevel serverLevel) {
+        // get template pool holder
+        Optional<Holder.Reference<StructureTemplatePool>> holderOptional = structureTemplateRegistry.getHolder(templatePool);
+        if(holderOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        Holder<StructureTemplatePool> startPool = holderOptional.get();
+
+        // get generation context
         ChunkGenerator chunkGenerator = serverLevel.getChunkSource().getGenerator();
-        // need to give the rooms individual seeds to stop them from all having the same orientation/layout/etc.
-        long roomSeed = random.nextLong() ^ stageSeed;
-
-        Structure.GenerationContext context = new Structure.GenerationContext(
-                serverLevel.registryAccess(),
+        Structure.GenerationContext generationContext = new Structure.GenerationContext(
+                registryAccess,
                 chunkGenerator,
                 chunkGenerator.getBiomeSource(),
                 serverLevel.getChunkSource().randomState(),
                 serverLevel.getStructureManager(),
-                roomSeed,
-                stageCenterPos,
+                seed,
+                new ChunkPos(pos),
                 serverLevel,
                 biome -> true
         );
-        return structure.findValidGenerationPoint(context);
+
+        // gen generation stub
+        Optional<Structure.GenerationStub> genStubOptional = JigsawPlacement.addPieces(
+                generationContext,
+                startPool,
+                Optional.empty(), // this determines structure spawn position, but the structure gets repositioned anyway, so this is not needed and can be left empty
+                maxDepth,
+                pos,
+                false,
+                Optional.empty(),
+                128,
+                PoolAliasLookup.EMPTY,
+                JigsawStructure.DEFAULT_DIMENSION_PADDING,
+                JigsawStructure.DEFAULT_LIQUID_SETTINGS
+        );
+
+        // return pieces
+        return genStubOptional.map(generationStub -> generationStub.getPiecesBuilder().build());
     }
 
     public static Room.RoomObjects collectRoomObjects(PiecesContainer piecesContainer, StructureTemplateManager structureTemplateManager, RandomSource random, long roomId) {
