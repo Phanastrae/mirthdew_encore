@@ -86,6 +86,10 @@ public class ItemTagProvider extends FabricTagProvider.ItemTagProvider {
         // copy convention tags
         this.copy(ConventionalBlockTags.COBBLESTONES, ConventionalItemTags.COBBLESTONES);
         this.copy(ConventionalBlockTags.ORES, ConventionalItemTags.ORES);
+        this.copy(ConventionalBlockTags.ORE_RATES_DENSE, ConventionalItemTags.ORE_RATES_DENSE);
+        this.copy(ConventionalBlockTags.STRIPPED_LOGS, ConventionalItemTags.STRIPPED_LOGS);
+        this.copy(ConventionalBlockTags.STRIPPED_WOODS, ConventionalItemTags.STRIPPED_WOODS);
+        this.copy(ConventionalBlockTags.STORAGE_BLOCKS, ConventionalItemTags.STORAGE_BLOCKS);
 
         // vanilla item tags
         getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS)
@@ -117,6 +121,10 @@ public class ItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 .add(
                         PSYRITE_NUGGET
                 );
+
+        getOrCreateTagBuilder(ConventionalItemTags.BUCKETS).add(
+                VESPERBILE_BUCKET
+        );
 
         getOrCreateTagBuilder(ConventionalItemTags.RAW_MATERIALS)
                 .add(

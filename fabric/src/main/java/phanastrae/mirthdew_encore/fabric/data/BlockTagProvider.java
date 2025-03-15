@@ -291,6 +291,33 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                         MAGNETA_FOGHAIR
                 );
 
+        getOrCreateTagBuilder(BlockTags.REPLACEABLE).add(
+                RHEUMBRISTLES,
+
+                ORANGE_FOGHAIR,
+                LIME_FOGHAIR,
+                CYAN_FOGHAIR,
+                MAGNETA_FOGHAIR
+        );
+
+        getOrCreateTagBuilder(BlockTags.CRYSTAL_SOUND_BLOCKS).add(
+                GREATER_ACHERUNE,
+                ACHERUNE_HOLLOW,
+                WAKESIDE_RUNE,
+
+                BACCHENITE_BLOCK,
+
+                BACCHENITE_BRICKS,
+                BACCHENITE_BRICK_STAIRS,
+                BACCHENITE_BRICK_SLAB,
+                BACCHENITE_BRICK_WALL,
+
+                BACCHENITE_TILES,
+                BACCHENITE_TILE_STAIRS,
+                BACCHENITE_TILE_SLAB,
+                BACCHENITE_TILE_WALL
+        );
+
         getOrCreateTagBuilder(BlockTags.COMBINATION_STEP_SOUND_BLOCKS)
                 .add(
                         RHEUMBRISTLES,
@@ -300,6 +327,15 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                         CYAN_FOGHAIR,
                         MAGNETA_FOGHAIR
                 );
+
+        getOrCreateTagBuilder(BlockTags.ENCHANTMENT_POWER_TRANSMITTER).add(
+                RHEUMBRISTLES,
+
+                ORANGE_FOGHAIR,
+                LIME_FOGHAIR,
+                CYAN_FOGHAIR,
+                MAGNETA_FOGHAIR
+        );
 
         // convention tags
         getOrCreateTagBuilder(ConventionalBlockTags.COBBLESTONES)
@@ -315,12 +351,32 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
                         SUNSLAKED_PSYRITE_ORE
                 );
 
+        getOrCreateTagBuilder(ConventionalBlockTags.ORE_RATES_DENSE)
+                .add(
+                        GACHERIMM_PSYRITE_ORE,
+                        SCARABRIM_PSYRITE_ORE,
+                        SUNSLAKED_PSYRITE_ORE
+                );
+
         getOrCreateTagBuilder(ConventionalBlockTags.RELOCATION_NOT_SUPPORTED)
                 .add(
                         GREATER_ACHERUNE,
                         LYCHSEAL,
                         MEMORY_FOAM
                 );
+
+        getOrCreateTagBuilder(ConventionalBlockTags.STRIPPED_LOGS).add(
+                DECIDRHEUM_LOG
+        );
+
+        getOrCreateTagBuilder(ConventionalBlockTags.STRIPPED_WOODS).add(
+                DECIDRHEUM_LOG
+        );
+
+        getOrCreateTagBuilder(ConventionalBlockTags.STORAGE_BLOCKS).add(
+                PSYRITE_BLOCK,
+                BACCHENITE_BLOCK
+        );
 
         // custom
         getOrCreateTagBuilder(MirthdewEncoreBlockTags.DREAMSPECK_OPAQUE)
@@ -421,10 +477,12 @@ public class BlockTagProvider extends FabricTagProvider.BlockTagProvider {
         addBlockToTags(family, BlockFamily.Variant.STAIRS, isWooden, BlockTags.STAIRS, BlockTags.WOODEN_STAIRS);
         addBlockToTags(family, BlockFamily.Variant.SLAB, isWooden, BlockTags.SLABS, BlockTags.WOODEN_SLABS);
         addBlockToTags(family, BlockFamily.Variant.FENCE, isWooden, BlockTags.FENCES, BlockTags.WOODEN_FENCES);
+        addBlockToTags(family, BlockFamily.Variant.FENCE, isWooden, ConventionalBlockTags.FENCES, ConventionalBlockTags.WOODEN_FENCES);
         addBlockToTags(family, BlockFamily.Variant.DOOR, isWooden, BlockTags.DOORS, BlockTags.WOODEN_DOORS);
         addBlockToTags(family, BlockFamily.Variant.TRAPDOOR, isWooden, BlockTags.TRAPDOORS, BlockTags.WOODEN_TRAPDOORS);
 
         addBlockToTags(family, BlockFamily.Variant.FENCE_GATE, BlockTags.FENCE_GATES);
+        addBlockToTags(family, BlockFamily.Variant.FENCE_GATE, isWooden, ConventionalBlockTags.FENCE_GATES, ConventionalBlockTags.WOODEN_FENCE_GATES);
         addBlockToTags(family, BlockFamily.Variant.WALL, BlockTags.WALLS);
     }
 
