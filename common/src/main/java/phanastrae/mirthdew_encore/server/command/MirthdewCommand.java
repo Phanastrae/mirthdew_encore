@@ -150,7 +150,6 @@ public class MirthdewCommand {
                                                         )
                                                         .then(literal("clear")
                                                                 .then(literal("theEntireDreamtwirlIncludingTheBlocksYesAllOfItPleaseJustDeleteItAll")
-                                                                        .requires(source -> source.hasPermission(4))
                                                                         .then(literal("CONFIRM")
                                                                                 .executes(context -> clearTheEntireDreamtwirlIncludingTheBlocksYesAllOfItPleaseJustDeleteItAll(context.getSource(), IntegerArgumentType.getInteger(context, "regionX"), IntegerArgumentType.getInteger(context, "regionZ")))
                                                                         )

@@ -31,6 +31,9 @@ public class StageDesignGenerator {
     public static final String KEY_STEPS = "steps";
     public static final String KEY_DESIGN_DATA = "design_data";
 
+    public static final int TOTAL_STEPS = 5000;
+    public static final int STEPS_PER_TICK = 50;
+
     private final ServerLevel serverLevel;
     private final StageAreaData stageAreaData;
     private final long stageSeed;
@@ -90,7 +93,7 @@ public class StageDesignGenerator {
     }
 
     public boolean tick() {
-        for(int i = 0; i < 400; i++) {
+        for(int i = 0; i < STEPS_PER_TICK; i++) {
             this.steps++;
             // setup random every tick to allow RNG to persist through world reloads
             this.setupRandom();
@@ -113,7 +116,7 @@ public class StageDesignGenerator {
             this.attemptEntrancePlacement();
             return false;
         }
-        if(this.steps <= 5000) {
+        if(this.steps <= TOTAL_STEPS) {
             //this.sprawl();
             this.addBranch();
             return false;
