@@ -2,7 +2,6 @@ package phanastrae.mirthdew_encore.dreamtwirl.stage.generate.place;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -37,16 +36,74 @@ public class RoomActivePlacement {
         return NOISE.get(x, z);
     }
 
+    public static boolean canPlaceInBoxAtTime(BlockPos placementOrigin, int time, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        // we always reach one of the corners last, so if they have all been reached we can skip generation
+        boolean beyondAllMaxTimes = true;
+        for(int i = 0; i < 8; i++) {
+            int x = (i & 0x1) == 0 ? minX : maxX;
+            int y = (i & 0x2) == 0 ? minY : maxY;
+            int z = (i & 0x4) == 0 ? minZ : maxZ;
+
+            int maxTimeToReachPos = getTimeToReachPos(placementOrigin, x, y, z, true, getNoise(x, z)) + 1;
+            if(time <= maxTimeToReachPos) {
+                beyondAllMaxTimes = false;
+                break;
+            }
+        }
+        if(beyondAllMaxTimes) {
+            return false;
+        }
+
+        // first x,y,z reached should be the ones with the same x,y,z as placementOrigin, or the closest to that
+        int earliestX = Mth.clamp(placementOrigin.getX(), minX, maxX);
+        int earliestY = Mth.clamp(placementOrigin.getY(), minY, maxY);
+        int earliestZ = Mth.clamp(placementOrigin.getZ(), minZ, maxZ);
+        // if we are too early to reach any part of the box, then skip
+        int minTimeToReachBox = getTimeToReachPos(placementOrigin, earliestX, earliestY, earliestZ, false, 0) - 1;
+        if(time < minTimeToReachBox) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean canPlaceInColumnAtTime(BlockPos placementOrigin, int time, int x, int z, int minY, int maxY) {
+        float noise = getNoise(x, z);
+
+        // we always reach either the top or bottom last, so if both have already been reached then skip
+        int maxTimeToReachBottom = getTimeToReachPos(placementOrigin, x, minY, z, true, noise) + 1;
+        int maxTimeToReachTop = getTimeToReachPos(placementOrigin, x, maxY, z, true, noise) + 1;
+        if(time > maxTimeToReachBottom && time > maxTimeToReachTop) {
+            return false;
+        }
+
+        // first y reached should be the one on same height as placementOrigin, or the closest to that
+        int earliestY = Mth.clamp(placementOrigin.getY(), minY, maxY);
+        // if we are too early to reach any part of the column, then skip
+        int minTimeToReachColumn = getTimeToReachPos(placementOrigin, x, earliestY, z, false, noise) - 1;
+        if(time < minTimeToReachColumn) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static int getTimeToReachPos(BlockPos placementOrigin, BlockPos pos, boolean addDelay, int x, int z) {
         return getTimeToReachPos(placementOrigin, pos, addDelay, getNoise(x, z));
     }
 
     public static int getTimeToReachPos(BlockPos placementOrigin, BlockPos pos, boolean addDelay, float noise) {
+        return getTimeToReachPos(placementOrigin, pos.getX(), pos.getY(), pos.getZ(), addDelay, noise);
+    }
+
+    public static int getTimeToReachPos(BlockPos placementOrigin, int x, int y, int z, boolean addDelay, float noise) {
         if(placementOrigin == null) return 0;
 
-        Vec3i dif = placementOrigin.subtract(pos);
-        int maxDist = dif.getX()*dif.getX() + dif.getY()*dif.getY() + dif.getZ()*dif.getZ();
-        return Mth.ceil(Math.sqrt(maxDist) * TICKS_PER_BLOCK + (addDelay ? FOAM_DELAY_TICKS : 0) + noise); // TODO change this
+        int dx = placementOrigin.getX() - x;
+        int dy = placementOrigin.getY() - y;
+        int dz = placementOrigin.getZ() - z;
+        int distSqr = dx*dx + dy*dy + dz*dz;
+        return Mth.ceil(Math.sqrt(distSqr) * TICKS_PER_BLOCK + (addDelay ? FOAM_DELAY_TICKS : 0) + noise); // TODO change this
     }
 
     public static void setBlock(ServerLevel level, BlockPos pos, BlockState state, boolean updateNeighbors) {

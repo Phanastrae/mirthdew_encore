@@ -294,28 +294,42 @@ public class PlaceableRoom {
                     BoundingBox box = boxedContainer.getBox();
                     if(box == null) return;
 
+                    int mx = sectionPos.minBlockX();
+                    int my = sectionPos.minBlockY();
+                    int mz = sectionPos.minBlockZ();
+
+                    // skip early if boxed container is not in generation range
+                    if(!RoomActivePlacement.canPlaceInBoxAtTime(this.placementOrigin, time,
+                            mx + box.minX(), my + box.minY(), mz + box.minZ(),
+                            mx + box.maxX(), my + box.maxY(), mz + box.maxZ())
+                    ) {
+                        return;
+                    }
+
                     BoxedContainer fragile = this.intermediateStructureStorage.getFragileContainer(sectionPos);
                     if(fragile == null) {
                         fragile = new BoxedContainer();
                         this.intermediateStructureStorage.addFragileContainer(sectionPos, fragile);
                     }
 
-                    int mx = sectionPos.minBlockX();
-                    int my = sectionPos.minBlockY();
-                    int mz = sectionPos.minBlockZ();
-
                     BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
                     for(int x = box.minX(); x <= box.maxX(); x++) {
-                        for(int y = box.minY(); y <= box.maxY(); y++) {
-                            for(int z = box.minZ(); z <= box.maxZ(); z++) {
+                        mutableBlockPos.setX(mx + x);
+                        for(int z = box.minZ(); z <= box.maxZ(); z++) {
+                            // skip early if column is not in generation range
+                            if(!RoomActivePlacement.canPlaceInColumnAtTime(this.placementOrigin, time, mx + x, mz + z, my + box.minY(), my + box.maxY())) {
+                                continue;
+                            }
+
+                            mutableBlockPos.setZ(mz + z);
+                            for(int y = box.minY(); y <= box.maxY(); y++) {
                                 BlockState state = boxedContainer.get(x, y, z);
 
                                 if(!state.is(Blocks.STRUCTURE_VOID)) {
-                                    mutableBlockPos.set(mx + x, my + y, mz + z);
+                                    mutableBlockPos.setY(my + y);
 
                                     int targetTimeFoam = RoomActivePlacement.getTimeToReachPos(this.placementOrigin, mutableBlockPos, false, mx + x, mz + z);
                                     int targetTimeBlock = RoomActivePlacement.getTimeToReachPos(this.placementOrigin, mutableBlockPos, true, mx + x, mz + z);
-                                    // TODO optimise
                                     if(time == targetTimeBlock || time == targetTimeFoam) {
                                         BlockState targetState = boxedContainer.get(x, y, z);
                                         if(targetState.is(Blocks.STRUCTURE_VOID)) {
@@ -379,12 +393,14 @@ public class PlaceableRoom {
 
                     BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
                     for(int x = box.minX(); x <= box.maxX(); x++) {
+                        mutableBlockPos.setX(mx + x);
                         for(int y = box.minY(); y <= box.maxY(); y++) {
+                            mutableBlockPos.setY(my + y);
                             for(int z = box.minZ(); z <= box.maxZ(); z++) {
                                 BlockState state = boxedContainer.get(x, y, z);
 
                                 if(!state.is(Blocks.STRUCTURE_VOID)) {
-                                    mutableBlockPos.set(mx + x, my + y, mz + z);
+                                    mutableBlockPos.setZ(mz + z);
 
                                     RoomActivePlacement.setBlock(level, mutableBlockPos, state, false);
                                     RoomActivePlacement.playBlockPlaceEffects(level, random, mutableBlockPos);
@@ -412,12 +428,14 @@ public class PlaceableRoom {
 
                     BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
                     for(int x = box.minX(); x <= box.maxX(); x++) {
+                        mutableBlockPos.setX(mx + x);
                         for(int y = box.minY(); y <= box.maxY(); y++) {
+                            mutableBlockPos.setY(my + y);
                             for(int z = box.minZ(); z <= box.maxZ(); z++) {
                                 BlockState state = boxedContainer.get(x, y, z);
 
                                 if(!state.is(Blocks.STRUCTURE_VOID)) {
-                                    mutableBlockPos.set(mx + x, my + y, mz + z);
+                                    mutableBlockPos.setZ(mz + z);
 
                                     level.blockUpdated(mutableBlockPos, state.getBlock());
                                     if (state.hasAnalogOutputSignal()) {
