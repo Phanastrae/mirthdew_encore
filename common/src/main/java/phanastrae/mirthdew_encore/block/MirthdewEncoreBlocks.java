@@ -2,6 +2,7 @@ package phanastrae.mirthdew_encore.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BlockGetter;
@@ -558,7 +559,22 @@ public class MirthdewEncoreBlocks {
             .requiresCorrectToolForDrops()
     );
 
-    public static final BlockSetType PSYRITE_BLOCKSET = new BlockSetType("mirthdew_encore:psyrite");
+    public static final BlockSetType PSYRITE_BLOCKSET = new BlockSetType(
+            "mirthdew_encore:psyrite",
+            true,
+            true,
+            false,
+            BlockSetType.PressurePlateSensitivity.EVERYTHING,
+            SoundType.COPPER,
+            SoundEvents.COPPER_DOOR_CLOSE,
+            SoundEvents.COPPER_DOOR_OPEN,
+            SoundEvents.COPPER_TRAPDOOR_CLOSE,
+            SoundEvents.COPPER_TRAPDOOR_OPEN,
+            SoundEvents.METAL_PRESSURE_PLATE_CLICK_OFF,
+            SoundEvents.METAL_PRESSURE_PLATE_CLICK_ON,
+            SoundEvents.STONE_BUTTON_CLICK_OFF,
+            SoundEvents.STONE_BUTTON_CLICK_ON
+    );
     public static final Block PSYRITE_BLOCK = new Block(createSettings()
             .mapColor(MapColor.TERRACOTTA_PINK)
             .strength(3.0F, 6.0F)
