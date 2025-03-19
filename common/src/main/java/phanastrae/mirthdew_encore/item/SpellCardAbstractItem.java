@@ -204,6 +204,10 @@ public abstract class SpellCardAbstractItem extends Item {
 
     @Override
     public boolean overrideOtherStackedOnMe(ItemStack baseStack, ItemStack heldStack, Slot slot, ClickAction clickType, Player player, SlotAccess cursorStackReference) {
+        if(!slot.allowModification(player)) {
+            return false;
+        }
+
         if(heldStack.isEmpty()) {
             if (clickType == ClickAction.SECONDARY) {
                 // Right click with an empty cursor to remove the top-most card from the stack
