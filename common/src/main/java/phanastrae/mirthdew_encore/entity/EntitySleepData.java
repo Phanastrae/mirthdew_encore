@@ -3,6 +3,7 @@ package phanastrae.mirthdew_encore.entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 
 public class EntitySleepData {
@@ -75,7 +76,7 @@ public class EntitySleepData {
     }
 
     public boolean canEmitDreamspecks() {
-        return this.isDeepSleeping() && this.readyToDream();
+        return this.entity.level().getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && this.isDeepSleeping() && this.readyToDream();
     }
 
     public boolean isDeepSleeping() {
