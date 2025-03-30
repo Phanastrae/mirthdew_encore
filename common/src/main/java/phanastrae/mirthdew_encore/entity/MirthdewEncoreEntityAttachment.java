@@ -33,6 +33,7 @@ import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.Acherune;
 import phanastrae.mirthdew_encore.dreamtwirl.stage.acherune.StageAcherunes;
 import phanastrae.mirthdew_encore.duck.EntityDuckInterface;
 import phanastrae.mirthdew_encore.network.packet.EntityAcheruneWarpingPayload;
+import phanastrae.mirthdew_encore.particle.MirthdewEncoreParticleTypes;
 import phanastrae.mirthdew_encore.services.XPlatInterface;
 import phanastrae.mirthdew_encore.util.BlockPosDimensional;
 
@@ -129,9 +130,20 @@ public class MirthdewEncoreEntityAttachment {
 
                 this.entity.setDeltaMovement(this.entity.getDeltaMovement().lerp(new Vec3(0, 0.025, 0), 0.13));
 
-                for(int i = 0; i < 3; i++) {
+                for(int i = 0; i < 2; i++) {
                     level.addParticle(
                             ParticleTypes.ENCHANT,
+                            this.entity.getX() + this.entity.getBbWidth() * (random.nextFloat() - 0.5),
+                            this.entity.getY() + this.entity.getBbHeight() * random.nextFloat(),
+                            this.entity.getZ() + this.entity.getBbWidth() * (random.nextFloat() - 0.5),
+                            (random.nextFloat() - 0.5) * 0.1,
+                            (random.nextFloat() - 0.5) * 0.1,
+                            (random.nextFloat() - 0.5) * 0.1
+                    );
+                }
+                for(int i = 0; i < 3; i++) {
+                    level.addParticle(
+                            MirthdewEncoreParticleTypes.BACCHENITE_GLIMMER,
                             this.entity.getX() + this.entity.getBbWidth() * (random.nextFloat() - 0.5),
                             this.entity.getY() + this.entity.getBbHeight() * random.nextFloat(),
                             this.entity.getZ() + this.entity.getBbWidth() * (random.nextFloat() - 0.5),
@@ -151,6 +163,17 @@ public class MirthdewEncoreEntityAttachment {
                 if(!clientSide) {
                     this.entity.fallDistance = -5;
                     this.stopWarping();
+
+                    level.playSound(
+                            null,
+                            this.entity.getX(),
+                            this.entity.getY(),
+                            this.entity.getZ(),
+                            SoundEvents.AMETHYST_BLOCK_BREAK,
+                            SoundSource.NEUTRAL,
+                            0.8F,
+                            0.7F
+                    );
                 }
             }
         }
@@ -227,6 +250,17 @@ public class MirthdewEncoreEntityAttachment {
 
         LinkedAcheruneComponent lac = LinkedAcheruneComponent.fromAcheruneAndStage(stage, ac);
         this.startWarp(lac);
+
+        level.playSound(
+                null,
+                this.entity.getX(),
+                this.entity.getY(),
+                this.entity.getZ(),
+                SoundEvents.AMETHYST_BLOCK_RESONATE,
+                SoundSource.NEUTRAL,
+                0.8F,
+                1.1F
+        );
     }
 
     public void startWarp(LinkedAcheruneComponent acherune) {

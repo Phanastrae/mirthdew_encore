@@ -2,10 +2,14 @@ package phanastrae.mirthdew_encore.block;
 
 import com.google.common.collect.Sets;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -102,6 +106,15 @@ public class AcherunePoweredBlock extends Block {
             return state.getValue(GreaterAcheruneBlock.RUNE_STATE) == GreaterAcheruneBlock.RuneState.BOUND ? 32 : 0;
         } else {
             return 0;
+        }
+    }
+
+    @Override
+    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+        if(level.isClientSide && entity instanceof Player player) {
+            if(state.getValue(ACHERUNE_POWER) > 0) {
+                player.displayClientMessage(Component.translatable("mirthdew_encore.acherune.start_warp_info").withStyle(ChatFormatting.LIGHT_PURPLE), true);
+            }
         }
     }
 
