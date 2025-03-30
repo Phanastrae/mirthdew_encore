@@ -194,10 +194,16 @@ public class SlumbersocketBlockEntity extends BlockEntity {
             LinkedAcheruneComponent lac = eye.get(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE);
             this.linkedAcherune = lac.getAcherune(level.getServer());
             if(this.linkedAcherune == null && (eye.is(MirthdewEncoreItems.SLEEPY_EYE) || eye.is(MirthdewEncoreItems.SLUMBERING_EYE))) {
-                // if acherune is not found, remove component from item and revert to an ender eye
+                // if acherune is not found, revert to an ender eye and remove any relevant components
                 ItemStack itemStack = Items.ENDER_EYE.getDefaultInstance();
                 itemStack.applyComponents(eye.getComponentsPatch());
+
+                itemStack.remove(MirthdewEncoreDataComponentTypes.LOCATION_COMPONENT);
+                itemStack.remove(MirthdewEncoreDataComponentTypes.LINKED_DREAMTWIRL);
                 itemStack.remove(MirthdewEncoreDataComponentTypes.LINKED_ACHERUNE);
+                itemStack.remove(DataComponents.DAMAGE);
+                itemStack.remove(DataComponents.MAX_DAMAGE);
+
                 this.setHeldItem(itemStack);
 
                 if(this.getLevel() instanceof ServerLevel serverLevel) {
