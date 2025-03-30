@@ -13,7 +13,7 @@ public class BaccheniteGlimmerParticle extends TextureSheetParticle {
         super(level, x, y - 0.125, z, xSpeed, ySpeed, zSpeed);
         this.setSize(0.01F, 0.01F);
         this.pickSprite(sprites);
-        this.quadSize = this.quadSize * (this.random.nextFloat() * 0.2F + 1.3F) * 1.3F;
+        this.quadSize = this.quadSize * (this.random.nextFloat() * 0.9F + 0.7F) * 1.3F;
         this.lifetime = (int)(48.0 / (Math.random() * 0.8 + 0.2));
         this.hasPhysics = false;
         this.friction = 1.0F;
