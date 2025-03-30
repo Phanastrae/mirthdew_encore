@@ -90,7 +90,7 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         if (nbt.contains("listener", Tag.TAG_COMPOUND)) {
             VibrationSystem.Data.CODEC
                     .parse(registryOps, nbt.getCompound("listener"))
-                    .resultOrPartial(string -> LOGGER.error("Failed to parse vibration listener for Sculk Shrieker: '{}'", string))
+                    .resultOrPartial(string -> LOGGER.error("Failed to parse vibration listener for Veric Dreamsnare: '{}'", string))
                     .ifPresent(vibrationListener -> this.vibrationListenerData = vibrationListener);
         }
 
@@ -123,7 +123,7 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
         RegistryOps<Tag> registryOps = registryLookup.createSerializationContext(NbtOps.INSTANCE);
         VibrationSystem.Data.CODEC
                 .encodeStart(registryOps, this.vibrationListenerData)
-                .resultOrPartial(string -> LOGGER.error("Failed to encode vibration listener for Sculk Shrieker: '{}'", string))
+                .resultOrPartial(string -> LOGGER.error("Failed to encode vibration listener for Veric Dreamsnare: '{}'", string))
                 .ifPresent(nbtElement -> nbt.put("listener", nbtElement));
 
         nbt.put("tongue_target_offset", this.toNbtList(this.tongueTargetOffset.x, this.tongueTargetOffset.y, this.tongueTargetOffset.z));
@@ -281,9 +281,11 @@ public class VericDreamsnareBlockEntity extends BlockEntity implements GameEvent
                 }
             }
 
-            if(this.tongueDistance >= offsetLength) {
-                this.setTongueExtended(false);
-                this.sendUpdate();
+            if(this.tongueExtended) { // check again in case we set it to false earlier
+                if (this.tongueDistance >= offsetLength) {
+                    this.setTongueExtended(false);
+                    this.sendUpdate();
+                }
             }
 
             if(this.entitySnared) {
