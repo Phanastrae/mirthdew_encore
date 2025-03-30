@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import phanastrae.mirthdew_encore.block.entity.LychsealBlockEntity;
-import phanastrae.mirthdew_encore.block.entity.MirthdewEncoreBlockEntityTypes;
 
 public class LychsealBlock extends BaseEntityBlock {
     public static final MapCodec<LychsealBlock> CODEC = simpleCodec(LychsealBlock::new);
@@ -56,8 +55,7 @@ public class LychsealBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTickerHelper(type, MirthdewEncoreBlockEntityTypes.LYCHSEAL,
-                level.isClientSide() ? LychsealBlockEntity::tickClient : LychsealBlockEntity::tickServer);
+        return null;
     }
 
     @Override

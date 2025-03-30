@@ -44,14 +44,6 @@ public class LychsealBlockEntity extends BlockEntity {
         }
     }
 
-    public static void tickClient(Level level, BlockPos pos, BlockState state, LychsealBlockEntity blockEntity) {
-
-    }
-
-    public static void tickServer(Level level, BlockPos pos, BlockState state, LychsealBlockEntity blockEntity) {
-
-    }
-
     public void open(Level level, BlockPos pos, BlockState state) {
         RandomSource random = level.getRandom();
 
